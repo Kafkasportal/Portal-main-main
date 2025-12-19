@@ -36,8 +36,8 @@ import {
     FormMessage
 } from '@/components/ui/form'
 import { createBeneficiary } from '@/lib/mock-service'
-import { 
-    IHTIYAC_SAHIBI_KATEGORI_LABELS, 
+import {
+    IHTIYAC_SAHIBI_KATEGORI_LABELS,
     FON_BOLGESI_LABELS,
     DOSYA_BAGLANTISI_LABELS,
     COUNTRIES
@@ -49,7 +49,7 @@ const newBeneficiarySchema = z.object({
         'yetim-ailesi', 'multeci-aile', 'ihtiyac-sahibi-aile',
         'ogrenci-yabanci', 'ogrenci-tc', 'vakif-dernek',
         'devlet-okulu', 'kamu-kurumu', 'ozel-egitim-kurumu'
-    ], { required_error: 'Kategori seçiniz' }),
+    ], { message: 'Kategori seçiniz' }),
     ad: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
     soyad: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
     uyruk: z.string().min(1, 'Uyruk seçiniz'),
@@ -129,9 +129,9 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader className="flex flex-row items-center justify-between">
                     <DialogTitle>Kayıt Ekle</DialogTitle>
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
+                    <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 text-destructive hover:text-destructive"
                         onClick={() => onOpenChange(false)}
                     >
@@ -247,9 +247,9 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                                     <FormItem>
                                         <FormLabel>Kimlik No</FormLabel>
                                         <FormControl>
-                                            <Input 
-                                                placeholder={form.watch('uyruk') === 'Türkiye' ? 'TC Kimlik No' : 'Yabancı Kimlik No'} 
-                                                {...field} 
+                                            <Input
+                                                placeholder={form.watch('uyruk') === 'Türkiye' ? 'TC Kimlik No' : 'Yabancı Kimlik No'}
+                                                {...field}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -257,8 +257,8 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                                 )}
                             />
                             <div className="flex items-center space-x-2">
-                                <Checkbox 
-                                    id="mernis" 
+                                <Checkbox
+                                    id="mernis"
                                     checked={mernisKontrol}
                                     onCheckedChange={(checked) => setMernisKontrol(checked as boolean)}
                                 />
@@ -351,8 +351,8 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                         />
 
                         <DialogFooter className="gap-2 pt-4">
-                            <Button 
-                                type="button" 
+                            <Button
+                                type="button"
                                 variant="secondary"
                                 onClick={() => onOpenChange(false)}
                             >

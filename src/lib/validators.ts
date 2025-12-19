@@ -50,8 +50,7 @@ export const memberSchema = z.object({
         .min(2, 'Soyad en az 2 karakter olmalıdır')
         .max(50, 'Soyad en fazla 50 karakter olabilir'),
     dogumTarihi: z.date({
-        required_error: 'Doğum tarihi gereklidir',
-        invalid_type_error: 'Geçerli bir tarih giriniz'
+        message: 'Doğum tarihi gereklidir'
     }),
     cinsiyet: z.enum(['erkek', 'kadin']),
     telefon: z.string()

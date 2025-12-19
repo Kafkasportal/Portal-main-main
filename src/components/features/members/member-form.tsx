@@ -1,0 +1,344 @@
+'use client'
+
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from '@/components/ui/form'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
+import { memberSchema, type MemberFormData } from '@/lib/validators'
+import { createMember } from '@/lib/mock-service'
+import { TURKISH_CITIES, MEMBER_TYPE_LABELS } from '@/lib/constants'
+
+interface MemberFormProps {
+    onSuccess?: () => void
+    initialData?: Partial<MemberFormData>
+}
+
+export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
+    const queryClient = useQueryClient()
+
+    const form = useForm<MemberFormData>({
+        resolver: zodResolver(memberSchema),
+        defaultValues: {
+            tcKimlikNo: initialData?.tcKimlikNo || '',
+            ad: initialData?.ad || '',
+            soyad: initialData?.soyad || '',
+            telefon: initialData?.telefon || '',
+            email: initialData?.email || '',
+            dogumTarihi: initialData?.dogumTarihi || '',
+            cinsiyet: initialData?.cinsiyet || 'erkek',
+            uyeTuru: initialData?.uyeTuru || 'aktif',
+            adres: {
+                il: initialData?.adres?.il || '',
+                ilce: initialData?.adres?.ilce || '',
+                mahalle: initialData?.adres?.mahalle || '',
+                acikAdres: initialData?.adres?.acikAdres || ''
+            }
+        }
+    })
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: createMember,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['members'] })
+            toast.success('Üye başarıyla kaydedildi')
+            onSuccess?.()
+        },
+        onError: (error) => {
+            toast.error('Bir hata oluştu', {
+                description: error.message
+            })
+        }
+    })
+
+    function onSubmit(data: MemberFormData) {
+        mutate({
+            tcKimlikNo: data.tcKimlikNo,
+            ad: data.ad,
+            soyad: data.soyad,
+            telefon: data.telefon,
+            email: data.email,
+            dogumTarihi: data.dogumTarihi ? new Date(data.dogumTarihi) : new Date(),
+            cinsiyet: data.cinsiyet,
+            uyeTuru: data.uyeTuru,
+            adres: data.adres
+        })
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
+                {/* Kişisel Bilgiler */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Kişisel Bilgiler</h3>
+
+                    <FormField
+                        control={form.control}
+                        name="tcKimlikNo"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>TC Kimlik No *</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="12345678901" maxLength={11} {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="ad"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Ad *</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Ahmet" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="soyad"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Soyad *</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Yılmaz" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="dogumTarihi"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Doğum Tarihi</FormLabel>
+                                    <FormControl>
+                                        <Input type="date" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="cinsiyet"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cinsiyet *</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="erkek">Erkek</SelectItem>
+                                            <SelectItem value="kadin">Kadın</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                {/* İletişim Bilgileri */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">İletişim Bilgileri</h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="telefon"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Telefon *</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="0555 123 45 67" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>E-posta</FormLabel>
+                                    <FormControl>
+                                        <Input type="email" placeholder="ornek@mail.com" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                {/* Adres Bilgileri */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Adres Bilgileri</h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="adres.il"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>İl *</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="İl seçin" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {TURKISH_CITIES.map((city) => (
+                                                <SelectItem key={city} value={city}>
+                                                    {city}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="adres.ilce"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>İlçe *</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="İlçe" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <FormField
+                        control={form.control}
+                        name="adres.mahalle"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Mahalle</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Mahalle" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="adres.acikAdres"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Açık Adres</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="Sokak, bina no, daire..."
+                                        className="resize-none"
+                                        rows={2}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Üyelik Bilgileri */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Üyelik Bilgileri</h3>
+
+                    <FormField
+                        control={form.control}
+                        name="uyeTuru"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Üye Türü *</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {Object.entries(MEMBER_TYPE_LABELS).map(([value, label]) => (
+                                            <SelectItem key={value} value={value}>
+                                                {label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormDescription>
+                                    Üyelik türüne göre aidat miktarı belirlenir
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                    <Button type="button" variant="outline" onClick={onSuccess}>
+                        İptal
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                        {isPending ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Kaydediliyor...
+                            </>
+                        ) : (
+                            'Kaydet'
+                        )}
+                    </Button>
+                </div>
+            </form>
+        </Form>
+    )
+}

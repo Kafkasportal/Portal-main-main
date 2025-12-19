@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KafkasDer Yönetim Paneli
 
-## Getting Started
+KafkasDer için geliştirilmiş modern, hızlı ve kullanıcı dostu yönetim paneli.
 
-First, run the development server:
+## 🚀 Özellikler
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Dashboard:** Verilerin görselleştirilmesi ve genel durum takibi.
+- **Veri Yönetimi:** `@tanstack/react-table` ile gelişmiş filtreleme ve sıralama.
+- **Excel Entegrasyonu:** `xlsx` desteği ile veri içe/dışa aktarma.
+- **Modern UI:** Tailwind CSS v4 ve Shadcn UI bileşenleri ile şık tasarım.
+- **Responsive:** Mobil ve masaüstü uyumlu arayüz.
+- **Dark Mode:** `next-themes` ile gece/gündüz modu desteği.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Teknoloji Yığını
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** Next.js 16 (App Router)
+- **Dil:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **State Management:** Zustand
+- **Veri Çekme:** TanStack Query (React Query)
+- **Formlar:** React Hook Form & Zod
+- **Bileşenler:** Radix UI / Shadcn UI
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📋 Kurulum
 
-## Learn More
+Projeyi yerel ortamınızda çalıştırmak için:
 
-To learn more about Next.js, take a look at the following resources:
+1. Bağımlılıkları yükleyin:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. `.env.example` dosyasını `.env.local` olarak kopyalayın ve gerekli bilgileri doldurun:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Geliştirme sunucusunu başlatın:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## 🧪 Kod Standartları ve Otomasyon
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Bu projede kod kalitesini korumak için aşağıdaki araçlar kullanılır:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **ESLint:** Kod hatalarını ve standartlarını denetler.
+- **Prettier:** Kodun otomatik olarak formatlanmasını sağlar.
+- **GitHub Actions:** Her push ve pull request işleminde projenin hatasız derlendiğini ve lint kurallarına uyduğunu kontrol eder.
+
+## 📜 Lisans
+
+© 2024 Kafkasportal. Tüm hakları saklıdır.

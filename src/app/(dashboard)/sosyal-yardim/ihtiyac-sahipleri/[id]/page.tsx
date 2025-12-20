@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, use, useEffect } from 'react'
+import { useState, use, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { 
     ArrowLeft, 
@@ -45,9 +46,26 @@ import {
     SelectValue
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from '@/components/ui/sheet'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from '@/components/ui/table'
 
 import { fetchBeneficiaryById, updateBeneficiary } from '@/lib/mock-service'
-import { 
+import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validators'
+import {
     IHTIYAC_SAHIBI_KATEGORI_LABELS,
     FON_BOLGESI_LABELS,
     DOSYA_BAGLANTISI_LABELS,
@@ -69,16 +87,19 @@ import type { IhtiyacSahibi } from '@/types'
 function LinkedRecordButton({
     icon: Icon,
     label,
-    count
+    count,
+    onClick
 }: {
     icon: React.ElementType
     label: string
     count?: number
+    onClick?: () => void
 }) {
     return (
         <Button
             variant="outline"
             className="h-auto py-3 px-4 justify-start gap-3 bg-muted/50 border-border hover:bg-muted hover:border-border text-foreground relative"
+            onClick={onClick}
         >
             <Icon className="h-4 w-4 text-primary" />
             <span className="text-sm">{label}</span>
@@ -104,13 +125,42 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     )
 }
 
+// Bağlantılı Kayıt Sheet
+function LinkedRecordSheet({
+    open,
+    onOpenChange,
+    title,
+    description,
+    children
+}: {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    title: string
+    description?: string
+    children: React.ReactNode
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+                <SheetHeader>
+                    <SheetTitle>{title}</SheetTitle>
+                    {description && <SheetDescription>{description}</SheetDescription>}
+                </SheetHeader>
+                <div className="mt-6">{children}</div>
+            </SheetContent>
+        </Sheet>
+    )
+}
+
 export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
     const queryClient = useQueryClient()
     const resolvedParams = use(params)
     const isNew = resolvedParams.id === 'yeni'
-    const [hasChanges, setHasChanges] = useState(false)
     const [deleteChecked, setDeleteChecked] = useState(false)
+    const [activeSheet, setActiveSheet] = useState<string | null>(null)
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { data: beneficiary, isLoading } = useQuery({
         queryKey: ['beneficiary', resolvedParams.id],
@@ -118,18 +168,133 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
         enabled: !isNew
     })
 
+    // React Hook Form setup
+    const form = useForm<BeneficiaryFormData>({
+        resolver: zodResolver(beneficiarySchema),
+        defaultValues: beneficiary ? {
+            ad: beneficiary.ad,
+            soyad: beneficiary.soyad,
+            uyruk: beneficiary.uyruk,
+            tcKimlikNo: beneficiary.tcKimlikNo,
+            yabanciKimlikNo: beneficiary.yabanciKimlikNo,
+            kategori: beneficiary.kategori,
+            fonBolgesi: beneficiary.fonBolgesi,
+            dosyaBaglantisi: beneficiary.dosyaBaglantisi,
+            cepTelefonu: beneficiary.cepTelefonu,
+            cepTelefonuOperator: beneficiary.cepTelefonuOperator,
+            sabitTelefon: beneficiary.sabitTelefon,
+            yurtdisiTelefon: beneficiary.yurtdisiTelefon,
+            email: beneficiary.email,
+            ulke: beneficiary.ulke,
+            sehir: beneficiary.sehir,
+            ilce: beneficiary.ilce,
+            mahalle: beneficiary.mahalle,
+            adres: beneficiary.adres,
+            kimlikBilgileri: beneficiary.kimlikBilgileri,
+            pasaportVizeBilgileri: beneficiary.pasaportVizeBilgileri,
+            saglikBilgileri: beneficiary.saglikBilgileri,
+            ekonomikDurum: beneficiary.ekonomikDurum,
+            aileHaneBilgileri: beneficiary.aileHaneBilgileri,
+            sponsorlukTipi: beneficiary.sponsorlukTipi,
+            durum: beneficiary.durum,
+            rizaBeyaniDurumu: beneficiary.rizaBeyaniDurumu,
+            notlar: beneficiary.notlar
+        } : undefined
+    })
+
+    const {
+        formState: { isDirty, isSubmitting, errors },
+        handleSubmit,
+        reset,
+        setValue,
+        trigger,
+        register
+    } = form
+
+    // Reset form when beneficiary data loads
+    useEffect(() => {
+        if (beneficiary) {
+            reset({
+                ad: beneficiary.ad,
+                soyad: beneficiary.soyad,
+                uyruk: beneficiary.uyruk,
+                tcKimlikNo: beneficiary.tcKimlikNo,
+                yabanciKimlikNo: beneficiary.yabanciKimlikNo,
+                kategori: beneficiary.kategori,
+                fonBolgesi: beneficiary.fonBolgesi,
+                dosyaBaglantisi: beneficiary.dosyaBaglantisi,
+                cepTelefonu: beneficiary.cepTelefonu,
+                cepTelefonuOperator: beneficiary.cepTelefonuOperator,
+                sabitTelefon: beneficiary.sabitTelefon,
+                yurtdisiTelefon: beneficiary.yurtdisiTelefon,
+                email: beneficiary.email,
+                ulke: beneficiary.ulke,
+                sehir: beneficiary.sehir,
+                ilce: beneficiary.ilce,
+                mahalle: beneficiary.mahalle,
+                adres: beneficiary.adres,
+                kimlikBilgileri: beneficiary.kimlikBilgileri,
+                pasaportVizeBilgileri: beneficiary.pasaportVizeBilgileri,
+                saglikBilgileri: beneficiary.saglikBilgileri,
+                ekonomikDurum: beneficiary.ekonomikDurum,
+                aileHaneBilgileri: beneficiary.aileHaneBilgileri,
+                sponsorlukTipi: beneficiary.sponsorlukTipi,
+                durum: beneficiary.durum,
+                rizaBeyaniDurumu: beneficiary.rizaBeyaniDurumu,
+                notlar: beneficiary.notlar
+            })
+        }
+    }, [beneficiary, reset])
+
     const updateMutation = useMutation({
-        mutationFn: (data: Partial<IhtiyacSahibi>) => updateBeneficiary(resolvedParams.id, data),
+        mutationFn: (data: BeneficiaryFormData) => updateBeneficiary(resolvedParams.id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['beneficiary', resolvedParams.id] })
             queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
             toast.success('Kayıt başarıyla güncellendi')
-            setHasChanges(false)
+            reset(undefined, { keepValues: true })
         },
         onError: () => {
             toast.error('Kayıt güncellenirken bir hata oluştu')
         }
     })
+
+    const onSubmit = (data: BeneficiaryFormData) => {
+        updateMutation.mutate(data)
+    }
+
+    // Fotoğraf işleme fonksiyonları
+    const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Dosya boyutu en fazla 5MB olabilir')
+                return
+            }
+            if (!file.type.startsWith('image/')) {
+                toast.error('Sadece resim dosyaları yüklenebilir')
+                return
+            }
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setPhotoPreview(reader.result as string)
+                toast.success('Fotoğraf yüklendi')
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const handlePhotoRemove = () => {
+        setPhotoPreview(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
+        toast.success('Fotoğraf kaldırıldı')
+    }
+
+    const handlePhotoClick = () => {
+        fileInputRef.current?.click()
+    }
 
     if (isLoading) {
         return (
@@ -167,11 +332,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
             {/* Sağ Üst Köşe Sabit Butonlar - Scroll edilse bile görünür */}
             <div className="fixed top-28 right-6 z-[100] flex items-center gap-2 bg-background/95 backdrop-blur-sm border border-border rounded-lg p-2 shadow-lg" style={{ position: 'fixed' }}>
                     <Button
-                        disabled={!hasChanges || updateMutation.isPending}
-                        onClick={() => updateMutation.mutate({})}
+                        disabled={!isDirty || isSubmitting}
+                        onClick={handleSubmit(onSubmit)}
                     >
                         <Save className="mr-2 h-4 w-4" />
-                        Kaydet
+                        {isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
                     </Button>
                     <Button 
                         variant="destructive"
@@ -211,22 +376,35 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                     {/* Fotoğraf Alanı */}
                     <Card>
                         <CardContent className="p-4">
-                            <div className="aspect-square bg-muted rounded-lg flex items-center justify-center mb-3 border-2 border-dashed border-border">
-                                {data.fotografUrl ? (
-                                    <img src={data.fotografUrl} alt="Fotoğraf" className="w-full h-full object-cover rounded-lg" />
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoUpload}
+                                className="hidden"
+                            />
+                            <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-3 border-2 border-dashed border-border overflow-hidden cursor-pointer hover:bg-muted/80 transition-colors" onClick={handlePhotoClick}>
+                                {photoPreview || data.fotografUrl ? (
+                                    <img src={photoPreview || data.fotografUrl} alt="Fotoğraf" className="w-full h-full object-cover rounded-lg" />
                                 ) : (
                                     <div className="text-center text-muted-foreground">
-                                        <User className="h-16 w-16 mx-auto mb-2 opacity-30" />
-                                        <p className="text-sm">Fotoğraf yüklenmedi</p>
+                                        <User className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                                        <p className="text-xs">Fotoğraf yüklemek için tıklayın</p>
                                     </div>
                                 )}
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="sm" className="flex-1">
+                                <Button variant="outline" size="sm" className="flex-1" onClick={handlePhotoClick}>
                                     <Camera className="mr-1 h-3 w-3" />
-                                    Çek
+                                    Yükle
                                 </Button>
-                                <Button variant="outline" size="sm" className="flex-1">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1"
+                                    onClick={handlePhotoRemove}
+                                    disabled={!photoPreview && !data.fotografUrl}
+                                >
                                     <Trash2 className="mr-1 h-3 w-3" />
                                     Kaldır
                                 </Button>
@@ -238,7 +416,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                     <Card>
                         <CardContent className="p-4">
                             <Label className="text-sm text-muted-foreground mb-2 block">Sponsorluk Tipi</Label>
-                            <Select defaultValue={data.sponsorlukTipi}>
+                            <Select defaultValue={data.sponsorlukTipi} onValueChange={(value: any) => setValue('sponsorlukTipi', value, { shouldDirty: true })}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Seçiniz" />
                                 </SelectTrigger>
@@ -258,20 +436,89 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                         </CardHeader>
                         <CardContent className="p-3 pt-0">
                             <div className="grid grid-cols-2 gap-2">
-                                <LinkedRecordButton icon={CreditCard} label="Banka Hesapları" count={data.baglantiliKayitlar?.bankaHesaplari} />
-                                <LinkedRecordButton icon={FileText} label="Dokümanlar" count={data.baglantiliKayitlar?.dokumanlar} />
-                                <LinkedRecordButton icon={Image} label="Fotoğraflar" count={data.baglantiliKayitlar?.fotograflar} />
-                                <LinkedRecordButton icon={Users} label="Baktığı Yetimler" count={data.baglantiliKayitlar?.baktigiYetimler} />
-                                <LinkedRecordButton icon={Users} label="Baktığı Kişiler" count={data.baglantiliKayitlar?.baktigiKisiler} />
-                                <LinkedRecordButton icon={Heart} label="Sponsorlar" count={data.baglantiliKayitlar?.sponsorlar} />
-                                <LinkedRecordButton icon={User} label="Referanslar" count={data.baglantiliKayitlar?.referanslar} />
-                                <LinkedRecordButton icon={MessageSquare} label="Görüşme Kayıtları" count={data.baglantiliKayitlar?.gorusmeKayitlari} />
-                                <LinkedRecordButton icon={History} label="Görüşme Seans" count={data.baglantiliKayitlar?.gorusmeSeansTakibi} />
-                                <LinkedRecordButton icon={DollarSign} label="Yardım Talepleri" count={data.baglantiliKayitlar?.yardimTalepleri} />
-                                <LinkedRecordButton icon={DollarSign} label="Yapılan Yardımlar" count={data.baglantiliKayitlar?.yapilanYardimlar} />
-                                <LinkedRecordButton icon={Shield} label="Rıza Beyanları" count={data.baglantiliKayitlar?.rizaBeyannamesi} />
-                                <LinkedRecordButton icon={CreditCard} label="Sosyal Kartlar" count={data.baglantiliKayitlar?.sosyalKartlar} />
-                                <LinkedRecordButton icon={FileText} label="Kart Özeti" />
+                                <LinkedRecordButton
+                                    icon={CreditCard}
+                                    label="Banka Hesapları"
+                                    count={data.baglantiliKayitlar?.bankaHesaplari}
+                                    onClick={() => setActiveSheet('bankaHesaplari')}
+                                />
+                                <LinkedRecordButton
+                                    icon={FileText}
+                                    label="Dokümanlar"
+                                    count={data.baglantiliKayitlar?.dokumanlar}
+                                    onClick={() => setActiveSheet('dokumanlar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={Image}
+                                    label="Fotoğraflar"
+                                    count={data.baglantiliKayitlar?.fotograflar}
+                                    onClick={() => setActiveSheet('fotograflar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={Users}
+                                    label="Baktığı Yetimler"
+                                    count={data.baglantiliKayitlar?.baktigiYetimler}
+                                    onClick={() => setActiveSheet('baktigiYetimler')}
+                                />
+                                <LinkedRecordButton
+                                    icon={Users}
+                                    label="Baktığı Kişiler"
+                                    count={data.baglantiliKayitlar?.baktigiKisiler}
+                                    onClick={() => setActiveSheet('baktigiKisiler')}
+                                />
+                                <LinkedRecordButton
+                                    icon={Heart}
+                                    label="Sponsorlar"
+                                    count={data.baglantiliKayitlar?.sponsorlar}
+                                    onClick={() => setActiveSheet('sponsorlar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={User}
+                                    label="Referanslar"
+                                    count={data.baglantiliKayitlar?.referanslar}
+                                    onClick={() => setActiveSheet('referanslar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={MessageSquare}
+                                    label="Görüşme Kayıtları"
+                                    count={data.baglantiliKayitlar?.gorusmeKayitlari}
+                                    onClick={() => setActiveSheet('gorusmeKayitlari')}
+                                />
+                                <LinkedRecordButton
+                                    icon={History}
+                                    label="Görüşme Seans"
+                                    count={data.baglantiliKayitlar?.gorusmeSeansTakibi}
+                                    onClick={() => setActiveSheet('gorusmeSeans')}
+                                />
+                                <LinkedRecordButton
+                                    icon={DollarSign}
+                                    label="Yardım Talepleri"
+                                    count={data.baglantiliKayitlar?.yardimTalepleri}
+                                    onClick={() => setActiveSheet('yardimTalepleri')}
+                                />
+                                <LinkedRecordButton
+                                    icon={DollarSign}
+                                    label="Yapılan Yardımlar"
+                                    count={data.baglantiliKayitlar?.yapilanYardimlar}
+                                    onClick={() => setActiveSheet('yapilanYardimlar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={Shield}
+                                    label="Rıza Beyanları"
+                                    count={data.baglantiliKayitlar?.rizaBeyannamesi}
+                                    onClick={() => setActiveSheet('rizaBeyannamesi')}
+                                />
+                                <LinkedRecordButton
+                                    icon={CreditCard}
+                                    label="Sosyal Kartlar"
+                                    count={data.baglantiliKayitlar?.sosyalKartlar}
+                                    onClick={() => setActiveSheet('sosyalKartlar')}
+                                />
+                                <LinkedRecordButton
+                                    icon={FileText}
+                                    label="Kart Özeti"
+                                    onClick={() => setActiveSheet('kartOzeti')}
+                                />
                             </div>
                         </CardContent>
                     </Card>
@@ -289,24 +536,34 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label>Ad *</Label>
-                                        <Input defaultValue={data.ad} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('ad')} defaultValue={data.ad} />
+                                        {errors.ad && <p className="text-sm text-destructive">{errors.ad.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Soyad *</Label>
-                                        <Input defaultValue={data.soyad} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('soyad')} defaultValue={data.soyad} />
+                                        {errors.soyad && <p className="text-sm text-destructive">{errors.soyad.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Uyruk *</Label>
-                                        <div className="flex gap-2">
-                                            <Input value={data.uyruk} readOnly className="bg-muted" />
-                                            <Button variant="outline" size="icon">
-                                                <X className="h-4 w-4" />
-                                            </Button>
-                                        </div>
+                                        <Select defaultValue={data.uyruk} onValueChange={(value) => setValue('uyruk', value, { shouldDirty: true })}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {COUNTRIES.map(country => (
+                                                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.uyruk && <p className="text-sm text-destructive">{errors.uyruk.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kimlik No</Label>
-                                        <Input defaultValue={data.tcKimlikNo || data.yabanciKimlikNo} onChange={() => setHasChanges(true)} />
+                                        <Input
+                                            {...register(data.uyruk === 'Türkiye' ? 'tcKimlikNo' : 'yabanciKimlikNo')}
+                                            defaultValue={data.tcKimlikNo || data.yabanciKimlikNo}
+                                        />
                                         <div className="flex items-center space-x-2 mt-1">
                                             <Checkbox id="mernis" defaultChecked={data.mernisDogrulama} />
                                             <Label htmlFor="mernis" className="text-xs cursor-pointer">Mernis Kontrolü Yap</Label>
@@ -314,7 +571,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kategori *</Label>
-                                        <Select defaultValue={data.kategori} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.kategori} onValueChange={(value: any) => setValue('kategori', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
@@ -324,10 +581,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                        {errors.kategori && <p className="text-sm text-destructive">{errors.kategori.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Fon Bölgesi</Label>
-                                        <Select defaultValue={data.fonBolgesi} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.fonBolgesi} onValueChange={(value) => setValue('fonBolgesi', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -340,7 +598,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Dosya Bağlantısı</Label>
-                                        <Select defaultValue={data.dosyaBaglantisi} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.dosyaBaglantisi} onValueChange={(value) => setValue('dosyaBaglantisi', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -365,7 +623,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     <div className="space-y-2">
                                         <Label>Cep Telefonu</Label>
                                         <div className="flex gap-2">
-                                            <Select defaultValue={data.cepTelefonuOperator} onValueChange={() => setHasChanges(true)}>
+                                            <Select defaultValue={data.cepTelefonuOperator} onValueChange={(value) => setValue('cepTelefonuOperator', value, { shouldDirty: true })}>
                                                 <SelectTrigger className="w-24">
                                                     <SelectValue placeholder="Kod" />
                                                 </SelectTrigger>
@@ -375,25 +633,26 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <Input 
-                                                placeholder="XXX XX XX" 
-                                                defaultValue={data.cepTelefonu} 
-                                                onChange={() => setHasChanges(true)}
-                                                className="flex-1" 
+                                            <Input
+                                                {...register('cepTelefonu')}
+                                                placeholder="XXX XX XX"
+                                                defaultValue={data.cepTelefonu}
+                                                className="flex-1"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Sabit Telefon</Label>
-                                        <Input defaultValue={data.sabitTelefon} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('sabitTelefon')} defaultValue={data.sabitTelefon} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Yurtdışı Telefon</Label>
-                                        <Input defaultValue={data.yurtdisiTelefon} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('yurtdisiTelefon')} defaultValue={data.yurtdisiTelefon} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>e-Posta Adresi</Label>
-                                        <Input type="email" defaultValue={data.email} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('email')} type="email" defaultValue={data.email} />
+                                        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Bağlı Yetim</Label>
@@ -433,7 +692,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label>Ülke *</Label>
-                                        <Select defaultValue={data.ulke} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.ulke} onValueChange={(value) => setValue('ulke', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
@@ -443,10 +702,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                        {errors.ulke && <p className="text-sm text-destructive">{errors.ulke.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Şehir / Bölge *</Label>
-                                        <Select defaultValue={data.sehir} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.sehir} onValueChange={(value) => setValue('sehir', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
@@ -459,10 +719,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                        {errors.sehir && <p className="text-sm text-destructive">{errors.sehir.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Yerleşim</Label>
-                                        <Select defaultValue={data.ilce} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.ilce} onValueChange={(value) => setValue('ilce', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="İlçe seçiniz" />
                                             </SelectTrigger>
@@ -473,7 +734,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Mahalle / Köy</Label>
-                                        <Select defaultValue={data.mahalle} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.mahalle} onValueChange={(value) => setValue('mahalle', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Mahalle seçiniz" />
                                             </SelectTrigger>
@@ -484,10 +745,10 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Adres</Label>
-                                        <Textarea 
-                                            defaultValue={data.adres} 
-                                            onChange={() => setHasChanges(true)}
-                                            className="min-h-[100px]" 
+                                        <Textarea
+                                            {...register('adres')}
+                                            defaultValue={data.adres}
+                                            className="min-h-[100px]"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -533,11 +794,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label>Baba Adı</Label>
-                                        <Input defaultValue={data.kimlikBilgileri?.babaAdi} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('kimlikBilgileri.babaAdi')} defaultValue={data.kimlikBilgileri?.babaAdi} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Anne Adı</Label>
-                                        <Input defaultValue={data.kimlikBilgileri?.anneAdi} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('kimlikBilgileri.anneAdi')} defaultValue={data.kimlikBilgileri?.anneAdi} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kimlik Belgesi Türü</Label>
@@ -562,7 +823,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Seri Numarası</Label>
-                                        <Input defaultValue={data.kimlikBilgileri?.seriNumarasi} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('kimlikBilgileri.seriNumarasi')} defaultValue={data.kimlikBilgileri?.seriNumarasi} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Önceki Uyruğu (Varsa)</Label>
@@ -580,7 +841,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Önceki İsmi (Varsa)</Label>
-                                        <Input defaultValue={data.kimlikBilgileri?.oncekiIsim} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('kimlikBilgileri.oncekiIsim')} defaultValue={data.kimlikBilgileri?.oncekiIsim} />
                                     </div>
                                 </div>
 
@@ -651,7 +912,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kan Grubu</Label>
-                                        <Select defaultValue={data.saglikBilgileri?.kanGrubu} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.saglikBilgileri?.kanGrubu} onValueChange={(value) => setValue('saglikBilgileri.kanGrubu', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -664,25 +925,25 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kronik Hastalık</Label>
-                                        <Input defaultValue={data.saglikBilgileri?.kronikHastalik} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('saglikBilgileri.kronikHastalik')} defaultValue={data.saglikBilgileri?.kronikHastalik} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Engel Durumu</Label>
-                                        <Input defaultValue={data.saglikBilgileri?.engelDurumu} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('saglikBilgileri.engelDurumu')} defaultValue={data.saglikBilgileri?.engelDurumu} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Engel Oranı (%)</Label>
-                                        <Input 
-                                            type="number" 
-                                            min={0} 
+                                        <Input
+                                            {...register('saglikBilgileri.engelOrani', { valueAsNumber: true })}
+                                            type="number"
+                                            min={0}
                                             max={100}
-                                            defaultValue={data.saglikBilgileri?.engelOrani} 
-                                            onChange={() => setHasChanges(true)}
+                                            defaultValue={data.saglikBilgileri?.engelOrani}
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Sürekli Kullanılan İlaç</Label>
-                                        <Input defaultValue={data.saglikBilgileri?.surekliIlac} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('saglikBilgileri.surekliIlac')} defaultValue={data.saglikBilgileri?.surekliIlac} />
                                     </div>
                                 </div>
 
@@ -694,7 +955,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Eğitim Durumu</Label>
-                                        <Select defaultValue={data.ekonomikDurum?.egitimDurumu} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.ekonomikDurum?.egitimDurumu} onValueChange={(value) => setValue('ekonomikDurum.egitimDurumu', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -707,11 +968,11 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Meslek</Label>
-                                        <Input defaultValue={data.ekonomikDurum?.meslek} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('ekonomikDurum.meslek')} defaultValue={data.ekonomikDurum?.meslek} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Çalışma Durumu</Label>
-                                        <Select defaultValue={data.ekonomikDurum?.calismaDurumu} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.ekonomikDurum?.calismaDurumu} onValueChange={(value) => setValue('ekonomikDurum.calismaDurumu', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -724,15 +985,15 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Aylık Gelir (TL)</Label>
-                                        <Input 
-                                            type="number" 
-                                            defaultValue={data.ekonomikDurum?.aylikGelir} 
-                                            onChange={() => setHasChanges(true)}
+                                        <Input
+                                            {...register('ekonomikDurum.aylikGelir', { valueAsNumber: true })}
+                                            type="number"
+                                            defaultValue={data.ekonomikDurum?.aylikGelir}
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Konut Durumu</Label>
-                                        <Select defaultValue={data.ekonomikDurum?.konutDurumu} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.ekonomikDurum?.konutDurumu} onValueChange={(value) => setValue('ekonomikDurum.konutDurumu', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -779,21 +1040,21 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Eş Adı</Label>
-                                        <Input defaultValue={data.aileHaneBilgileri?.esAdi} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('aileHaneBilgileri.esAdi')} defaultValue={data.aileHaneBilgileri?.esAdi} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Eş Telefonu</Label>
-                                        <Input defaultValue={data.aileHaneBilgileri?.esTelefon} onChange={() => setHasChanges(true)} />
+                                        <Input {...register('aileHaneBilgileri.esTelefon')} defaultValue={data.aileHaneBilgileri?.esTelefon} />
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label>Ailedeki Kişi Sayısı</Label>
-                                        <Input 
-                                            type="number" 
+                                        <Input
+                                            {...register('aileHaneBilgileri.ailedekiKisiSayisi', { valueAsNumber: true })}
+                                            type="number"
                                             min={1}
-                                            defaultValue={data.aileHaneBilgileri?.ailedekiKisiSayisi} 
-                                            onChange={() => setHasChanges(true)}
+                                            defaultValue={data.aileHaneBilgileri?.ailedekiKisiSayisi}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -843,16 +1104,492 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                     <Card>
                         <CardContent className="p-6">
                             <SectionTitle>Ek Notlar</SectionTitle>
-                            <Textarea 
+                            <Textarea
+                                {...register('notlar')}
                                 defaultValue={data.notlar}
-                                onChange={() => setHasChanges(true)}
                                 className="min-h-[150px]"
                                 placeholder="İhtiyaç sahibi ile ilgili ek notlar..."
                             />
+                            {errors.notlar && <p className="text-sm text-destructive mt-2">{errors.notlar.message}</p>}
                         </CardContent>
                     </Card>
                 </div>
             </div>
+
+            {/* Bağlantılı Kayıtlar Sheet'leri */}
+
+            {/* Banka Hesapları */}
+            <LinkedRecordSheet
+                open={activeSheet === 'bankaHesaplari'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Banka Hesapları"
+                description={`${data.ad} ${data.soyad} - Banka Hesap Bilgileri`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Yeni Banka Hesabı Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.bankaHesaplari && data.baglantiliKayitlar.bankaHesaplari > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Banka Adı</TableHead>
+                                    <TableHead>IBAN</TableHead>
+                                    <TableHead>İşlemler</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                        Banka hesap verisi yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz banka hesabı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Dokümanlar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'dokumanlar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Dokümanlar"
+                description={`${data.ad} ${data.soyad} - Doküman Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Yeni Doküman Yükle
+                    </Button>
+                    {data.baglantiliKayitlar?.dokumanlar && data.baglantiliKayitlar.dokumanlar > 0 ? (
+                        <div className="grid gap-2">
+                            <p className="text-sm text-muted-foreground">
+                                Toplam {data.baglantiliKayitlar.dokumanlar} doküman bulunmaktadır.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz doküman eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Fotoğraflar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'fotograflar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Fotoğraflar"
+                description={`${data.ad} ${data.soyad} - Fotoğraf Galerisi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <Image className="mr-2 h-4 w-4" />
+                        Yeni Fotoğraf Yükle
+                    </Button>
+                    {data.baglantiliKayitlar?.fotograflar && data.baglantiliKayitlar.fotograflar > 0 ? (
+                        <div className="grid grid-cols-3 gap-2">
+                            <p className="col-span-3 text-sm text-muted-foreground">
+                                Toplam {data.baglantiliKayitlar.fotograflar} fotoğraf bulunmaktadır.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Image className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz fotoğraf eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Baktığı Yetimler */}
+            <LinkedRecordSheet
+                open={activeSheet === 'baktigiYetimler'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Baktığı Yetimler"
+                description={`${data.ad} ${data.soyad} - Baktığı Yetim Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <Users className="mr-2 h-4 w-4" />
+                        Yeni Yetim Bağlantısı Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.baktigiYetimler && data.baglantiliKayitlar.baktigiYetimler > 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Toplam {data.baglantiliKayitlar.baktigiYetimler} yetim bulunmaktadır.
+                        </p>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz yetim bağlantısı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Baktığı Kişiler */}
+            <LinkedRecordSheet
+                open={activeSheet === 'baktigiKisiler'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Baktığı Kişiler"
+                description={`${data.ad} ${data.soyad} - Baktığı Kişi Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <Users className="mr-2 h-4 w-4" />
+                        Yeni Kişi Bağlantısı Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.baktigiKisiler && data.baglantiliKayitlar.baktigiKisiler > 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Toplam {data.baglantiliKayitlar.baktigiKisiler} kişi bulunmaktadır.
+                        </p>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz kişi bağlantısı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Sponsorlar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'sponsorlar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Sponsorlar"
+                description={`${data.ad} ${data.soyad} - Sponsor Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <Heart className="mr-2 h-4 w-4" />
+                        Yeni Sponsor Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.sponsorlar && data.baglantiliKayitlar.sponsorlar > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Sponsor Adı</TableHead>
+                                    <TableHead>Tür</TableHead>
+                                    <TableHead>Durum</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                        Sponsor verisi yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Heart className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz sponsor eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Referanslar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'referanslar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Referanslar"
+                description={`${data.ad} ${data.soyad} - Referans Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <User className="mr-2 h-4 w-4" />
+                        Yeni Referans Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.referanslar && data.baglantiliKayitlar.referanslar > 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Toplam {data.baglantiliKayitlar.referanslar} referans bulunmaktadır.
+                        </p>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <User className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz referans eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Görüşme Kayıtları */}
+            <LinkedRecordSheet
+                open={activeSheet === 'gorusmeKayitlari'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Görüşme Kayıtları"
+                description={`${data.ad} ${data.soyad} - Görüşme Geçmişi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        Yeni Görüşme Kaydı Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.gorusmeKayitlari && data.baglantiliKayitlar.gorusmeKayitlari > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Tarih</TableHead>
+                                    <TableHead>Görüşen</TableHead>
+                                    <TableHead>Özet</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                        Görüşme kayıtları yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz görüşme kaydı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Görüşme Seans Takibi */}
+            <LinkedRecordSheet
+                open={activeSheet === 'gorusmeSeans'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Görüşme Seans Takibi"
+                description={`${data.ad} ${data.soyad} - Seans Takibi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <History className="mr-2 h-4 w-4" />
+                        Yeni Seans Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.gorusmeSeansTakibi && data.baglantiliKayitlar.gorusmeSeansTakibi > 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Toplam {data.baglantiliKayitlar.gorusmeSeansTakibi} seans kaydı bulunmaktadır.
+                        </p>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <History className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz seans kaydı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Yardım Talepleri */}
+            <LinkedRecordSheet
+                open={activeSheet === 'yardimTalepleri'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Yardım Talepleri"
+                description={`${data.ad} ${data.soyad} - Yardım Talep Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <DollarSign className="mr-2 h-4 w-4" />
+                        Yeni Yardım Talebi Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.yardimTalepleri && data.baglantiliKayitlar.yardimTalepleri > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Tarih</TableHead>
+                                    <TableHead>Talep Türü</TableHead>
+                                    <TableHead>Tutar</TableHead>
+                                    <TableHead>Durum</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                        Yardım talepleri yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <DollarSign className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz yardım talebi eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Yapılan Yardımlar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'yapilanYardimlar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Yapılan Yardımlar"
+                description={`${data.ad} ${data.soyad} - Yardım Geçmişi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <DollarSign className="mr-2 h-4 w-4" />
+                        Yeni Yardım Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.yapilanYardimlar && data.baglantiliKayitlar.yapilanYardimlar > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Tarih</TableHead>
+                                    <TableHead>Yardım Türü</TableHead>
+                                    <TableHead>Tutar</TableHead>
+                                    <TableHead>Durum</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                        Yapılan yardımlar yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <DollarSign className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz yapılmış yardım kaydı yok</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Rıza Beyanları */}
+            <LinkedRecordSheet
+                open={activeSheet === 'rizaBeyannamesi'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Rıza Beyanları"
+                description={`${data.ad} ${data.soyad} - Rıza Beyannamesi Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Yeni Rıza Beyanı Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.rizaBeyannamesi && data.baglantiliKayitlar.rizaBeyannamesi > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Tarih</TableHead>
+                                    <TableHead>Beyan Türü</TableHead>
+                                    <TableHead>Durum</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                        Rıza beyanları yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Shield className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz rıza beyanı eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Sosyal Kartlar */}
+            <LinkedRecordSheet
+                open={activeSheet === 'sosyalKartlar'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Sosyal Kartlar"
+                description={`${data.ad} ${data.soyad} - Sosyal Kart Listesi`}
+            >
+                <div className="space-y-4">
+                    <Button className="w-full">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Yeni Sosyal Kart Ekle
+                    </Button>
+                    {data.baglantiliKayitlar?.sosyalKartlar && data.baglantiliKayitlar.sosyalKartlar > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Kart No</TableHead>
+                                    <TableHead>Kart Türü</TableHead>
+                                    <TableHead>Durum</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                        Sosyal kart verisi yükleniyor...
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                            <p>Henüz sosyal kart eklenmemiş</p>
+                        </div>
+                    )}
+                </div>
+            </LinkedRecordSheet>
+
+            {/* Kart Özeti */}
+            <LinkedRecordSheet
+                open={activeSheet === 'kartOzeti'}
+                onOpenChange={(open) => !open && setActiveSheet(null)}
+                title="Kart Özeti"
+                description={`${data.ad} ${data.soyad} - Genel Özet`}
+            >
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="text-2xl font-bold">{data.baglantiliKayitlar?.yardimTalepleri || 0}</div>
+                                <div className="text-sm text-muted-foreground">Toplam Talep</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="text-2xl font-bold">{data.baglantiliKayitlar?.yapilanYardimlar || 0}</div>
+                                <div className="text-sm text-muted-foreground">Yapılan Yardım</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="text-2xl font-bold">{data.baglantiliKayitlar?.sponsorlar || 0}</div>
+                                <div className="text-sm text-muted-foreground">Sponsor</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="text-2xl font-bold">{data.baglantiliKayitlar?.gorusmeKayitlari || 0}</div>
+                                <div className="text-sm text-muted-foreground">Görüşme</div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                        <h4 className="font-semibold">Kişi Bilgileri</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="text-muted-foreground">Ad Soyad:</div>
+                            <div>{data.ad} {data.soyad}</div>
+                            <div className="text-muted-foreground">Uyruk:</div>
+                            <div>{data.uyruk}</div>
+                            <div className="text-muted-foreground">Telefon:</div>
+                            <div>{data.cepTelefonu}</div>
+                            <div className="text-muted-foreground">E-posta:</div>
+                            <div>{data.email || '-'}</div>
+                        </div>
+                    </div>
+                </div>
+            </LinkedRecordSheet>
         </div>
     )
 }

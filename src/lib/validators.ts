@@ -144,3 +144,92 @@ export const basicBeneficiarySchema = z.object({
 })
 
 export type BasicBeneficiaryFormData = z.infer<typeof basicBeneficiarySchema>
+
+// Detailed beneficiary schema for full profile management
+export const beneficiarySchema = z.object({
+    // Temel Bilgiler
+    ad: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
+    soyad: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
+    uyruk: z.string().min(1, 'Uyruk seçiniz'),
+    tcKimlikNo: z.string().optional(),
+    yabanciKimlikNo: z.string().optional(),
+    kategori: z.enum(['yetiskin', 'cocuk', 'yetim', 'saglik', 'egitim', 'engelli']),
+    fonBolgesi: z.string().optional(),
+    dosyaBaglantisi: z.string().optional(),
+    mernisDogrulama: z.boolean().optional(),
+
+    // İletişim Bilgileri
+    cepTelefonu: z.string().optional(),
+    cepTelefonuOperator: z.string().optional(),
+    sabitTelefon: z.string().optional(),
+    yurtdisiTelefon: z.string().optional(),
+    email: emailSchema,
+
+    // Adres Bilgileri
+    ulke: z.string().min(1, 'Ülke seçiniz'),
+    sehir: z.string().min(1, 'Şehir seçiniz'),
+    ilce: z.string().optional(),
+    mahalle: z.string().optional(),
+    adres: z.string().optional(),
+
+    // Kimlik Bilgileri
+    kimlikBilgileri: z.object({
+        babaAdi: z.string().optional(),
+        anneAdi: z.string().optional(),
+        belgeTuru: z.string().optional(),
+        belgeGecerlilikTarihi: z.date().optional(),
+        seriNumarasi: z.string().optional(),
+        oncekiUyruk: z.string().optional(),
+        oncekiIsim: z.string().optional()
+    }).optional(),
+
+    // Pasaport ve Vize Bilgileri
+    pasaportVizeBilgileri: z.object({
+        pasaportTuru: z.string().optional(),
+        pasaportNumarasi: z.string().optional(),
+        pasaportGecerlilikTarihi: z.date().optional(),
+        vizeGirisTuru: z.string().optional(),
+        vizeBitisTarihi: z.date().optional()
+    }).optional(),
+
+    // Sağlık Bilgileri
+    saglikBilgileri: z.object({
+        kanGrubu: z.string().optional(),
+        kronikHastalik: z.string().optional(),
+        engelDurumu: z.string().optional(),
+        engelOrani: z.number().min(0).max(100).optional(),
+        surekliIlac: z.string().optional()
+    }).optional(),
+
+    // Ekonomik Durum
+    ekonomikDurum: z.object({
+        egitimDurumu: z.string().optional(),
+        meslek: z.string().optional(),
+        calismaDurumu: z.string().optional(),
+        aylikGelir: z.number().min(0).optional(),
+        konutDurumu: z.string().optional(),
+        kiraTutari: z.number().min(0).optional()
+    }).optional(),
+
+    // Aile ve Hane Bilgileri
+    aileHaneBilgileri: z.object({
+        medeniHal: z.string().optional(),
+        esAdi: z.string().optional(),
+        esTelefon: z.string().optional(),
+        ailedekiKisiSayisi: z.number().min(1).optional(),
+        cocukSayisi: z.number().min(0).optional(),
+        yetimSayisi: z.number().min(0).optional(),
+        calısanSayisi: z.number().min(0).optional(),
+        bakmaklaYukumluSayisi: z.number().min(0).optional()
+    }).optional(),
+
+    // Sponsorluk ve Durum
+    sponsorlukTipi: z.enum(['bireysel', 'kurumsal', 'yok']).optional(),
+    durum: z.enum(['aktif', 'pasif', 'arsiv']).default('aktif'),
+    rizaBeyaniDurumu: z.enum(['onaylandi', 'beklemede', 'reddedildi']).optional(),
+
+    // Notlar
+    notlar: z.string().max(2000, 'Notlar en fazla 2000 karakter olabilir').optional()
+})
+
+export type BeneficiaryFormData = z.infer<typeof beneficiarySchema>

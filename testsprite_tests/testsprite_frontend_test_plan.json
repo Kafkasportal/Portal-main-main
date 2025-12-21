@@ -1,0 +1,599 @@
+[
+  {
+    "id": "TC001",
+    "title": "Login success with valid credentials",
+    "description": "Verify that the login is successful when any valid email and password with 6 or more characters are entered.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page at /giris"
+      },
+      {
+        "type": "action",
+        "description": "Enter a valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Enter a password with 6 or more characters"
+      },
+      {
+        "type": "action",
+        "description": "Click the login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify successful login and redirection to the dashboard page /genel"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Login failure with short password",
+    "description": "Verify that login submissions with passwords fewer than 6 characters are rejected with validation error.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page at /giris"
+      },
+      {
+        "type": "action",
+        "description": "Enter any valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Enter a password with fewer than 6 characters"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to click the login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that a validation error message is shown and login is blocked"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Dashboard statistics and charts are displayed correctly",
+    "description": "Verify the dashboard overview page shows total donations, active members, pending applications statistics, monthly donation and aid distribution charts, and recent donations list accurately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in successfully and navigate to the dashboard page /genel"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that statistics cards for total donations, active members, and pending applications are visible and display correct data"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify monthly donations and monthly aid distribution charts render with correct data"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm recent donations list is populated and displays recent data"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Donations list filtering, sorting, searching, and pagination",
+    "description": "Verify donations list page supports filtering by status and purpose, sorting on all applicable columns, text search, and pagination functionality.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the donations list page /bagis/liste"
+      },
+      {
+        "type": "action",
+        "description": "Apply filters by donation status"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify list updates and only displays donations matching the status filter"
+      },
+      {
+        "type": "action",
+        "description": "Sort donations list by various columns such as date, amount, and donor"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that the sorting order is applied correctly for each column"
+      },
+      {
+        "type": "action",
+        "description": "Use the search input to enter text query matching donor or purpose"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the results match the search query correctly"
+      },
+      {
+        "type": "action",
+        "description": "Navigate through pagination controls to switch pages"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that different pages show correct slice of donations list"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Donations collection box (kumbara) overview and reports",
+    "description": "Verify the kumbara overview page displays correct collection box data and the reports page generates accurate downloadable reports.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the donations collection box overview page /bagis/kumbara"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate all collection boxes are listed with accurate amounts and status"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the donations reports page /bagis/raporlar"
+      },
+      {
+        "type": "action",
+        "description": "Generate a report with various filters and date ranges"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the report displays correct aggregated donation data"
+      },
+      {
+        "type": "action",
+        "description": "Export report data to Excel"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm exported Excel file contains all visible report data with proper formatting"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Members list filtering, searching, and dues tracking",
+    "description": "Verify members listing supports filtering by member types, text search, correct pagination, and membership dues are tracked accurately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the members listing page /uyeler/liste"
+      },
+      {
+        "type": "action",
+        "description": "Apply filters by membership type"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify members list refreshes correctly and shows only filtered types"
+      },
+      {
+        "type": "action",
+        "description": "Search members by name or ID"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm search results correctly match the query"
+      },
+      {
+        "type": "assertion",
+        "description": "Check the displayed membership dues status is accurate and up-to-date"
+      },
+      {
+        "type": "action",
+        "description": "Use pagination controls to navigate through members pages"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure different pages display correct members data"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "New member registration with form validation",
+    "description": "Validate the new member registration form enforces all field validations, shows appropriate error messages, and successfully adds members when inputs are valid.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to new member registration page /uyeler/yeni"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form with empty required fields"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error messages are displayed for each missing required field"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid data in fields (such as invalid email or phone formats)"
+      },
+      {
+        "type": "assertion",
+        "description": "Check field-specific validation error messages appear"
+      },
+      {
+        "type": "action",
+        "description": "Fill form with valid data and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm successful registration message and new member appears in members list"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Social Aid beneficiary list and application management",
+    "description": "Verify beneficiary list displays all relevant information, supports searching and filtering, and social aid applications are handled correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to social aid beneficiary list page /sosyal-yardim/ihtiyac-sahipleri"
+      },
+      {
+        "type": "assertion",
+        "description": "Check beneficiary list loads and shows expected details including immigration status, family structure, and health status"
+      },
+      {
+        "type": "action",
+        "description": "Use filters to narrow beneficiaries by status or other criteria"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify list updates according to filter conditions"
+      },
+      {
+        "type": "action",
+        "description": "Search for beneficiaries by name or ID"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm search results are valid and relevant"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to applications management page /sosyal-yardim/basvurular"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify applications data is displayed correctly and application status can be updated"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Social Aid payment tracking and statistics dashboard",
+    "description": "Verify social aid payments are tracked accurately with correct listing and summary statistics on payments and overall aid distribution charts.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to social aid payments page /sosyal-yardim/odemeler"
+      },
+      {
+        "type": "assertion",
+        "description": "Check payment records list loads correctly with relevant payment details"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to social aid statistics page /sosyal-yardim/istatistikler"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate charts and statistics summarize aid distribution data accurately"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Responsive and collapsible sidebar navigation",
+    "description": "Verify sidebar navigation is visible by default, can be collapsed and expanded, and responds properly on mobile devices.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and view any dashboard page"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm sidebar navigation is displayed and contains navigation links"
+      },
+      {
+        "type": "action",
+        "description": "Click sidebar toggle button to collapse sidebar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sidebar collapses and main content adjusts accordingly"
+      },
+      {
+        "type": "action",
+        "description": "Click toggle button again to expand sidebar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sidebar expands and main content layout reverts"
+      },
+      {
+        "type": "action",
+        "description": "Resize browser window to mobile width"
+      },
+      {
+        "type": "assertion",
+        "description": "Check sidebar becomes responsive for mobile, can be toggled, and navigation is usable"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Breadcrumb navigation reflects current location",
+    "description": "Verify breadcrumb navigation updates accurately with page context as user navigates the app modules.",
+    "category": "ui",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to dashboard page /genel"
+      },
+      {
+        "type": "assertion",
+        "description": "Check breadcrumb shows ‘Home > Genel’ or equivalent"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to donations list /bagis/liste"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify breadcrumb updates to ‘Home > Bagis > Liste’"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to social aid beneficiary detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm breadcrumb reflects full path including beneficiary ID"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Data tables support sorting, filtering, searching, pagination, loading and empty states",
+    "description": "Validate shared data table component functionality including column sorting, multi-criteria filtering, text searching, pagination controls, loading skeleton displays during data fetches, and empty state display when no data is available.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open any feature page with data table (e.g., donations list)"
+      },
+      {
+        "type": "action",
+        "description": "Change sorting on multiple columns and consecutive toggles of ascending/descending"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify data rows reorder correctly according to selected sorting"
+      },
+      {
+        "type": "action",
+        "description": "Apply different filters simultaneously"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm table updates to display filtered rows only"
+      },
+      {
+        "type": "action",
+        "description": "Enter search text matching subset of data"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify only matching rows shown"
+      },
+      {
+        "type": "action",
+        "description": "Paginate through data using controls"
+      },
+      {
+        "type": "assertion",
+        "description": "Check each page loads correct records"
+      },
+      {
+        "type": "action",
+        "description": "Trigger data reload that simulates loading state"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm loading skeleton placeholders visible during data fetch"
+      },
+      {
+        "type": "action",
+        "description": "Apply filter that yields no results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify empty state message/component is shown"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Export to Excel functionality exports filtered table view correctly",
+    "description": "Verify that exporting current table view data to Excel produces a correctly structured and formatted file matching displayed data and filters.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open a data table page (e.g., donations list) with filters applied"
+      },
+      {
+        "type": "action",
+        "description": "Trigger export-to-Excel action"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm an Excel file is downloaded"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate the Excel content matches the current table's filtered and sorted data including column names and row values"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Form validation applies correctly for donations, members, and social aid beneficiary forms",
+    "description": "Tests all forms in donation, member registration, and beneficiary registration modules enforce field validations based on Zod schemas and provide user feedback on errors.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open donation form and submit empty form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation errors for required fields appear"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid data types or out-of-range values and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm appropriate field validation errors are shown"
+      },
+      {
+        "type": "action",
+        "description": "Complete donation form with valid inputs and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Check form submits successfully without errors"
+      },
+      {
+        "type": "action",
+        "description": "Repeat above steps for members registration and social aid beneficiary forms"
+      },
+      {
+        "type": "assertion",
+        "description": "All relevant validation enforced and success submissions succeed"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Mock service returns consistent sample data and supports pagination",
+    "description": "Verify the mock API service layer returns sample data consistently for donations, members, beneficiaries, applications, and dashboard statistics, and supports pagination parameters correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Fetch donations list via mock service with default parameters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a consistent set of sample donation records is returned"
+      },
+      {
+        "type": "action",
+        "description": "Fetch members, social aid beneficiaries, and application lists similarly"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm each returns sample data consistent on repeated calls"
+      },
+      {
+        "type": "action",
+        "description": "Query with pagination parameters to fetch page 2 or specific page sizes"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that returned data is correct slice corresponding to pagination request"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "User session state managed correctly with cookie based authentication",
+    "description": "Verify that after login, the user session state is stored in cookies, and protected routes block unauthorized access and reflect state properly.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in with valid credentials and verify cookie is set"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm cookie contains session token or relevant user session info"
+      },
+      {
+        "type": "action",
+        "description": "Access protected dashboard route after login and verify access"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure dashboard content is visible to authenticated user"
+      },
+      {
+        "type": "action",
+        "description": "Clear cookies or open new incognito window and try accessing protected routes"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm unauthorized access is redirected to login page"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Page transitions and loading progress bar on route changes",
+    "description": "Verify that page transitions trigger loading progress bar display and that it accurately reflects loading state during navigation.",
+    "category": "ui",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate between multiple pages (dashboard, donations, members, social aid)"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that progress bar appears at top when page is loading and disappears after load"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure transitions are smooth without UI glitches"
+      }
+    ]
+  }
+]

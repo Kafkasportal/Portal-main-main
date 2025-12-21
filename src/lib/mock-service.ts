@@ -1,6 +1,8 @@
 import type {
     Bagis,
     Kumbara,
+    KumbaraToplama,
+    GpsKoordinat,
     Uye,
     SosyalYardimBasvuru,
     IhtiyacSahibi,
@@ -188,6 +190,106 @@ export async function fetchKumbaras(options: {
     }
 }
 
+// Fetch kumbara by code (for QR scan)
+export async function fetchKumbaraByCode(kod: string): Promise<Kumbara | null> {
+    await delay(200)
+    const kumbaras = getKumbaras()
+    return kumbaras.find(k => k.kod === kod || k.qrKod?.kod === kod) || null
+}
+
+// Create new kumbara
+export async function createKumbara(data: {
+    qrKod: string
+    ad: string
+    konum: string
+    koordinat?: GpsKoordinat
+    sorumluId: string
+    notlar?: string
+}): Promise<Kumbara> {
+    await delay(300)
+    
+    const newKumbara: Kumbara = {
+        id: crypto.randomUUID(),
+        kod: data.qrKod,
+        ad: data.ad,
+        konum: data.konum,
+        koordinat: data.koordinat,
+        qrKod: {
+            kod: data.qrKod,
+            tapilanTarih: new Date()
+        },
+        sorumlu: {
+            id: data.sorumluId,
+            name: 'Sorumlu Kişi',
+            email: 'sorumlu@example.com',
+            role: 'gorevli',
+            isActive: true,
+            permissions: ['donations.view'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        },
+        sonBosaltma: undefined,
+        toplamTutar: 0,
+        toplamaBaşarina: 0,
+        toplamaGecmisi: [],
+        durum: 'aktif',
+        notlar: data.notlar,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+    
+    // Cache'e ekle
+    if (kumbarasCache) {
+        kumbarasCache.unshift(newKumbara)
+    }
+    
+    return newKumbara
+}
+
+// Collect (empty) kumbara
+export async function collectKumbara(data: {
+    kumbaraId: string
+    tutar: number
+    notlar?: string
+}): Promise<KumbaraToplama> {
+    await delay(300)
+    
+    const kumbaras = getKumbaras()
+    const kumbara = kumbaras.find(k => k.id === data.kumbaraId)
+    
+    if (!kumbara) {
+        throw new Error('Kumbara bulunamadı')
+    }
+    
+    const toplama: KumbaraToplama = {
+        id: crypto.randomUUID(),
+        kumbaraId: data.kumbaraId,
+        tarih: new Date(),
+        tutar: data.tutar,
+        toplayanKisi: {
+            id: 'current-user',
+            name: 'Mevcut Kullanıcı',
+            email: 'user@example.com',
+            role: 'gorevli',
+            isActive: true,
+            permissions: ['donations.view'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        },
+        notlar: data.notlar
+    }
+    
+    // Kumbara bilgilerini güncelle
+    kumbara.toplamTutar = 0 // Boşaltıldı
+    kumbara.toplamaBaşarina = (kumbara.toplamaBaşarina || 0) + data.tutar
+    kumbara.sonBosaltma = new Date()
+    kumbara.toplamaGecmisi = kumbara.toplamaGecmisi || []
+    kumbara.toplamaGecmisi.unshift(toplama)
+    kumbara.updatedAt = new Date()
+    
+    return toplama
+}
+
 // Fetch members
 export async function fetchMembers(options: {
     page?: number
@@ -277,6 +379,50 @@ export async function fetchApplications(options: {
         pageSize,
         totalPages
     }
+}
+
+// Fetch single application by ID
+export async function fetchApplicationById(id: string): Promise<SosyalYardimBasvuru | null> {
+    await delay(200)
+    const applications = getApplications()
+    return applications.find(a => a.id === id) || null
+}
+
+// Update application status
+export async function updateApplicationStatus(
+    id: string, 
+    durum: BasvuruDurumu,
+    degerlendirmeNotu?: string
+): Promise<SosyalYardimBasvuru> {
+    await delay(300)
+    
+    const applications = getApplications()
+    const application = applications.find(a => a.id === id)
+    
+    if (!application) {
+        throw new Error('Başvuru bulunamadı')
+    }
+    
+    // Update application status
+    application.durum = durum
+    application.degerlendiren = {
+        id: 'current-user',
+        name: 'Mevcut Kullanıcı',
+        email: 'user@example.com',
+        role: 'yonetici',
+        isActive: true,
+        permissions: ['applications.update'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+    
+    if (degerlendirmeNotu) {
+        application.degerlendirmeNotu = degerlendirmeNotu
+    }
+    
+    application.updatedAt = new Date()
+    
+    return application
 }
 
 // Fetch payments (approved applications)

@@ -1,13 +1,28 @@
 'use client'
 
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { PiggyBank, MapPin, Calendar, User } from 'lucide-react'
+import { 
+    PiggyBank, 
+    MapPin, 
+    Plus, 
+    QrCode, 
+    Banknote,
+    Route,
+    History
+} from 'lucide-react'
 
 import { PageHeader } from '@/components/shared/page-header'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+
+import { YeniKumbaraDialog } from '@/components/features/kumbara/yeni-kumbara-dialog'
+import { KumbaraToplamaDialog } from '@/components/features/kumbara/kumbara-toplama-dialog'
+import { RotaOlusturDialog } from '@/components/features/kumbara/rota-olustur-dialog'
+
 import { fetchKumbaras } from '@/lib/mock-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
@@ -18,6 +33,11 @@ const statusLabels = {
 }
 
 export default function KumbaraPage() {
+    const [yeniKumbaraOpen, setYeniKumbaraOpen] = useState(false)
+    const [toplamaOpen, setToplamaOpen] = useState(false)
+    const [rotaOpen, setRotaOpen] = useState(false)
+    const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(null)
+
     const { data, isLoading } = useQuery({
         queryKey: ['kumbaras'],
         queryFn: () => fetchKumbaras({ pageSize: 50 })
@@ -26,16 +46,57 @@ export default function KumbaraPage() {
     const kumbaras = data?.data || []
     const activeCount = kumbaras.filter(k => k.durum === 'aktif').length
     const totalAmount = kumbaras.reduce((sum, k) => sum + k.toplamTutar, 0)
+    const totalCollected = kumbaras.reduce((sum, k) => sum + (k.toplamaBaşarina || 0), 0)
+
+    // Kumbara kartına tıklandığında toplama dialogunu aç
+    const handleKumbaraClick = (kumbara: Kumbara) => {
+        setSelectedKumbara(kumbara)
+        setToplamaOpen(true)
+    }
 
     return (
         <div className="space-y-6">
             <PageHeader
                 title="Kumbara Yönetimi"
                 description="Bağış kumbaralarını takip edin ve yönetin"
+                action={
+                    <div className="flex items-center gap-2">
+                        {/* Rota Oluştur Butonu */}
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setRotaOpen(true)}
+                            className="gap-1.5"
+                        >
+                            <Route className="h-4 w-4" />
+                            <span className="hidden md:inline">Rota</span>
+                        </Button>
+
+                        {/* Kumbarayı Tara (Toplama) */}
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                                setSelectedKumbara(null)
+                                setToplamaOpen(true)
+                            }}
+                            className="gap-1.5"
+                        >
+                            <QrCode className="h-4 w-4" />
+                            <span className="hidden md:inline">Tara</span>
+                        </Button>
+
+                        {/* Yeni Kumbara Ekle */}
+                        <Button size="sm" onClick={() => setYeniKumbaraOpen(true)} className="gap-1.5">
+                            <Plus className="h-4 w-4" />
+                            Ekle
+                        </Button>
+                    </div>
+                }
             />
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
@@ -66,11 +127,24 @@ export default function KumbaraPage() {
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                             <div className="p-3 rounded-xl bg-chart-4/10">
-                                <PiggyBank className="h-6 w-6 text-chart-4" />
+                                <Banknote className="h-6 w-6 text-chart-4" />
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Toplam Birikim</p>
+                                <p className="text-sm text-muted-foreground">Mevcut Birikim</p>
                                 <p className="text-2xl font-bold">{formatCurrency(totalAmount)}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-xl bg-chart-2/10">
+                                <History className="h-6 w-6 text-chart-2" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Toplam Toplanan</p>
+                                <p className="text-2xl font-bold">{formatCurrency(totalCollected)}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -93,23 +167,53 @@ export default function KumbaraPage() {
                     {isLoading ? (
                         <KumbarasSkeleton />
                     ) : (
-                        <KumbaraGrid kumbaras={kumbaras} />
+                        <KumbaraGrid kumbaras={kumbaras} onKumbaraClick={handleKumbaraClick} />
                     )}
                 </TabsContent>
 
                 <TabsContent value="aktif" className="space-y-4">
-                    <KumbaraGrid kumbaras={kumbaras.filter(k => k.durum === 'aktif')} />
+                    <KumbaraGrid 
+                        kumbaras={kumbaras.filter(k => k.durum === 'aktif')} 
+                        onKumbaraClick={handleKumbaraClick}
+                    />
                 </TabsContent>
 
                 <TabsContent value="bakim" className="space-y-4">
-                    <KumbaraGrid kumbaras={kumbaras.filter(k => k.durum === 'bakim')} />
+                    <KumbaraGrid 
+                        kumbaras={kumbaras.filter(k => k.durum === 'bakim')} 
+                        onKumbaraClick={handleKumbaraClick}
+                    />
                 </TabsContent>
             </Tabs>
+
+            {/* Dialogs */}
+            <YeniKumbaraDialog
+                open={yeniKumbaraOpen}
+                onOpenChange={setYeniKumbaraOpen}
+            />
+
+            <KumbaraToplamaDialog
+                open={toplamaOpen}
+                onOpenChange={setToplamaOpen}
+                initialKumbara={selectedKumbara}
+            />
+
+            <RotaOlusturDialog
+                open={rotaOpen}
+                onOpenChange={setRotaOpen}
+                kumbaras={kumbaras}
+            />
         </div>
     )
 }
 
-function KumbaraGrid({ kumbaras }: { kumbaras: any[] }) {
+function KumbaraGrid({ 
+    kumbaras, 
+    onKumbaraClick 
+}: { 
+    kumbaras: Kumbara[]
+    onKumbaraClick: (kumbara: Kumbara) => void 
+}) {
     if (kumbaras.length === 0) {
         return (
             <div className="text-center py-12 text-muted-foreground">
@@ -119,48 +223,40 @@ function KumbaraGrid({ kumbaras }: { kumbaras: any[] }) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
             {kumbaras.map((kumbara) => (
-                <Card key={kumbara.id} className="hover-glow cursor-pointer transition-all">
-                    <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <CardTitle className="text-base font-semibold">
-                                    {kumbara.kod}
-                                </CardTitle>
-                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                                    <MapPin className="h-3 w-3" />
-                                    {kumbara.konum}
-                                </p>
-                            </div>
-                            <Badge variant={statusLabels[kumbara.durum as keyof typeof statusLabels].variant}>
+                <Card 
+                    key={kumbara.id} 
+                    className="hover-glow cursor-pointer transition-all hover:border-primary"
+                    onClick={() => onKumbaraClick(kumbara)}
+                >
+                    <CardContent className="p-3 space-y-1.5">
+                        <div className="flex items-start justify-between gap-1">
+                            <h4 className="text-xs font-semibold truncate flex-1">
+                                {kumbara.ad || kumbara.kod}
+                            </h4>
+                            <Badge 
+                                variant={statusLabels[kumbara.durum as keyof typeof statusLabels].variant}
+                                className="text-[10px] px-1.5 py-0 flex-shrink-0"
+                            >
                                 {statusLabels[kumbara.durum as keyof typeof statusLabels].label}
                             </Badge>
                         </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Birikim</span>
-                            <span className="font-mono font-semibold text-primary">
+                        <p className="text-[10px] text-muted-foreground flex items-center gap-1 truncate">
+                            <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+                            <span className="truncate">{kumbara.konum}</span>
+                        </p>
+                        <div className="pt-1 border-t">
+                            <p className="font-mono font-bold text-primary text-sm">
                                 {formatCurrency(kumbara.toplamTutar)}
-                            </span>
+                            </p>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                Sorumlu
-                            </span>
-                            <span>{kumbara.sorumlu.name}</span>
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                            <span className="truncate">{kumbara.sorumlu.name.split(' ')[0]}</span>
+                            {kumbara.koordinat && (
+                                <MapPin className="h-2.5 w-2.5 text-success" />
+                            )}
                         </div>
-                        {kumbara.sonBosaltma && (
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Son Boşaltma
-                                </span>
-                                <span>{formatDate(kumbara.sonBosaltma)}</span>
-                            </div>
-                        )}
                     </CardContent>
                 </Card>
             ))}
@@ -170,9 +266,9 @@ function KumbaraGrid({ kumbaras }: { kumbaras: any[] }) {
 
 function KumbarasSkeleton() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-[180px]" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+            {Array.from({ length: 12 }).map((_, i) => (
+                <Skeleton key={i} className="h-[100px]" />
             ))}
         </div>
     )

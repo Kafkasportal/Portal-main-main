@@ -84,13 +84,27 @@ export function generateMockUser(): User {
 // Generate mock kumbara
 export function generateMockKumbara(): Kumbara {
     const createdAt = faker.date.past({ years: 1 })
+    const kod = `KMB-2024-${faker.string.numeric({ length: 3 })}`
+    
+    // Istanbul civarında rastgele koordinatlar
+    const lat = faker.number.float({ min: 40.8, max: 41.2, fractionDigits: 6 })
+    const lng = faker.number.float({ min: 28.8, max: 29.3, fractionDigits: 6 })
+    
     return {
         id: faker.string.uuid(),
-        kod: `KMB-2024-${faker.string.numeric({ length: 3 })}`,
+        kod,
+        ad: `${faker.location.city()} ${randomItem(['Cami', 'Market', 'Bakkal', 'Eczane', 'Kafe'])} Kumbarası`,
         konum: `${faker.location.city()} - ${faker.company.name()}`,
+        koordinat: faker.helpers.maybe(() => ({ lat, lng }), { probability: 0.8 }),
+        qrKod: {
+            kod,
+            tapilanTarih: createdAt
+        },
         sorumlu: generateMockUser(),
         sonBosaltma: faker.helpers.maybe(() => faker.date.recent({ days: 60 }), { probability: 0.7 }),
         toplamTutar: faker.number.float({ min: 100, max: 5000, fractionDigits: 2 }),
+        toplamaBaşarina: faker.number.float({ min: 1000, max: 50000, fractionDigits: 2 }),
+        toplamaGecmisi: [],
         durum: randomItem<KumbaraStatus>(['aktif', 'aktif', 'aktif', 'pasif', 'bakim']),
         notlar: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.2 }),
         createdAt,

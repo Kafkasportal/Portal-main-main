@@ -14,6 +14,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogFooter
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -96,11 +97,15 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
             toast.success('Kayıt başarıyla oluşturuldu')
-            onOpenChange(false)
             form.reset()
-            router.push(`/sosyal-yardim/ihtiyac-sahipleri/${data.id}`)
+            onOpenChange(false)
+            // Navigate after dialog closes
+            setTimeout(() => {
+                router.push(`/sosyal-yardim/ihtiyac-sahipleri/${data.id}`)
+            }, 100)
         },
-        onError: () => {
+        onError: (error) => {
+            console.error('Beneficiary creation error:', error)
             toast.error('Kayıt oluşturulurken bir hata oluştu')
         }
     })
@@ -122,13 +127,19 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
         })
     }
 
-    const isFormValid = form.formState.isValid
+    // Check if form is valid for submission
+    const isFormValid = form.formState.isValid && form.getValues('kategori') && form.getValues('ad') && form.getValues('soyad') && form.getValues('dosyaNo')
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader className="flex flex-row items-center justify-between">
-                    <DialogTitle>Kayıt Ekle</DialogTitle>
+                    <div>
+                        <DialogTitle>Kayıt Ekle</DialogTitle>
+                        <DialogDescription>
+                            Yeni ihtiyaç sahibi kaydı oluşturun. Tüm zorunlu alanları doldurun.
+                        </DialogDescription>
+                    </div>
                     <Button
                         variant="ghost"
                         size="icon"

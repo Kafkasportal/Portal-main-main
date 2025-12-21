@@ -42,7 +42,19 @@ export const donationColumns: ColumnDef<Bagis>[] = [
     },
     {
         accessorKey: 'makbuzNo',
-        header: 'Makbuz No',
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={(e) => {
+                    e.stopPropagation()
+                    column.toggleSorting(column.getIsSorted() === 'asc')
+                }}
+                className="-ml-4 h-auto"
+            >
+                Makbuz No
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
         cell: ({ row }) => (
             <code className="font-mono text-xs bg-muted px-2 py-1 rounded">
                 {row.original.makbuzNo || '-'}
@@ -51,7 +63,19 @@ export const donationColumns: ColumnDef<Bagis>[] = [
     },
     {
         accessorKey: 'bagisci',
-        header: 'Bağışçı',
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={(e) => {
+                    e.stopPropagation()
+                    column.toggleSorting(column.getIsSorted() === 'asc')
+                }}
+                className="-ml-4 h-auto"
+            >
+                Bağışçı
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
         cell: ({ row }) => {
             const bagisci = row.original.bagisci
             return (
@@ -67,6 +91,11 @@ export const donationColumns: ColumnDef<Bagis>[] = [
                     </div>
                 </div>
             )
+        },
+        sortingFn: (rowA, rowB) => {
+            const nameA = `${rowA.original.bagisci.ad} ${rowA.original.bagisci.soyad}`.toLowerCase()
+            const nameB = `${rowB.original.bagisci.ad} ${rowB.original.bagisci.soyad}`.toLowerCase()
+            return nameA.localeCompare(nameB)
         }
     },
     {

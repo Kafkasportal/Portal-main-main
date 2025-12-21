@@ -29,6 +29,8 @@ export default function LoginPage() {
 
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: {
             email: '',
             password: '',
@@ -37,13 +39,50 @@ export default function LoginPage() {
     })
 
     async function onSubmit(data: LoginFormData) {
-        const success = await login(data.email, data.password)
+        // Trim email and password before submission
+        const trimmedEmail = (data.email || '').trim()
+        const trimmedPassword = (data.password || '').trim()
+        
+        // Validate manually if needed
+        if (!trimmedEmail || trimmedEmail.length === 0) {
+            form.setError('email', { message: 'E-posta adresi gereklidir' })
+            return
+        }
+        
+        if (!trimmedPassword || trimmedPassword.length < 6) {
+            form.setError('password', { message: 'Şifre en az 6 karakter olmalıdır' })
+            return
+        }
+        
+        const success = await login(trimmedEmail, trimmedPassword)
 
         if (success) {
+            // Wait longer for cookie to be set and persisted
+            await new Promise(resolve => setTimeout(resolve, 300))
+            
+            // Double-check cookie is set
+            if (typeof document !== 'undefined') {
+                const cookies = document.cookie.split(';')
+                const hasAuthToken = cookies.some(cookie => cookie.trim().startsWith('auth-token='))
+                
+                if (!hasAuthToken) {
+                    // Retry setting cookie
+                    const cookieValue = `mock-token-${Date.now()}`
+                    const expires = new Date()
+                    expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000)
+                    document.cookie = `auth-token=${cookieValue}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                }
+            }
+            
             toast.success('Giriş başarılı', {
                 description: 'Yönetim paneline yönlendiriliyorsunuz...'
             })
-            router.push('/genel')
+            
+            // Use window.location for full page reload to ensure cookie is read by middleware
+            setTimeout(() => {
+                window.location.href = '/genel'
+            }, 500)
         } else {
             toast.error('Giriş başarısız', {
                 description: 'E-posta veya şifre hatalı.'
@@ -78,10 +117,15 @@ export default function LoginPage() {
                                     <FormLabel>E-posta</FormLabel>
                                     <FormControl>
                                         <Input
-                                            type="email"
-                                            placeholder="ornek@kafkasder.org"
+                                            type="text"
+                                            placeholder="ornek@kafkasder.org veya demo"
                                             autoComplete="email"
                                             {...field}
+                                            onBlur={(e) => {
+                                                const trimmed = e.target.value.trim()
+                                                field.onChange(trimmed)
+                                                field.onBlur()
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -102,6 +146,11 @@ export default function LoginPage() {
                                                 placeholder="••••••••"
                                                 autoComplete="current-password"
                                                 {...field}
+                                                onChange={(e) => {
+                                                    const trimmed = e.target.value.trim()
+                                                    field.onChange(trimmed)
+                                                }}
+                                                onBlur={field.onBlur}
                                             />
                                             <Button
                                                 type="button"

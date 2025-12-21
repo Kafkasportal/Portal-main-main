@@ -83,15 +83,43 @@ export interface BagisStats {
 // Kumbara (Collection Box) Types
 export type KumbaraStatus = 'aktif' | 'pasif' | 'bakim';
 
+// GPS koordinatları için
+export interface GpsKoordinat {
+    lat: number;
+    lng: number;
+}
+
+// Kumbara toplama (boşaltma) kaydı
+export interface KumbaraToplama {
+    id: string;
+    kumbaraId: string;
+    tarih: Date;
+    tutar: number;
+    toplayanKisi: User;
+    notlar?: string;
+}
+
+// Kumbara QR kod bilgisi
+export interface KumbaraQR {
+    kod: string;      // QR kodun içeriği (unique identifier)
+    tapilanTarih?: Date;  // QR kodun sisteme tanıtıldığı tarih
+}
+
 export interface Kumbara extends Timestamps {
     id: string;
     kod: string;
-    konum: string;
+    ad: string;           // Kumbaranın adı (örn: "Merkez Cami Kumbarası")
+    konum: string;        // Metin açıklaması (örn: "Merkez Cami Girişi")
+    koordinat?: GpsKoordinat;  // GPS koordinatları (rota için)
+    qrKod?: KumbaraQR;    // QR kod bilgisi
     sorumlu: User;
     sonBosaltma?: Date;
     toplamTutar: number;
+    toplamaBaşarina: number;  // Toplam toplanan miktar (geçmişten bugüne)
+    toplamaGecmisi: KumbaraToplama[];  // Toplama geçmişi
     durum: KumbaraStatus;
     notlar?: string;
+    fotoğraf?: string;    // Kumbaranın fotoğrafı URL
 }
 
 // Member (Üye) Types

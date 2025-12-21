@@ -137,7 +137,7 @@ const memberColumns: ColumnDef<Uye>[] = [
 export default function MembersListPage() {
     const { data, isLoading } = useQuery({
         queryKey: ['members'],
-        queryFn: () => fetchMembers({ pageSize: 50 })
+        queryFn: () => fetchMembers({ pageSize: 1000 }) // Get all for client-side pagination
     })
 
     return (

@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-media-query'
 
 export function Header() {
-    const { toggle, isCollapsed, setOpen } = useSidebarStore()
+    const { toggle, isCollapsed, setCollapsed, setOpen } = useSidebarStore()
     const { logout } = useUserStore()
     const router = useRouter()
     const isMobile = useIsMobile()
@@ -50,8 +50,8 @@ export function Header() {
                     variant="ghost"
                     size="icon"
                     className="hidden lg:flex hover:bg-accent"
-                    onClick={toggle}
-                    title="Menüyü daralt/genişlet (Ctrl+B)"
+                    onClick={() => setCollapsed(!isCollapsed)}
+                    title="Menüyü daralt/genişlet"
                 >
                     <Menu className="h-5 w-5" />
                 </Button>

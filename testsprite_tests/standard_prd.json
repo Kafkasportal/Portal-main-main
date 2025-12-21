@@ -1,0 +1,257 @@
+{
+  "meta": {
+    "project": "KafkasDer Yönetim Paneli",
+    "date": "2025-12-18",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "KafkasDer Yönetim Paneli is a comprehensive management system designed for Kafkas Göçmenleri Derneği (Caucasian Immigrants Association). It enables efficient management of donations, members, social aid, and beneficiary tracking through a modern, user-friendly interface with responsive design and robust data handling capabilities.",
+  "core_goals": [
+    "Provide secure and simple user authentication to restrict access to authorized personnel.",
+    "Offer a comprehensive dashboard with key statistics and visual charts to monitor donations, member activity, and social aid status.",
+    "Enable detailed management of donations including filtering, sorting, searching, pagination, and reporting.",
+    "Support full member management with searchable, filterable listings and membership due tracking.",
+    "Manage social aid programs with beneficiary tracking, applications management, payments processing, and detailed statistics.",
+    "Ensure intuitive and responsive navigation with sidebar, header, mobile support, breadcrumbs, and user information.",
+    "Implement reusable and feature-rich data tables supporting sorting, filtering, searching, pagination, and exporting capabilities."
+  ],
+  "key_features": [
+    "User Authentication system with mock login accepting any email and password (6+ characters) and session management via cookies.",
+    "Dashboard overview page presenting statistics cards, charts (including monthly donations and aid distribution) and recent donations list for quick insights.",
+    "Donations management including list view with filters and sorting, collection box (kumbara) overview, and detailed reports page.",
+    "Members management with member listings, search, filter by types, registration forms with validation, and dues tracking.",
+    "Social aid management with beneficiary list, application processing, payment tracking, and statistics dashboard.",
+    "Responsive and collapsible sidebar navigation, header with user details, breadcrumbs navigation, mobile compatibility and page transitions with loading progress bar.",
+    "Reusable shared data table component supporting sorting, filtering, searching, pagination, loading states with skeletons, empty states, and export to Excel functionality.",
+    "Robust form validation system using Zod integrated with React Hook Form for login, donations, members, and social aid beneficiary forms.",
+    "Modern UI component library based on Radix UI and Shadcn UI providing buttons, cards, dialogs, forms, tables, inputs, selects, and notifications.",
+    "State management leveraging Zustand for user session and interface states, and TanStack Query for server state management.",
+    "Mock service layer simulating API calls and data handling for development and testing."
+  ],
+  "user_flow_summary": [
+    "Users start by accessing the login page at /giris, entering valid credentials (any email and password with 6+ chars) to authenticate.",
+    "Post-login, users are directed to the /genel dashboard showing key statistics cards, charts and recent donation activities.",
+    "Users navigate via a responsive sidebar and header to different modules such as Donations (/bagis), Members (/uyeler), Social Aid (/sosyal-yardim), Events, Documents, and Settings.",
+    "Within Donations, users can filter, sort, search, paginate the list, view collection boxes, and access donation reports.",
+    "In Members, users can browse member lists, filter, search, register new members, and track membership dues.",
+    "Social Aid module allows users to manage beneficiaries, handle applications, process payments, and review detailed statistics on aid distribution.",
+    "Throughout the panel, data tables present information with real-time filtering, sorting, pagination, and export options, providing smooth interactive data management.",
+    "Users can collapse/expand the sidebar, use breadcrumbs for navigation context, and see user info in the header, ensuring seamless navigation experience."
+  ],
+  "validation_criteria": [
+    "Login page enforces input validation and only allows submissions with password length 6 or more characters.",
+    "Dashboard correctly displays total donations, active members, pending applications, monthly aid amount, and corresponding charts.",
+    "Donations list supports filtering by status and purpose, sorting by columns, searching, and pagination mechanics function correctly.",
+    "Members list and registration form must correctly filter by type, support search capabilities, and validate form input properly.",
+    "Social Aid beneficiary lists, applications, payments, and statistics pages must accurately display data and support search and filters.",
+    "Sidebar navigation is visible, functional, and collapsible/responsive on all relevant pages and devices.",
+    "Data tables exhibit correct sorting, filtering, searching, pagination, show loading skeletons during fetches, and display empty state when no data is present.",
+    "Form validations are enforced for all inputs across login, donations, members, and social aid modules using Zod schemas.",
+    "Export to Excel function successfully exports current table view data with correct formatting.",
+    "Mock service layer returns consistent sample data enabling reliable frontend testing and development workflow."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "Next.js 16",
+      "React 19",
+      "Tailwind CSS v4",
+      "Radix UI",
+      "Shadcn UI",
+      "Zustand",
+      "TanStack Query",
+      "React Hook Form",
+      "Zod",
+      "Recharts",
+      "nuqs",
+      "xlsx",
+      "next-themes",
+      "nprogress",
+      "sonner"
+    ],
+    "features": [
+      {
+        "name": "Authentication System",
+        "description": "User login page with mock authentication accepting any email and password (6+ chars), cookie-based session management, protected route middleware",
+        "files": [
+          "src/app/(auth)/giris/page.tsx",
+          "src/stores/user-store.ts",
+          "src/middleware.ts"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Overview page displaying statistics cards (total donations, active members, pending applications), charts using Recharts, and recent donations list",
+        "files": [
+          "src/app/(dashboard)/genel/page.tsx",
+          "src/components/shared/stat-card.tsx"
+        ]
+      },
+      {
+        "name": "Donations Management",
+        "description": "Comprehensive donation management system with list view (filtering, sorting, search, pagination), collection box (kumbara) management, and reports page",
+        "files": [
+          "src/app/(dashboard)/bagis/liste/page.tsx",
+          "src/app/(dashboard)/bagis/kumbara/page.tsx",
+          "src/app/(dashboard)/bagis/raporlar/page.tsx",
+          "src/components/features/donations/columns.tsx",
+          "src/components/features/donations/donation-form.tsx",
+          "src/lib/mock-service.ts"
+        ]
+      },
+      {
+        "name": "Members Management",
+        "description": "Member listing with search and filters, new member registration form with validation, membership dues tracking",
+        "files": [
+          "src/app/(dashboard)/uyeler/liste/page.tsx",
+          "src/app/(dashboard)/uyeler/yeni/page.tsx",
+          "src/components/features/members/member-form.tsx"
+        ]
+      },
+      {
+        "name": "Social Aid Management",
+        "description": "Complex social aid system with beneficiary tracking (comprehensive forms with immigration status, family structure, health status), aid applications management, payment processing, and statistics dashboard",
+        "files": [
+          "src/app/(dashboard)/sosyal-yardim/ihtiyac-sahipleri/page.tsx",
+          "src/app/(dashboard)/sosyal-yardim/ihtiyac-sahipleri/[id]/page.tsx",
+          "src/app/(dashboard)/sosyal-yardim/basvurular/page.tsx",
+          "src/app/(dashboard)/sosyal-yardim/odemeler/page.tsx",
+          "src/app/(dashboard)/sosyal-yardim/istatistikler/page.tsx",
+          "src/components/features/social-aid/new-beneficiary-dialog.tsx",
+          "src/components/features/social-aid/quick-register-dialog.tsx",
+          "src/components/features/social-aid/columns.tsx",
+          "src/components/features/social-aid/payment-columns.tsx"
+        ]
+      },
+      {
+        "name": "Layout Components",
+        "description": "Responsive sidebar navigation with collapsible menu, header with user info, breadcrumbs navigation, page transitions, and progress bar",
+        "files": [
+          "src/components/layout/sidebar/sidebar.tsx",
+          "src/components/layout/header/header.tsx",
+          "src/components/layout/breadcrumbs.tsx",
+          "src/components/layout/page-transition.tsx",
+          "src/components/layout/progress-bar.tsx",
+          "src/app/(dashboard)/layout.tsx"
+        ]
+      },
+      {
+        "name": "Shared Data Table Component",
+        "description": "Reusable data table component with sorting, filtering, searching, pagination, loading states, empty states, and Excel export functionality",
+        "files": [
+          "src/components/shared/data-table/index.tsx",
+          "src/components/shared/data-table/toolbar.tsx",
+          "src/components/shared/data-table/pagination.tsx"
+        ]
+      },
+      {
+        "name": "UI Component Library",
+        "description": "Comprehensive UI component library based on Radix UI and Shadcn UI including buttons, cards, forms, dialogs, tables, tabs, dropdowns, selects, checkboxes, switches, badges, alerts, avatars, breadcrumbs, skeleton loaders, and toast notifications",
+        "files": [
+          "src/components/ui/button.tsx",
+          "src/components/ui/card.tsx",
+          "src/components/ui/dialog.tsx",
+          "src/components/ui/form.tsx",
+          "src/components/ui/input.tsx",
+          "src/components/ui/table.tsx",
+          "src/components/ui/tabs.tsx",
+          "src/components/ui/dropdown-menu.tsx",
+          "src/components/ui/select.tsx",
+          "src/components/ui/checkbox.tsx",
+          "src/components/ui/switch.tsx",
+          "src/components/ui/badge.tsx",
+          "src/components/ui/alert.tsx",
+          "src/components/ui/avatar.tsx",
+          "src/components/ui/breadcrumb.tsx",
+          "src/components/ui/skeleton.tsx",
+          "src/components/ui/sonner.tsx",
+          "src/components/ui/label.tsx",
+          "src/components/ui/textarea.tsx",
+          "src/components/ui/separator.tsx",
+          "src/components/ui/sheet.tsx"
+        ]
+      },
+      {
+        "name": "Shared Utility Components",
+        "description": "Shared utility components including page header, empty state, construction page indicator",
+        "files": [
+          "src/components/shared/page-header.tsx",
+          "src/components/shared/empty-state.tsx",
+          "src/components/shared/construction-page.tsx"
+        ]
+      },
+      {
+        "name": "Form Validation System",
+        "description": "Zod-based form validation schemas for login, donations, members, and social aid beneficiaries with React Hook Form integration",
+        "files": [
+          "src/lib/validators.ts",
+          "src/components/ui/form.tsx"
+        ]
+      },
+      {
+        "name": "Mock Data Service",
+        "description": "Mock service layer providing simulated API calls for donations, members, beneficiaries, applications, dashboard statistics with pagination support",
+        "files": [
+          "src/lib/mock-service.ts",
+          "src/lib/mock-data.ts"
+        ]
+      },
+      {
+        "name": "State Management",
+        "description": "Zustand stores for user authentication state and sidebar state management",
+        "files": [
+          "src/stores/user-store.ts",
+          "src/stores/sidebar-store.ts"
+        ]
+      },
+      {
+        "name": "Events Management",
+        "description": "Events management page for tracking and managing association events",
+        "files": [
+          "src/app/(dashboard)/etkinlikler/page.tsx"
+        ]
+      },
+      {
+        "name": "Documents Management",
+        "description": "Documents management page for handling association documents",
+        "files": [
+          "src/app/(dashboard)/dokumanlar/page.tsx"
+        ]
+      },
+      {
+        "name": "Settings and Administration",
+        "description": "Settings pages for general settings, user management, and backup functionality",
+        "files": [
+          "src/app/(dashboard)/ayarlar/page.tsx",
+          "src/app/(dashboard)/kullanicilar/page.tsx",
+          "src/app/(dashboard)/yedekleme/page.tsx"
+        ]
+      },
+      {
+        "name": "Utility Functions and Constants",
+        "description": "Utility functions (cn helper for className merging), constants (navigation items, status variants, pagination settings), and type definitions",
+        "files": [
+          "src/lib/utils.ts",
+          "src/lib/constants.ts",
+          "src/types/index.ts"
+        ]
+      },
+      {
+        "name": "Query Provider",
+        "description": "TanStack Query provider wrapper for server state management",
+        "files": [
+          "src/providers/query-provider.tsx"
+        ]
+      },
+      {
+        "name": "Custom Hooks",
+        "description": "Custom React hooks for debouncing and media queries",
+        "files": [
+          "src/hooks/use-debounce.ts",
+          "src/hooks/use-media-query.ts"
+        ]
+      }
+    ]
+  }
+}
+
+

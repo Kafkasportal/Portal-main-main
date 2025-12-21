@@ -48,13 +48,20 @@ export function Breadcrumbs() {
     // Build breadcrumb items
     const items = segments.map((segment, index) => {
         const href = '/' + segments.slice(0, index + 1).join('/')
-        const label = routeLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
+        // Check if segment is a UUID or numeric ID
+        const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(segment) || 
+                     /^\d+$/.test(segment) ||
+                     segment.length > 20
+        const label = isId 
+            ? (routeLabels[segments[index - 1]] ? `${routeLabels[segments[index - 1]]} Detayı` : 'Detay')
+            : (routeLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1))
         const isLast = index === segments.length - 1
 
         return {
             href,
             label,
-            isLast
+            isLast,
+            isId
         }
     })
 

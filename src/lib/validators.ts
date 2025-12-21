@@ -49,18 +49,39 @@ export const memberSchema = z.object({
     soyad: z.string()
         .min(2, 'Soyad en az 2 karakter olmalıdır')
         .max(50, 'Soyad en fazla 50 karakter olabilir'),
-    dogumTarihi: z.date({
-        message: 'Doğum tarihi gereklidir'
-    }),
+    dogumTarihi: z.string()
+        .optional()
+        .or(z.literal(''))
+        .refine((val) => {
+            // If empty, it's valid (optional field)
+            if (!val || val === '' || val === 'invalid-date') {
+                return true
+            }
+            // Check if it's a valid date string in yyyy-MM-dd format
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+            if (!dateRegex.test(val)) {
+                return false
+            }
+            // Check if it's a valid date
+            const date = new Date(val)
+            return !isNaN(date.getTime()) && date.toISOString().split('T')[0] === val
+        }, 'Geçerli bir tarih giriniz (yyyy-MM-dd formatında)'),
     cinsiyet: z.enum(['erkek', 'kadin']),
     telefon: z.string()
-        .min(10, 'Geçerli bir telefon numarası giriniz'),
+        .min(1, 'Telefon numarası gereklidir')
+        .refine((val) => {
+            // Remove spaces, dashes, and parentheses
+            const cleaned = val.replace(/[\s\-\(\)]/g, '')
+            // Check if it's a valid Turkish phone number
+            // Format: 0XXXXXXXXX (11 digits) or +90XXXXXXXXXX (13 digits) or 5XXXXXXXXX (10 digits)
+            return /^(\+90)?[0-9]{10,11}$/.test(cleaned)
+        }, 'Geçerli bir telefon numarası giriniz (örn: 05551234567)'),
     email: emailSchema,
     adres: z.object({
         il: z.string().min(1, 'İl seçiniz'),
         ilce: z.string().min(1, 'İlçe giriniz'),
-        mahalle: z.string().min(1, 'Mahalle giriniz'),
-        acikAdres: z.string().min(5, 'Açık adres en az 5 karakter olmalıdır')
+        mahalle: z.string().optional().or(z.literal('')),
+        acikAdres: z.string().optional().or(z.literal(''))
     }),
     uyeTuru: z.enum(['aktif', 'onursal', 'genc', 'destekci'])
 })
@@ -87,13 +108,22 @@ export const socialAidApplicationSchema = z.object({
 
 export type SocialAidApplicationFormData = z.infer<typeof socialAidApplicationSchema>
 
-// Login form schema
+// Login form schema - very flexible for demo purposes
 export const loginSchema = z.object({
     email: z.string()
         .min(1, 'E-posta adresi gereklidir')
-        .email('Geçerli bir e-posta adresi giriniz'),
+        .refine((val) => {
+            // For demo: accept any non-empty string (even without @)
+            const trimmed = (val || '').trim()
+            return trimmed.length >= 1
+        }, 'E-posta adresi gereklidir'),
     password: z.string()
-        .min(6, 'Şifre en az 6 karakter olmalıdır'),
+        .min(1, 'Şifre gereklidir')
+        .refine((val) => {
+            // For demo: accept any string with at least 6 characters
+            const trimmed = (val || '').trim()
+            return trimmed.length >= 6
+        }, 'Şifre en az 6 karakter olmalıdır'),
     rememberMe: z.boolean().optional()
 })
 

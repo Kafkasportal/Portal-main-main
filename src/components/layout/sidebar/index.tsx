@@ -8,7 +8,7 @@ import { NAV_ITEMS } from '@/lib/constants'
 import { useSidebarStore } from '@/stores/sidebar-store'
 import { useIsMobile } from '@/hooks/use-media-query'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { CURRENT_USER } from '@/lib/mock-data'
 import { getInitials } from '@/lib/utils'
@@ -175,12 +175,6 @@ function MobileSidebar() {
 
     return (
         <Sheet open={isOpen} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Menüyü aç</span>
-                </Button>
-            </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0 bg-sidebar border-sidebar-border">
                 {/* Logo */}
                 <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">

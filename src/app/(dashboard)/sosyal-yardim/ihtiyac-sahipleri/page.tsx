@@ -43,6 +43,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { NewBeneficiaryDialog } from '@/components/features/social-aid/new-beneficiary-dialog'
 import { fetchBeneficiaries } from '@/lib/mock-service'
@@ -78,6 +86,7 @@ export default function BeneficiariesPage() {
     const [page, setPage] = useState(1)
     const [pageSize] = useState(20)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isFilterOpen, setIsFilterOpen] = useState(false)
     
     // Filtreler
     const [searchId, setSearchId] = useState('')
@@ -85,17 +94,25 @@ export default function BeneficiariesPage() {
     const [searchKimlik, setSearchKimlik] = useState('')
     const [searchDosyaNo, setSearchDosyaNo] = useState('')
     const [operator, setOperator] = useState<string>('~')
+    const [filterKategori, setFilterKategori] = useState<string>('all')
+    const [filterDurum, setFilterDurum] = useState<string>('all')
+    const [filterTur, setFilterTur] = useState<string>('all')
 
     const { data, isLoading } = useQuery({
-        queryKey: ['beneficiaries', page, pageSize, searchName, searchKimlik, searchDosyaNo],
+        queryKey: ['beneficiaries', page, pageSize, searchName, searchKimlik, searchDosyaNo, filterKategori, filterDurum],
         queryFn: () => fetchBeneficiaries({ 
             page, 
             pageSize,
             search: searchName,
             kimlikNo: searchKimlik,
-            dosyaNo: searchDosyaNo
+            dosyaNo: searchDosyaNo,
+            kategori: filterKategori !== 'all' ? filterKategori as IhtiyacSahibiKategori : undefined,
+            status: filterDurum !== 'all' ? filterDurum as IhtiyacDurumu : undefined
         })
     })
+
+    // Use data directly from query (filtering is done server-side)
+    const filteredData = data?.data || []
 
     const totalPages = data?.totalPages || 1
     const totalRecords = data?.total || 0
@@ -218,10 +235,102 @@ export default function BeneficiariesPage() {
                         <Search className="mr-2 h-4 w-4" />
                         Ara
                     </Button>
-                    <Button variant="secondary" className="h-9">
-                        <Filter className="mr-2 h-4 w-4" />
-                        Filtre
-                    </Button>
+                    <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                        <SheetTrigger asChild>
+                            <Button variant="secondary" className="h-9">
+                                <Filter className="mr-2 h-4 w-4" />
+                                Filtre
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+                            <SheetHeader>
+                                <SheetTitle>Filtre Seçenekleri</SheetTitle>
+                                <SheetDescription>
+                                    Listeyi filtrelemek için seçenekleri kullanın
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="mt-6 space-y-6">
+                                {/* Kategori Filtresi */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Kategori</label>
+                                    <Select value={filterKategori} onValueChange={setFilterKategori}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Tüm Kategoriler" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Tüm Kategoriler</SelectItem>
+                                            {Object.entries(IHTIYAC_SAHIBI_KATEGORI_LABELS).map(([value, label]) => (
+                                                <SelectItem key={value} value={value}>
+                                                    {label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Durum Filtresi */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Durum</label>
+                                    <Select value={filterDurum} onValueChange={setFilterDurum}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Tüm Durumlar" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Tüm Durumlar</SelectItem>
+                                            {Object.entries(IHTIYAC_DURUMU_LABELS).map(([value, label]) => (
+                                                <SelectItem key={value} value={value}>
+                                                    {label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Tür Filtresi */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Tür</label>
+                                    <Select value={filterTur} onValueChange={setFilterTur}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Tüm Türler" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Tüm Türler</SelectItem>
+                                            {Object.entries(IHTIYAC_SAHIBI_TURU_LABELS).map(([value, label]) => (
+                                                <SelectItem key={value} value={value}>
+                                                    {label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Filtre Butonları */}
+                                <div className="flex gap-2 pt-4">
+                                    <Button
+                                        onClick={() => {
+                                            setFilterKategori('all')
+                                            setFilterDurum('all')
+                                            setFilterTur('all')
+                                            setPage(1)
+                                        }}
+                                        variant="outline"
+                                        className="flex-1"
+                                    >
+                                        Temizle
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            setPage(1)
+                                            setIsFilterOpen(false)
+                                        }}
+                                        className="flex-1"
+                                    >
+                                        Uygula
+                                    </Button>
+                                </div>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                     <Button 
                         className="bg-primary hover:bg-primary/90 h-9"
                         onClick={() => setIsDialogOpen(true)}
@@ -244,7 +353,11 @@ export default function BeneficiariesPage() {
                             <TableRow className="bg-muted/50 hover:bg-muted/50">
                                 <TableHead className="w-[40px]"></TableHead>
                                 <TableHead className="min-w-[140px]">Tür</TableHead>
-                                <TableHead className="min-w-[160px]">İsim</TableHead>
+                                <TableHead className="min-w-[160px]">
+                                    <div className="flex items-center gap-2">
+                                        İsim
+                                    </div>
+                                </TableHead>
                                 <TableHead className="min-w-[140px]">Kategori</TableHead>
                                 <TableHead className="w-[60px] text-center">Yaş</TableHead>
                                 <TableHead className="min-w-[80px]">Uyruk</TableHead>
@@ -274,14 +387,14 @@ export default function BeneficiariesPage() {
                                         ))}
                                     </TableRow>
                                 ))
-                            ) : data?.data.length === 0 ? (
+                            ) : filteredData.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={19} className="h-32 text-center text-muted-foreground">
                                         Kayıt bulunamadı
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                data?.data.map((item: IhtiyacSahibi, index: number) => (
+                                filteredData.map((item: IhtiyacSahibi, index: number) => (
                                     <TableRow 
                                         key={item.id}
                                         className={`

@@ -153,18 +153,20 @@ function LinkedRecordSheet({
 }
 
 export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    // Unwrap params immediately to avoid serialization issues
+    const { id } = use(params)
     const router = useRouter()
     const queryClient = useQueryClient()
-    const resolvedParams = use(params)
-    const isNew = resolvedParams.id === 'yeni'
+    const isNew = id === 'yeni'
+    const [hasChanges, setHasChanges] = useState(false)
     const [deleteChecked, setDeleteChecked] = useState(false)
     const [activeSheet, setActiveSheet] = useState<string | null>(null)
     const [photoPreview, setPhotoPreview] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { data: beneficiary, isLoading } = useQuery({
-        queryKey: ['beneficiary', resolvedParams.id],
-        queryFn: () => fetchBeneficiaryById(resolvedParams.id),
+        queryKey: ['beneficiary', id],
+        queryFn: () => fetchBeneficiaryById(id),
         enabled: !isNew
     })
 
@@ -247,9 +249,9 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
     }, [beneficiary, reset])
 
     const updateMutation = useMutation({
-        mutationFn: (data: BeneficiaryFormData) => updateBeneficiary(resolvedParams.id, data),
+        mutationFn: (data: Partial<IhtiyacSahibi>) => updateBeneficiary(id, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['beneficiary', resolvedParams.id] })
+            queryClient.invalidateQueries({ queryKey: ['beneficiary', id] })
             queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
             toast.success('Kayıt başarıyla güncellendi')
             reset(undefined, { keepValues: true })

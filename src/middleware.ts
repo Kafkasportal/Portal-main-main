@@ -30,9 +30,10 @@ export function middleware(request: NextRequest) {
     // In a real app, this would check for a valid JWT or session
     const authToken = request.cookies.get('auth-token')?.value
 
-    // For demo purposes, we'll simulate that users are always authenticated
-    // Remove this in production and implement proper auth checking
-    const isAuthenticated = true // authToken !== undefined
+    // Check authentication - for demo, accept any auth token
+    // In production, validate the token properly
+    // Also check if cookie exists (even if value is empty, it means user was authenticated)
+    const isAuthenticated = authToken !== undefined && authToken !== null && authToken !== ''
 
     // Redirect unauthenticated users to login
     if (isProtectedRoute && !isAuthenticated) {

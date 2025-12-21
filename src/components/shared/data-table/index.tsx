@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
         options: { label: string; value: string }[]
     }[]
     onRowClick?: (row: TData) => void
+    onExport?: (filteredData: TData[]) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -50,7 +51,8 @@ export function DataTable<TData, TValue>({
     searchColumn,
     isLoading = false,
     filters,
-    onRowClick
+    onRowClick,
+    onExport
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -69,12 +71,18 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        initialState: {
+            pagination: {
+                pageSize: 10
+            }
+        },
         state: {
             sorting,
             columnFilters,
             columnVisibility,
             rowSelection
-        }
+        },
+        manualPagination: !!pageCount
     })
 
     if (isLoading) {

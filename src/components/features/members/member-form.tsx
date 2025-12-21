@@ -39,6 +39,8 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
 
     const form = useForm<MemberFormData>({
         resolver: zodResolver(memberSchema),
+        mode: 'onChange', // Validate on change for instant feedback
+        reValidateMode: 'onChange', // Re-validate on change
         defaultValues: {
             tcKimlikNo: initialData?.tcKimlikNo || '',
             ad: initialData?.ad || '',
@@ -72,16 +74,24 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
     })
 
     function onSubmit(data: MemberFormData) {
+        // Clean phone number - remove spaces, dashes, parentheses
+        const cleanPhone = data.telefon.replace(/[\s\-\(\)]/g, '').replace(/^\+90/, '0')
+        
         mutate({
             tcKimlikNo: data.tcKimlikNo,
             ad: data.ad,
             soyad: data.soyad,
-            telefon: data.telefon,
-            email: data.email,
-            dogumTarihi: data.dogumTarihi ? new Date(data.dogumTarihi) : new Date(),
+            telefon: cleanPhone,
+            email: data.email || undefined,
+            dogumTarihi: data.dogumTarihi ? new Date(data.dogumTarihi) : undefined,
             cinsiyet: data.cinsiyet,
             uyeTuru: data.uyeTuru,
-            adres: data.adres
+            adres: {
+                il: data.adres.il,
+                ilce: data.adres.ilce,
+                mahalle: data.adres.mahalle || undefined,
+                acikAdres: data.adres.acikAdres || undefined
+            }
         })
     }
 
@@ -144,8 +154,70 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
                                 <FormItem>
                                     <FormLabel>Doğum Tarihi</FormLabel>
                                     <FormControl>
-                                        <Input type="date" {...field} />
+                                        <Input 
+                                            type="date" 
+                                            {...field}
+                                            value={field.value || ''}
+                                            max={new Date().toISOString().split('T')[0]}
+                                            onChange={(e) => {
+                                                const value = e.target.value
+                                                // Handle invalid date values from browser
+                                                // Check if the input's validity state indicates an invalid date
+                                                const input = e.target as HTMLInputElement
+                                                const isValid = input.validity.valid
+                                                
+                                                if (!isValid || value === 'invalid-date' || value === '') {
+                                                    // Clear invalid date
+                                                    field.onChange('')
+                                                    // Trigger validation immediately to show error
+                                                    setTimeout(() => {
+                                                        form.trigger('dogumTarihi')
+                                                    }, 0)
+                                                } else {
+                                                    // Validate date format
+                                                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+                                                    if (dateRegex.test(value)) {
+                                                        const date = new Date(value)
+                                                        // Check if date is valid and matches the input format
+                                                        if (!isNaN(date.getTime()) && date.toISOString().split('T')[0] === value) {
+                                                            field.onChange(value)
+                                                        } else {
+                                                            // Invalid date, clear and trigger validation
+                                                            field.onChange('')
+                                                            setTimeout(() => {
+                                                                form.trigger('dogumTarihi')
+                                                            }, 0)
+                                                        }
+                                                    } else {
+                                                        // Invalid format, clear and trigger validation
+                                                        field.onChange('')
+                                                        setTimeout(() => {
+                                                            form.trigger('dogumTarihi')
+                                                        }, 0)
+                                                    }
+                                                }
+                                            }}
+                                            onBlur={(e) => {
+                                                const value = e.target.value
+                                                const input = e.target as HTMLInputElement
+                                                
+                                                // Check if the input is invalid
+                                                if (!input.validity.valid || value === 'invalid-date') {
+                                                    // Clear invalid date
+                                                    field.onChange('')
+                                                }
+                                                
+                                                field.onBlur()
+                                                // Trigger validation on blur to show errors
+                                                setTimeout(() => {
+                                                    form.trigger('dogumTarihi')
+                                                }, 0)
+                                            }}
+                                        />
                                     </FormControl>
+                                    <FormDescription>
+                                        İsteğe bağlı
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -187,8 +259,15 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
                                 <FormItem>
                                     <FormLabel>Telefon *</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="0555 123 45 67" {...field} />
+                                        <Input 
+                                            type="tel"
+                                            placeholder="0555 123 45 67 veya 05551234567" 
+                                            {...field}
+                                        />
                                     </FormControl>
+                                    <FormDescription>
+                                        Türk telefon formatı (örn: 0555 123 45 67 veya 05551234567)
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -262,8 +341,11 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
                             <FormItem>
                                 <FormLabel>Mahalle</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Mahalle" {...field} />
+                                    <Input placeholder="Mahalle (isteğe bağlı)" {...field} />
                                 </FormControl>
+                                <FormDescription>
+                                    İsteğe bağlı
+                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -277,12 +359,15 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
                                 <FormLabel>Açık Adres</FormLabel>
                                 <FormControl>
                                     <Textarea
-                                        placeholder="Sokak, bina no, daire..."
+                                        placeholder="Sokak, bina no, daire... (isteğe bağlı)"
                                         className="resize-none"
                                         rows={2}
                                         {...field}
                                     />
                                 </FormControl>
+                                <FormDescription>
+                                    İsteğe bağlı
+                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}

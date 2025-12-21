@@ -24,6 +24,39 @@
 
 **Database**: None (mock service in `src/lib/mock-service.ts`)
 
+## ⚠️ CRITICAL: This is a WEB-ONLY Project
+
+**Bu proje SADECE WEB uygulamasıdır. Mobil uygulama YOKTUR.**
+
+- Responsive tasarım Tailwind CSS breakpoint'leri ile yapılır (sm, md, lg, xl, 2xl)
+- Mobil görünüm = küçük ekran genişliği, ayrı bir mobil uygulama DEĞİL
+- Tüm sayfalar tek bir Next.js App Router yapısında
+
+## Component API Reference (MUST READ)
+
+Yeni sayfa veya bileşen eklerken MUTLAKA mevcut bileşenlerin prop'larını kontrol et!
+
+### PageHeader Component (`@/components/shared/page-header`)
+```tsx
+interface PageHeaderProps {
+    title: string           // Sayfa başlığı
+    description?: string    // Açıklama metni
+    action?: ReactNode      // ⚠️ DİKKAT: "action" (tekil), "actions" DEĞİL!
+    className?: string
+}
+```
+
+### Diğer Shared Components
+- `DataTable` - TanStack Table wrapper
+- `StatCard` - İstatistik kartları
+- `EmptyState` - Boş durum gösterimi
+- `LoadingState` - Yükleniyor durumu
+
+### UI Components (`@/components/ui/`)
+shadcn/ui tabanlı. Yeni bileşen eklemeden önce mevcut olanları kontrol et:
+- button, card, dialog, badge, tabs, skeleton, input, label, select, textarea
+- scroll-area, separator, dropdown-menu, avatar, tooltip
+
 ## Code Style & Conventions
 
 - **TypeScript**: Strict mode enabled, target ES2017
@@ -36,6 +69,13 @@
 - **Error handling**: Error boundary (`error.tsx`), not-found page (`not-found.tsx`)
 - **Naming**: camelCase for variables/functions, PascalCase for React components
 - **Imports**: Organize by external libs, then internal modules
+
+## Turkish Language Notes
+
+Bu uygulama Türkçe arayüze sahiptir:
+- UI metinleri Türkçe olmalı
+- Değişken/fonksiyon isimleri Türkçe veya İngilizce olabilir
+- Türkçe karakterler (ş, ğ, ü, ö, ç, ı) dosya/değişken isimlerinde KULLANILMAMALI
 
 ## Custom Rules
 

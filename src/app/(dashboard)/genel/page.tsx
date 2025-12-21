@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
@@ -35,10 +36,29 @@ import { formatCurrency, formatDate, getInitials } from '@/lib/utils'
 import { STATUS_VARIANTS } from '@/lib/constants'
 
 export default function DashboardPage() {
-    const { data: stats, isLoading } = useQuery({
+    const [isMounted, setIsMounted] = useState(false)
+    const { data: stats, isLoading, isError } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: fetchDashboardStats
     })
+
+    useEffect(() => {
+        // Delay to ensure container dimensions are calculated
+        const timer = setTimeout(() => {
+            setIsMounted(true)
+        }, 300)
+        
+        // Also trigger on window resize
+        const handleResize = () => {
+            setIsMounted(true)
+        }
+        window.addEventListener('resize', handleResize)
+        
+        return () => {
+            clearTimeout(timer)
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
 
     if (isLoading || !stats) {
         return <DashboardSkeleton />
@@ -101,9 +121,10 @@ export default function DashboardPage() {
                         </Button>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[300px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={stats.monthlyDonations}>
+                        <div className="h-[300px] min-h-[300px] w-full" style={{ minWidth: 0, minHeight: 300, width: '100%', position: 'relative' }}>
+                            {isMounted && !isLoading && stats?.monthlyDonations && stats.monthlyDonations.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                                    <AreaChart data={stats.monthlyDonations}>
                                     <defs>
                                         <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
@@ -140,8 +161,11 @@ export default function DashboardPage() {
                                         fillOpacity={1}
                                         fill="url(#colorAmount)"
                                     />
-                                </AreaChart>
-                            </ResponsiveContainer>
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-muted-foreground">Veri yok</div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -157,22 +181,23 @@ export default function DashboardPage() {
                         </Button>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[300px] flex items-center justify-center">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={stats.aidDistribution}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={65}
-                                        outerRadius={105}
-                                        paddingAngle={3}
-                                        dataKey="value"
-                                    >
-                                        {stats.aidDistribution.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
+                        <div className="h-[300px] min-h-[300px] w-full flex items-center justify-center" style={{ minWidth: 0, minHeight: 300, width: '100%', position: 'relative' }}>
+                            {isMounted && !isLoading && stats?.aidDistribution && stats.aidDistribution.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={stats.aidDistribution}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={65}
+                                            outerRadius={105}
+                                            paddingAngle={3}
+                                            dataKey="value"
+                                        >
+                                            {stats.aidDistribution.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
                                     <Tooltip
                                         contentStyle={{
                                             backgroundColor: 'hsl(var(--card))',
@@ -182,8 +207,11 @@ export default function DashboardPage() {
                                         }}
                                         formatter={(value: number) => [`%${value}`, 'Oran']}
                                     />
-                                </PieChart>
-                            </ResponsiveContainer>
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div className="text-muted-foreground">Veri yok</div>
+                            )}
                         </div>
                         {/* Legend */}
                         <div className="flex flex-wrap justify-center gap-4 mt-4">

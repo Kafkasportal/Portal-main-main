@@ -23,9 +23,22 @@ export const useUserStore = create<UserState>()((set) => ({
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         // Mock authentication - accept any valid email/password
-        if (email && password.length >= 6) {
+        // For demo: accept any non-empty email and password >= 6 chars
+        const trimmedEmail = email.trim()
+        const trimmedPassword = password.trim()
+        
+        if (trimmedEmail && trimmedPassword.length >= 6) {
+            // Set auth token cookie for middleware
+            if (typeof document !== 'undefined') {
+                // Use more reliable cookie setting
+                const cookieValue = `mock-token-${Date.now()}`
+                const expires = new Date()
+                expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000) // 24 hours
+                document.cookie = `auth-token=${cookieValue}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`
+            }
+            
             set({
-                user: { ...CURRENT_USER, email },
+                user: { ...CURRENT_USER, email: trimmedEmail },
                 isAuthenticated: true,
                 isLoading: false
             })
@@ -37,6 +50,10 @@ export const useUserStore = create<UserState>()((set) => ({
     },
 
     logout: () => {
+        // Remove auth token cookie
+        if (typeof document !== 'undefined') {
+            document.cookie = 'auth-token=; path=/; max-age=0'
+        }
         set({ user: null, isAuthenticated: false })
     },
 

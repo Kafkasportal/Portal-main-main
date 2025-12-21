@@ -1,0 +1,101 @@
+{
+  "project_name": "KafkasDer Yönetim Paneli",
+  "project_description": "A comprehensive management system for Kafkas Göçmenleri Derneği (Caucasian Immigrants Association) that manages donations, members, social aid, and beneficiary tracking.",
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "User Authentication",
+      "description": "Users should be able to log in to the management panel",
+      "acceptance_criteria": [
+        "User can access login page at /giris",
+        "User can enter email and password",
+        "User can submit login form",
+        "User is redirected to dashboard after successful login",
+        "Mock authentication accepts any email with 6+ character password"
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "title": "Dashboard Overview",
+      "description": "Users should see an overview dashboard with statistics and charts",
+      "acceptance_criteria": [
+        "Dashboard displays at /genel route",
+        "Shows total donations statistic",
+        "Shows active members count",
+        "Shows pending applications count",
+        "Shows monthly aid amount",
+        "Displays monthly donations chart",
+        "Displays aid distribution pie chart",
+        "Shows recent donations list"
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "title": "Donations Management",
+      "description": "Users should be able to view and manage donations",
+      "acceptance_criteria": [
+        "Can view donation list at /bagis/liste",
+        "Can filter donations by status and purpose",
+        "Can search donations",
+        "Can sort donations",
+        "Can paginate through donations",
+        "Can view collection boxes at /bagis/kumbara",
+        "Can view reports at /bagis/raporlar"
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "title": "Members Management",
+      "description": "Users should be able to view and manage members",
+      "acceptance_criteria": [
+        "Can view member list at /uyeler/liste",
+        "Can search members",
+        "Can filter members by type",
+        "Can add new member at /uyeler/yeni",
+        "Can view member details"
+      ]
+    },
+    {
+      "id": "REQ-005",
+      "title": "Social Aid Management",
+      "description": "Users should be able to manage social aid beneficiaries and applications",
+      "acceptance_criteria": [
+        "Can view beneficiaries at /sosyal-yardim/ihtiyac-sahipleri",
+        "Can view applications at /sosyal-yardim/basvurular",
+        "Can view payments at /sosyal-yardim/odemeler",
+        "Can view statistics at /sosyal-yardim/istatistikler",
+        "Can search and filter beneficiaries",
+        "Can add new beneficiary"
+      ]
+    },
+    {
+      "id": "REQ-006",
+      "title": "Navigation and Layout",
+      "description": "Users should be able to navigate through the application",
+      "acceptance_criteria": [
+        "Sidebar is visible on dashboard pages",
+        "Sidebar can be collapsed/expanded",
+        "Mobile menu works on small screens",
+        "Breadcrumbs show current location",
+        "Header displays user information",
+        "Navigation items are clickable"
+      ]
+    },
+    {
+      "id": "REQ-007",
+      "title": "Data Tables",
+      "description": "Data tables should support filtering, sorting, and pagination",
+      "acceptance_criteria": [
+        "Tables display data correctly",
+        "Can sort by columns",
+        "Can filter data",
+        "Can search within tables",
+        "Pagination works correctly",
+        "Loading states show skeletons",
+        "Empty states display when no data"
+      ]
+    }
+  ]
+}
+
+

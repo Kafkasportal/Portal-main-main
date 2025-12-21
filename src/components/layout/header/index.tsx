@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-media-query'
 
 export function Header() {
-    const { toggle, isCollapsed, setCollapsed, setOpen } = useSidebarStore()
+    const { isCollapsed, setCollapsed, setOpen } = useSidebarStore()
     const { logout } = useUserStore()
     const router = useRouter()
     const isMobile = useIsMobile()

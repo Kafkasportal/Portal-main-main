@@ -220,7 +220,6 @@ export function generateMockIhtiyacSahibi(): IhtiyacSahibi {
     const yardimSayisi = faker.number.int({ min: 0, max: 10 })
     const basvuruSayisi = faker.number.int({ min: 0, max: 15 })
     const dogumTarihi = faker.date.birthdate({ min: 1, max: 85, mode: 'age' })
-    const yas = new Date().getFullYear() - dogumTarihi.getFullYear()
 
     const kategori = randomItem<IhtiyacSahibiKategori>([
         'yetim-ailesi', 'multeci-aile', 'ihtiyac-sahibi-aile', 

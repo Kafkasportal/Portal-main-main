@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Camera, QrCode, X, RefreshCw, Flashlight, SwitchCamera } from 'lucide-react'
+import { Camera, QrCode, X, SwitchCamera } from 'lucide-react'
 import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library'
 
 import {
@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
 
 interface QRScannerDialogProps {
     open: boolean
@@ -34,7 +32,7 @@ export function QRScannerDialog({
     const [isScanning, setIsScanning] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [manualCode, setManualCode] = useState('')
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+    const [, setHasPermission] = useState<boolean | null>(null)
     const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
     
     const videoRef = useRef<HTMLVideoElement>(null)
@@ -78,7 +76,7 @@ export function QRScannerDialog({
                     if (!videoRef.current || !readerRef.current || !isScanning) return
 
                     try {
-                        const result = await readerRef.current.decodeOnceFromVideoElement(videoRef.current)
+                        const result = await readerRef.current.decodeFromVideoElement(videoRef.current)
                         if (result) {
                             const qrCode = result.getText()
                             stopCamera()
@@ -87,7 +85,7 @@ export function QRScannerDialog({
                         }
                     } catch (err) {
                         if (!(err instanceof NotFoundException)) {
-                            console.error('QR decode error:', err)
+                            // QR decode error - silent in production
                         }
                         // Taramaya devam et
                         if (isScanning) {
@@ -98,8 +96,8 @@ export function QRScannerDialog({
 
                 decode()
             }
-        } catch (err) {
-            console.error('Camera error:', err)
+        } catch {
+            // Camera error - silent in production
             setHasPermission(false)
             setError('Kamera erişimi sağlanamadı. Lütfen tarayıcı izinlerini kontrol edin.')
             setIsScanning(false)
@@ -107,12 +105,16 @@ export function QRScannerDialog({
     }, [facingMode, isScanning, onScan, onOpenChange, stopCamera])
 
     // Dialog kapandığında kamerayı durdur
+    const prevOpenRef = useRef(open)
     useEffect(() => {
-        if (!open) {
+        // Sadece open false'a değiştiğinde çalış
+        if (prevOpenRef.current && !open) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- Cleanup when dialog closes is intentional
             stopCamera()
             setManualCode('')
             setError(null)
         }
+        prevOpenRef.current = open
     }, [open, stopCamera])
 
     // Kamera değiştir

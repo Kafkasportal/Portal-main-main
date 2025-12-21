@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { Download } from 'lucide-react'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable } from '@/components/shared/data-table'
@@ -22,22 +22,48 @@ export default function PaymentsPage() {
         app.durum === 'onaylandi' || app.durum === 'tamamlandi'
     ) || []
 
-    const handleExportExcel = () => {
-        const exportData = paymentsData.map(item => ({
-            'Ad Soyad': `${item.basvuranKisi.ad} ${item.basvuranKisi.soyad}`,
-            'TC Kimlik': item.basvuranKisi.tcKimlikNo,
-            'Yardım Türü': item.yardimTuru,
-            'Ödenen Tutar': item.odemeBilgileri?.tutar,
-            'IBAN': item.odemeBilgileri?.iban,
-            'Banka': item.odemeBilgileri?.bankaAdi,
-            'Ödeme Tarihi': item.odemeBilgileri?.odemeTarihi ? formatDate(item.odemeBilgileri.odemeTarihi) : '-',
-            'Durum': item.odemeBilgileri?.durum === 'odendi' ? 'Ödendi' : 'Bekliyor'
-        }))
-
-        const ws = XLSX.utils.json_to_sheet(exportData)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Ödemeler")
-        XLSX.writeFile(wb, "odeme-listesi.xlsx")
+    const handleExportExcel = async () => {
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Ödemeler')
+        
+        // Header row
+        worksheet.columns = [
+            { header: 'Ad Soyad', key: 'adSoyad', width: 25 },
+            { header: 'TC Kimlik', key: 'tcKimlik', width: 15 },
+            { header: 'Yardım Türü', key: 'yardimTuru', width: 15 },
+            { header: 'Ödenen Tutar', key: 'tutar', width: 15 },
+            { header: 'IBAN', key: 'iban', width: 30 },
+            { header: 'Banka', key: 'banka', width: 20 },
+            { header: 'Ödeme Tarihi', key: 'odemeTarihi', width: 15 },
+            { header: 'Durum', key: 'durum', width: 12 }
+        ]
+        
+        // Add data rows
+        paymentsData.forEach(item => {
+            worksheet.addRow({
+                adSoyad: `${item.basvuranKisi.ad} ${item.basvuranKisi.soyad}`,
+                tcKimlik: item.basvuranKisi.tcKimlikNo,
+                yardimTuru: item.yardimTuru,
+                tutar: item.odemeBilgileri?.tutar,
+                iban: item.odemeBilgileri?.iban,
+                banka: item.odemeBilgileri?.bankaAdi,
+                odemeTarihi: item.odemeBilgileri?.odemeTarihi ? formatDate(item.odemeBilgileri.odemeTarihi) : '-',
+                durum: item.odemeBilgileri?.durum === 'odendi' ? 'Ödendi' : 'Bekliyor'
+            })
+        })
+        
+        // Style header row
+        worksheet.getRow(1).font = { bold: true }
+        
+        // Generate and download
+        const buffer = await workbook.xlsx.writeBuffer()
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'odeme-listesi.xlsx'
+        a.click()
+        URL.revokeObjectURL(url)
     }
 
     return (
@@ -48,7 +74,7 @@ export default function PaymentsPage() {
                 action={
                     <Button variant="outline" onClick={handleExportExcel}>
                         <Download className="mr-2 h-4 w-4" />
-                        Excel'e Aktar
+                        Excel&apos;e Aktar
                     </Button>
                 }
             />

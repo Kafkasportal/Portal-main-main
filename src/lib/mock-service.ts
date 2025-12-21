@@ -6,7 +6,6 @@ import type {
     Uye,
     SosyalYardimBasvuru,
     IhtiyacSahibi,
-    IhtiyacSahibiListItem,
     IhtiyacDurumu,
     IhtiyacSahibiKategori,
     DashboardStats,
@@ -21,7 +20,6 @@ import {
     generateMockUyeler,
     generateMockBasvurular,
     generateMockIhtiyacSahipleri,
-    generateMockIhtiyacSahipleriListItems,
     generateDashboardStats
 } from './mock-data'
 

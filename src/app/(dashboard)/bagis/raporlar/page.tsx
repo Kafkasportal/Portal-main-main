@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Download, FileText, TrendingUp, Calendar, Filter } from 'lucide-react'
 import {
@@ -19,6 +19,7 @@ import {
 } from 'recharts'
 
 import { PageHeader } from '@/components/shared/page-header'
+import { QueryError } from '@/components/shared/query-error'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -33,7 +34,7 @@ import { fetchDonations, fetchDashboardStats } from '@/lib/mock-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { DONATION_PURPOSE_LABELS, STATUS_LABELS } from '@/lib/constants'
 import type { DonationPurpose, PaymentStatus } from '@/types'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 export default function ReportsPage() {
     const [isMounted, setIsMounted] = useState(false)
@@ -52,7 +53,7 @@ export default function ReportsPage() {
         }
     }, [])
 
-    const { data: donations, isLoading: donationsLoading } = useQuery({
+    const { data: donations, isLoading: donationsLoading, isError: donationsError, refetch: refetchDonations } = useQuery({
         queryKey: ['donations-report', purpose, status],
         queryFn: () => fetchDonations({
             pageSize: 1000,
@@ -61,71 +62,92 @@ export default function ReportsPage() {
         })
     })
 
-    const { data: dashboardStats, isLoading: statsLoading } = useQuery({
+    const { data: dashboardStats, isLoading: statsLoading, isError: statsError } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: fetchDashboardStats
     })
 
-    // Calculate statistics
-    const allDonations = donations?.data || []
-    const totalAmount = allDonations.reduce((sum, d) => sum + d.tutar, 0)
-    const totalCount = allDonations.length
-    const avgAmount = totalCount > 0 ? totalAmount / totalCount : 0
+    // Memoize data array to prevent recalculation on every render
+    const allDonations = useMemo(() => donations?.data || [], [donations?.data])
+    
+    // Calculate statistics with useMemo
+    const stats = useMemo(() => {
+        const totalAmount = allDonations.reduce((sum, d) => sum + d.tutar, 0)
+        const totalCount = allDonations.length
+        const avgAmount = totalCount > 0 ? totalAmount / totalCount : 0
+        return { totalAmount, totalCount, avgAmount }
+    }, [allDonations])
+
+    const { totalAmount, totalCount, avgAmount } = stats
 
     // Monthly donations data
     const monthlyData = dashboardStats?.monthlyDonations || []
 
-    // Purpose distribution
-    const purposeDistribution = Object.entries(DONATION_PURPOSE_LABELS).map(([key, label]) => {
-        const count = allDonations.filter(d => d.amac === key).length
-        const amount = allDonations
-            .filter(d => d.amac === key)
-            .reduce((sum, d) => sum + d.tutar, 0)
-        return { name: label, count, amount }
-    }).filter(item => item.count > 0)
+    // Purpose distribution - memoized
+    const purposeDistribution = useMemo(() => 
+        Object.entries(DONATION_PURPOSE_LABELS).map(([key, label]) => {
+            const count = allDonations.filter(d => d.amac === key).length
+            const amount = allDonations
+                .filter(d => d.amac === key)
+                .reduce((sum, d) => sum + d.tutar, 0)
+            return { name: label, count, amount }
+        }).filter(item => item.count > 0)
+    , [allDonations])
 
-    // Status distribution
-    const statusDistribution = Object.entries(STATUS_LABELS).map(([key, label]) => ({
-        name: label,
-        count: allDonations.filter(d => d.durum === key).length,
-        color: key === 'tamamlandi' ? 'hsl(var(--primary))' : 
-               key === 'beklemede' ? 'hsl(var(--warning))' : 
-               'hsl(var(--muted-foreground))'
-    })).filter(item => item.count > 0)
+    // Status distribution - memoized
+    const statusDistribution = useMemo(() => 
+        Object.entries(STATUS_LABELS).map(([key, label]) => ({
+            name: label,
+            count: allDonations.filter(d => d.durum === key).length,
+            color: key === 'tamamlandi' ? 'hsl(var(--primary))' : 
+                   key === 'beklemede' ? 'hsl(var(--warning))' : 
+                   'hsl(var(--muted-foreground))'
+        })).filter(item => item.count > 0)
+    , [allDonations])
 
-    const handleExportExcel = () => {
+    const handleExportExcel = async () => {
         try {
-            const exportData = allDonations.map(d => ({
-                'Makbuz No': d.makbuzNo || '-',
-                'Bağışçı': `${d.bagisci.ad} ${d.bagisci.soyad}`,
-                'Telefon': d.bagisci.telefon || '-',
-                'Tutar': d.tutar,
-                'Amaç': DONATION_PURPOSE_LABELS[d.amac],
-                'Durum': STATUS_LABELS[d.durum] || d.durum,
-                'Tarih': formatDate(d.createdAt, 'dd/MM/yyyy'),
-                'Ödeme Yöntemi': d.odemeYontemi || '-'
-            }))
+            const workbook = new ExcelJS.Workbook()
+            const worksheet = workbook.addWorksheet('Bağış Raporu')
             
-            const worksheet = XLSX.utils.json_to_sheet(exportData)
-            const workbook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Bağış Raporu')
-            const fileName = `bagis-raporu-${new Date().toISOString().split('T')[0]}.xlsx`
-            XLSX.writeFile(workbook, fileName)
+            worksheet.columns = [
+                { header: 'Makbuz No', key: 'makbuzNo', width: 15 },
+                { header: 'Bağışçı', key: 'bagisci', width: 25 },
+                { header: 'Telefon', key: 'telefon', width: 15 },
+                { header: 'Tutar', key: 'tutar', width: 15 },
+                { header: 'Amaç', key: 'amac', width: 20 },
+                { header: 'Durum', key: 'durum', width: 12 },
+                { header: 'Tarih', key: 'tarih', width: 12 },
+                { header: 'Ödeme Yöntemi', key: 'odemeYontemi', width: 15 }
+            ]
             
-            // Log for testing purposes
-            console.log('Excel export completed:', fileName, 'Records:', exportData.length)
-        } catch (error) {
-            console.error('Excel export failed:', error)
+            allDonations.forEach(d => {
+                worksheet.addRow({
+                    makbuzNo: d.makbuzNo || '-',
+                    bagisci: `${d.bagisci.ad} ${d.bagisci.soyad}`,
+                    telefon: d.bagisci.telefon || '-',
+                    tutar: d.tutar,
+                    amac: DONATION_PURPOSE_LABELS[d.amac],
+                    durum: STATUS_LABELS[d.durum] || d.durum,
+                    tarih: formatDate(d.createdAt, 'dd/MM/yyyy'),
+                    odemeYontemi: d.odemeYontemi || '-'
+                })
+            })
+            
+            worksheet.getRow(1).font = { bold: true }
+            
+            const buffer = await workbook.xlsx.writeBuffer()
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `bagis-raporu-${new Date().toISOString().split('T')[0]}.xlsx`
+            a.click()
+            URL.revokeObjectURL(url)
+        } catch {
+            // Error handled silently in production
         }
     }
-
-    const COLORS = [
-        'hsl(var(--primary))',
-        'hsl(var(--chart-1))',
-        'hsl(var(--chart-2))',
-        'hsl(var(--chart-3))',
-        'hsl(var(--chart-4))'
-    ]
 
     if (donationsLoading || statsLoading) {
         return (
@@ -137,6 +159,19 @@ export default function ReportsPage() {
                     ))}
                 </div>
                 <Skeleton className="h-96" />
+            </div>
+        )
+    }
+
+    if (donationsError || statsError) {
+        return (
+            <div className="space-y-6">
+                <PageHeader title="Raporlar" description="Detaylı bağış ve finansal raporlar" />
+                <QueryError 
+                    title="Raporlar Yüklenemedi"
+                    message="Rapor verileri yüklenirken bir hata oluştu."
+                    onRetry={refetchDonations}
+                />
             </div>
         )
     }
@@ -304,7 +339,7 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: any) => [formatCurrency(value), 'Tutar']}
+                                            formatter={(value: number | undefined) => [value ? formatCurrency(value) : '', 'Tutar']}
                                         />
                                         <Area
                                             type="monotone"
@@ -353,7 +388,7 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: any) => [formatCurrency(value), 'Tutar']}
+                                            formatter={(value: number | undefined) => [value ? formatCurrency(value) : '', 'Tutar']}
                                         />
                                         <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
                                     </BarChart>
@@ -395,7 +430,7 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: any) => [value, 'Adet']}
+                                            formatter={(value: number | undefined) => [value ?? 0, 'Adet']}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>

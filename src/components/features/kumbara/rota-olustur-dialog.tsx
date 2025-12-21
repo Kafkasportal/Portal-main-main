@@ -6,8 +6,6 @@ import {
     Navigation, 
     Route, 
     ExternalLink, 
-    CheckCircle2, 
-    Circle,
     Loader2,
     Map,
     ArrowRight
@@ -95,7 +93,6 @@ export function RotaOlusturDialog({
     kumbaras
 }: RotaOlusturDialogProps) {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-    const [isOptimizing, setIsOptimizing] = useState(false)
     const [currentLocation, setCurrentLocation] = useState<GpsKoordinat | null>(null)
     const [isGettingLocation, setIsGettingLocation] = useState(false)
 
@@ -388,7 +385,7 @@ export function RotaOlusturDialog({
                         className="gap-2"
                     >
                         <ExternalLink className="h-4 w-4" />
-                        Google Maps'te Aç
+                        Google Maps&apos;te Aç
                     </Button>
                 </DialogFooter>
             </DialogContent>

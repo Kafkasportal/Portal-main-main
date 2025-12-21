@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
@@ -22,8 +21,15 @@ import {
 import { loginSchema, type LoginFormData } from '@/lib/validators'
 import { useUserStore } from '@/stores/user-store'
 
+// Helper function to set auth cookie
+const setAuthCookie = () => {
+    const cookieValue = `mock-token-${Date.now()}`
+    const expires = new Date()
+    expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000)
+    document.cookie = `auth-token=${cookieValue}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`
+}
+
 export default function LoginPage() {
-    const router = useRouter()
     const { login, isLoading } = useUserStore()
     const [showPassword, setShowPassword] = useState(false)
 
@@ -37,6 +43,32 @@ export default function LoginPage() {
             rememberMe: false
         }
     })
+
+    const handleSuccessfulLogin = useCallback(async () => {
+        // Wait for cookie to be set and persisted
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        // Double-check cookie is set
+        if (typeof document !== 'undefined') {
+            const cookies = document.cookie.split(';')
+            const hasAuthToken = cookies.some(cookie => cookie.trim().startsWith('auth-token='))
+            
+            if (!hasAuthToken) {
+                // Retry setting cookie
+                setAuthCookie()
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+        }
+        
+        toast.success('Giriş başarılı', {
+            description: 'Yönetim paneline yönlendiriliyorsunuz...'
+        })
+        
+        // Use window.location for full page reload to ensure cookie is read by middleware
+        setTimeout(() => {
+            window.location.href = '/genel'
+        }, 500)
+    }, [])
 
     async function onSubmit(data: LoginFormData) {
         // Trim email and password before submission
@@ -57,32 +89,7 @@ export default function LoginPage() {
         const success = await login(trimmedEmail, trimmedPassword)
 
         if (success) {
-            // Wait longer for cookie to be set and persisted
-            await new Promise(resolve => setTimeout(resolve, 300))
-            
-            // Double-check cookie is set
-            if (typeof document !== 'undefined') {
-                const cookies = document.cookie.split(';')
-                const hasAuthToken = cookies.some(cookie => cookie.trim().startsWith('auth-token='))
-                
-                if (!hasAuthToken) {
-                    // Retry setting cookie
-                    const cookieValue = `mock-token-${Date.now()}`
-                    const expires = new Date()
-                    expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000)
-                    document.cookie = `auth-token=${cookieValue}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`
-                    await new Promise(resolve => setTimeout(resolve, 100))
-                }
-            }
-            
-            toast.success('Giriş başarılı', {
-                description: 'Yönetim paneline yönlendiriliyorsunuz...'
-            })
-            
-            // Use window.location for full page reload to ensure cookie is read by middleware
-            setTimeout(() => {
-                window.location.href = '/genel'
-            }, 500)
+            await handleSuccessfulLogin()
         } else {
             toast.error('Giriş başarısız', {
                 description: 'E-posta veya şifre hatalı.'

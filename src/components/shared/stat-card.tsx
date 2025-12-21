@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react'

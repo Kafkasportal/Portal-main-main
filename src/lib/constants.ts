@@ -108,6 +108,18 @@ export const STATUS_VARIANTS = {
     odendi: 'success'
 } as const
 
+// Status labels
+export const STATUS_LABELS: Record<string, string> = {
+    beklemede: 'Beklemede',
+    tamamlandi: 'Tamamlandı',
+    iptal: 'İptal',
+    iade: 'İade',
+    inceleniyor: 'İnceleniyor',
+    onaylandi: 'Onaylandı',
+    reddedildi: 'Reddedildi',
+    odendi: 'Ödendi'
+}
+
 // Payment method labels
 export const PAYMENT_METHOD_LABELS = {
     nakit: 'Nakit',

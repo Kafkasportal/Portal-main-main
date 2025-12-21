@@ -47,7 +47,7 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
         }
     })
 
-    async function onSubmit(data: BasicBeneficiaryFormData) {
+    async function onSubmit() {
         setIsLoading(true)
         try {
             // Simulate API call to create basic record
@@ -62,7 +62,7 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
 
             setOpen(false)
             router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newId}?edit=true`)
-        } catch (error) {
+        } catch {
             toast.error('Bir hata oluştu')
         } finally {
             setIsLoading(false)

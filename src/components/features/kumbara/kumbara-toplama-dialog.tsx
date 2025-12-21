@@ -98,7 +98,7 @@ export function KumbaraToplamaDialog({
 
     const { mutate, isPending } = useMutation({
         mutationFn: collectKumbara,
-        onSuccess: (data) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
             toast.success('Toplama başarıyla kaydedildi', {
                 description: `${formatCurrency(form.getValues('tutar'))} toplandı`
@@ -135,7 +135,7 @@ export function KumbaraToplamaDialog({
                     description: `"${qrCode}" kodlu kumbara sistemde kayıtlı değil`
                 })
             }
-        } catch (error) {
+        } catch {
             toast.error('Arama hatası')
         } finally {
             setIsSearching(false)

@@ -3,7 +3,7 @@
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, CheckCircle, XCircle, Clock, FileText, User, DollarSign } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle, Clock, FileText, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,8 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { fetchApplicationById, updateApplicationStatus } from '@/lib/mock-service'
 import { 
     AID_TYPE_LABELS,
-    BASVURU_DURUMU_LABELS,
-    STATUS_VARIANTS
+    BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { BasvuruDurumu } from '@/types'
@@ -250,10 +249,10 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                                 {application.belgeler.map((belge, index) => (
                                     <div key={index} className="border rounded-lg p-4 text-center">
                                         <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                                        <p className="text-sm font-medium">{belge.ad}</p>
-                                        {belge.tarih && (
+                                        <p className="text-sm font-medium">{belge.tur}</p>
+                                        {belge.uploadedAt && (
                                             <p className="text-xs text-muted-foreground">
-                                                {formatDate(belge.tarih)}
+                                                {formatDate(belge.uploadedAt)}
                                             </p>
                                         )}
                                     </div>
@@ -266,6 +265,3 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
         </div>
     )
 }
-
-
-

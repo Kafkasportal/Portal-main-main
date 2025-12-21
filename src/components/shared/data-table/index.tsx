@@ -51,14 +51,14 @@ export function DataTable<TData, TValue>({
     searchColumn,
     isLoading = false,
     filters,
-    onRowClick,
-    onExport
+    onRowClick
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
 
+    // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table standard usage
     const table = useReactTable({
         data,
         columns,

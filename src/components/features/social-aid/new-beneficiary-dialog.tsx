@@ -104,8 +104,7 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                 router.push(`/sosyal-yardim/ihtiyac-sahipleri/${data.id}`)
             }, 100)
         },
-        onError: (error) => {
-            console.error('Beneficiary creation error:', error)
+        onError: () => {
             toast.error('Kayıt oluşturulurken bir hata oluştu')
         }
     })
@@ -259,6 +258,7 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                                         <FormLabel>Kimlik No</FormLabel>
                                         <FormControl>
                                             <Input
+                                                // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form watch is standard usage
                                                 placeholder={form.watch('uyruk') === 'Türkiye' ? 'TC Kimlik No' : 'Yabancı Kimlik No'}
                                                 {...field}
                                             />

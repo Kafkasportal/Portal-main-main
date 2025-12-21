@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable } from '@/components/shared/data-table'
+import { QueryError } from '@/components/shared/query-error'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -107,7 +108,7 @@ const memberColumns: ColumnDef<Uye>[] = [
     },
     {
         id: 'actions',
-        cell: ({ row }) => (
+        cell: () => (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -135,10 +136,26 @@ const memberColumns: ColumnDef<Uye>[] = [
 ]
 
 export default function MembersListPage() {
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['members'],
         queryFn: () => fetchMembers({ pageSize: 1000 }) // Get all for client-side pagination
     })
+
+    if (isError) {
+        return (
+            <div className="space-y-6">
+                <PageHeader
+                    title="Üye Listesi"
+                    description="Dernek üyelerini görüntüleyin ve yönetin"
+                />
+                <QueryError 
+                    title="Üyeler Yüklenemedi"
+                    message="Üye listesi yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-6">

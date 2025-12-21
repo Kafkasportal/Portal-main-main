@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Plus, Download } from 'lucide-react'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable } from '@/components/shared/data-table'
+import { QueryError } from '@/components/shared/query-error'
 import { Button } from '@/components/ui/button'
 import {
     Sheet,
@@ -18,48 +19,83 @@ import { donationColumns } from '@/components/features/donations/columns'
 import { DonationForm } from '@/components/features/donations/donation-form'
 import { fetchDonations } from '@/lib/mock-service'
 import type { Bagis } from '@/types'
-import { formatCurrency, formatDate } from '@/lib/utils'
-import { STATUS_VARIANTS, DONATION_PURPOSE_LABELS } from '@/lib/constants'
+import { DONATION_PURPOSE_LABELS } from '@/lib/constants'
+import { formatDate } from '@/lib/utils'
 
 export default function DonationsListPage() {
     const [isSheetOpen, setIsSheetOpen] = useState(false)
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['donations'],
         queryFn: () => fetchDonations({ pageSize: 1000 }) // Get more for export
     })
 
-    const handleExportExcel = () => {
+    const handleExportExcel = async () => {
         try {
             const donationsData = data?.data || []
             
-            // Map donations to Excel format
-            const exportData = donationsData.map((item: Bagis) => ({
-                'Makbuz No': item.makbuzNo || '-',
-                'Bağışçı Ad': item.bagisci.ad,
-                'Bağışçı Soyad': item.bagisci.soyad,
-                'Telefon': item.bagisci.telefon || '-',
-                'Tutar': item.tutar,
-                'Para Birimi': item.paraBirimi || 'TRY',
-                'Amaç': DONATION_PURPOSE_LABELS[item.amac] || item.amac,
-                'Durum': item.durum === 'tamamlandi' ? 'Tamamlandı' : 
-                        item.durum === 'beklemede' ? 'Beklemede' : 
-                        item.durum === 'iptal' ? 'İptal' : item.durum,
-                'Tarih': formatDate(item.tarih),
-                'Açıklama': item.aciklama || '-'
-            }))
-
-            const ws = XLSX.utils.json_to_sheet(exportData)
-            const wb = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(wb, ws, 'Bağışlar')
-            const fileName = `bagis-listesi-${new Date().toISOString().split('T')[0]}.xlsx`
-            XLSX.writeFile(wb, fileName)
+            const workbook = new ExcelJS.Workbook()
+            const worksheet = workbook.addWorksheet('Bağışlar')
             
-            // Log for testing purposes
-            console.log('Excel export completed:', fileName, 'Records:', exportData.length)
-        } catch (error) {
-            console.error('Excel export failed:', error)
+            worksheet.columns = [
+                { header: 'Makbuz No', key: 'makbuzNo', width: 15 },
+                { header: 'Bağışçı Ad', key: 'ad', width: 15 },
+                { header: 'Bağışçı Soyad', key: 'soyad', width: 15 },
+                { header: 'Telefon', key: 'telefon', width: 15 },
+                { header: 'Tutar', key: 'tutar', width: 12 },
+                { header: 'Para Birimi', key: 'paraBirimi', width: 10 },
+                { header: 'Amaç', key: 'amac', width: 20 },
+                { header: 'Durum', key: 'durum', width: 12 },
+                { header: 'Tarih', key: 'tarih', width: 12 },
+                { header: 'Açıklama', key: 'aciklama', width: 25 }
+            ]
+            
+            donationsData.forEach((item: Bagis) => {
+                worksheet.addRow({
+                    makbuzNo: item.makbuzNo || '-',
+                    ad: item.bagisci.ad,
+                    soyad: item.bagisci.soyad,
+                    telefon: item.bagisci.telefon || '-',
+                    tutar: item.tutar,
+                    paraBirimi: item.currency || 'TRY',
+                    amac: DONATION_PURPOSE_LABELS[item.amac] || item.amac,
+                    durum: item.durum === 'tamamlandi' ? 'Tamamlandı' :
+                           item.durum === 'beklemede' ? 'Beklemede' :
+                           item.durum === 'iptal' ? 'İptal' : item.durum,
+                    tarih: formatDate(new Date(item.createdAt)),
+                    aciklama: item.aciklama || '-'
+                })
+            })
+            
+            worksheet.getRow(1).font = { bold: true }
+            
+            const buffer = await workbook.xlsx.writeBuffer()
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `bagis-listesi-${new Date().toISOString().split('T')[0]}.xlsx`
+            a.click()
+            URL.revokeObjectURL(url)
+        } catch {
+            // Error handled silently in production
         }
+    }
+
+    if (isError) {
+        return (
+            <div className="space-y-6">
+                <PageHeader
+                    title="Bağış Listesi"
+                    description="Tüm bağışları görüntüleyin ve yönetin"
+                />
+                <QueryError 
+                    title="Bağışlar Yüklenemedi"
+                    message="Bağış listesi yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
     }
 
     return (

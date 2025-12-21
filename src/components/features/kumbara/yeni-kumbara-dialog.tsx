@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { MapPin, QrCode, User, Camera, Navigation, Loader2, Printer, RefreshCw } from 'lucide-react'
+import { QrCode, Camera, Navigation, Loader2, Printer, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import QRCode from 'react-qr-code'
 

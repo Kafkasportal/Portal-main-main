@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { 
     PiggyBank, 
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 import { PageHeader } from '@/components/shared/page-header'
+import { QueryError } from '@/components/shared/query-error'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,7 +25,8 @@ import { KumbaraToplamaDialog } from '@/components/features/kumbara/kumbara-topl
 import { RotaOlusturDialog } from '@/components/features/kumbara/rota-olustur-dialog'
 
 import { fetchKumbaras } from '@/lib/mock-service'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
+import type { Kumbara } from '@/types'
 
 const statusLabels = {
     aktif: { label: 'Aktif', variant: 'success' as const },
@@ -38,20 +40,43 @@ export default function KumbaraPage() {
     const [rotaOpen, setRotaOpen] = useState(false)
     const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(null)
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['kumbaras'],
         queryFn: () => fetchKumbaras({ pageSize: 50 })
     })
 
-    const kumbaras = data?.data || []
-    const activeCount = kumbaras.filter(k => k.durum === 'aktif').length
-    const totalAmount = kumbaras.reduce((sum, k) => sum + k.toplamTutar, 0)
-    const totalCollected = kumbaras.reduce((sum, k) => sum + (k.toplamaBaşarina || 0), 0)
+    // Memoize data array to prevent recalculation
+    const kumbaras = useMemo(() => data?.data || [], [data?.data])
+    
+    // Memoize expensive calculations
+    const stats = useMemo(() => ({
+        activeCount: kumbaras.filter(k => k.durum === 'aktif').length,
+        totalAmount: kumbaras.reduce((sum, k) => sum + k.toplamTutar, 0),
+        totalCollected: kumbaras.reduce((sum, k) => sum + (k.toplamaBaşarina || 0), 0)
+    }), [kumbaras])
+
+    const { activeCount, totalAmount, totalCollected } = stats
 
     // Kumbara kartına tıklandığında toplama dialogunu aç
     const handleKumbaraClick = (kumbara: Kumbara) => {
         setSelectedKumbara(kumbara)
         setToplamaOpen(true)
+    }
+
+    if (isError) {
+        return (
+            <div className="space-y-6">
+                <PageHeader
+                    title="Kumbara Yönetimi"
+                    description="Bağış kumbaralarını takip edin ve yönetin"
+                />
+                <QueryError 
+                    title="Kumbaralar Yüklenemedi"
+                    message="Kumbara listesi yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
     }
 
     return (

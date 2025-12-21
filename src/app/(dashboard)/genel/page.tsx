@@ -4,16 +4,17 @@ import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
-    TrendingUp,
     Users,
     AlertCircle,
     Wallet,
     ArrowRight,
-    Heart
+    FileText,
+    UserPlus,
+    UserCheck,
+    UserX,
+    Clock
 } from 'lucide-react'
 import {
-    AreaChart,
-    Area,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -26,20 +27,39 @@ import {
 
 import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
+import { QueryError } from '@/components/shared/query-error'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Skeleton } from '@/components/ui/skeleton'
-import { fetchDashboardStats } from '@/lib/mock-service'
+import { fetchDashboardStats, fetchApplications, fetchMembers, fetchBeneficiaries } from '@/lib/mock-service'
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils'
-import { STATUS_VARIANTS } from '@/lib/constants'
+import { STATUS_VARIANTS, BASVURU_DURUMU_LABELS } from '@/lib/constants'
 
 export default function DashboardPage() {
     const [isMounted, setIsMounted] = useState(false)
-    const { data: stats, isLoading, isError } = useQuery({
+    const { data: stats, isLoading, isError, refetch } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: fetchDashboardStats
+    })
+
+    // Son başvurular
+    const { data: applicationsData } = useQuery({
+        queryKey: ['dashboard-applications'],
+        queryFn: () => fetchApplications({ page: 1, pageSize: 5, status: 'beklemede' })
+    })
+
+    // Son üyeler
+    const { data: membersData } = useQuery({
+        queryKey: ['dashboard-members'],
+        queryFn: () => fetchMembers({ page: 1, pageSize: 5 })
+    })
+
+    // İhtiyaç sahipleri
+    const { data: beneficiariesData } = useQuery({
+        queryKey: ['dashboard-beneficiaries'],
+        queryFn: () => fetchBeneficiaries({ page: 1, pageSize: 100 })
     })
 
     useEffect(() => {
@@ -64,6 +84,22 @@ export default function DashboardPage() {
         return <DashboardSkeleton />
     }
 
+    if (isError) {
+        return (
+            <div className="space-y-6">
+                <PageHeader
+                    title="Genel Bakış"
+                    description="Dernek istatistikleri ve son aktiviteler"
+                />
+                <QueryError 
+                    title="Dashboard Yüklenemedi"
+                    message="İstatistikler yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
+    }
+
     return (
         <div className="space-y-6 animate-in">
             <div className="gold-accent">
@@ -74,16 +110,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="stagger-item">
-                    <StatCard
-                        label="Toplam Bağış"
-                        value={formatCurrency(stats.totalDonations)}
-                        icon={TrendingUp}
-                        trend={stats.donationsTrend}
-                        trendLabel="son aya göre"
-                    />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="stagger-item">
                     <StatCard
                         label="Aktif Üye"
@@ -109,67 +136,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Monthly Donations Chart */}
-                <Card className="hover-glow border-border/50 shadow-sm">
-                    <CardHeader className="flex flex-row items-center justify-between pb-4">
-                        <CardTitle className="text-lg font-semibold">Aylık Bağış Grafiği</CardTitle>
-                        <Button variant="ghost" size="sm" asChild className="hover:bg-accent">
-                            <Link href="/bagis/raporlar">
-                                Detaylar <ArrowRight className="ml-1 h-4 w-4" />
-                            </Link>
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px] min-h-[300px] w-full" style={{ minWidth: 0, minHeight: 300, width: '100%', position: 'relative' }}>
-                            {isMounted && !isLoading && stats?.monthlyDonations && stats.monthlyDonations.length > 0 ? (
-                                <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                                    <AreaChart data={stats.monthlyDonations}>
-                                    <defs>
-                                        <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                                    <XAxis
-                                        dataKey="month"
-                                        stroke="hsl(var(--muted-foreground))"
-                                        fontSize={11}
-                                        fontWeight={500}
-                                    />
-                                    <YAxis
-                                        stroke="hsl(var(--muted-foreground))"
-                                        fontSize={11}
-                                        fontWeight={500}
-                                        tickFormatter={(value) => `₺${(value / 1000).toFixed(0)}K`}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--card))',
-                                            border: '1px solid hsl(var(--border))',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                        }}
-                                        formatter={(value: number) => [formatCurrency(value), 'Tutar']}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="amount"
-                                        stroke="hsl(var(--primary))"
-                                        strokeWidth={3}
-                                        fillOpacity={1}
-                                        fill="url(#colorAmount)"
-                                    />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            ) : (
-                                <div className="flex items-center justify-center h-full text-muted-foreground">Veri yok</div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-
+            <div className="grid grid-cols-1 gap-6">
                 {/* Aid Distribution Chart */}
                 <Card className="hover-glow border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-4">
@@ -205,7 +172,7 @@ export default function DashboardPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value: number) => [`%${value}`, 'Oran']}
+                                        formatter={(value?: number) => [value != null ? `%${value}` : '', 'Oran']}
                                     />
                                     </PieChart>
                                 </ResponsiveContainer>
@@ -229,59 +196,181 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            {/* Recent Donations */}
+            {/* İhtiyaç Sahipleri Özeti */}
             <Card className="hover-glow border-border/50 shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-4">
                     <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                            <Heart className="h-4 w-4 text-primary-foreground" />
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                            <Users className="h-4 w-4 text-white" />
                         </div>
-                        Son Bağışlar
+                        İhtiyaç Sahipleri Özeti
                     </CardTitle>
                     <Button variant="ghost" size="sm" asChild className="hover:bg-accent">
-                        <Link href="/bagis/liste">
+                        <Link href="/sosyal-yardim/ihtiyac-sahipleri">
                             Tümünü Gör <ArrowRight className="ml-1 h-4 w-4" />
                         </Link>
                     </Button>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-3">
-                        {stats.recentDonations.map((donation, index) => (
-                            <div
-                                key={donation.id}
-                                className="flex items-center justify-between p-4 rounded-lg bg-muted/40 hover:bg-muted/60 transition-all duration-200 hover:shadow-md border border-border/30"
-                                style={{
-                                    animationDelay: `${index * 0.1}s`
-                                }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="h-11 w-11 ring-2 ring-primary/20 shadow-sm">
-                                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-semibold">
-                                            {getInitials(`${donation.bagisci.ad} ${donation.bagisci.soyad}`)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-semibold text-foreground">
-                                            {donation.bagisci.ad} {donation.bagisci.soyad}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground font-medium">
-                                            {formatDate(donation.createdAt)}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <Badge variant={STATUS_VARIANTS[donation.durum] as any} className="shadow-sm">
-                                        {donation.durum.charAt(0).toUpperCase() + donation.durum.slice(1)}
-                                    </Badge>
-                                    <span className="font-bold font-mono text-primary">
-                                        {formatCurrency(donation.tutar, donation.currency)}
-                                    </span>
-                                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                <UserCheck className="h-5 w-5 text-green-600" />
                             </div>
-                        ))}
+                            <div>
+                                <p className="text-2xl font-bold text-green-600">
+                                    {beneficiariesData?.data.filter(b => b.durum === 'aktif').length || 0}
+                                </p>
+                                <p className="text-sm text-muted-foreground">Aktif</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-500/10 border border-gray-500/20">
+                            <div className="w-10 h-10 rounded-full bg-gray-500/20 flex items-center justify-center">
+                                <UserX className="h-5 w-5 text-gray-600" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-gray-600">
+                                    {beneficiariesData?.data.filter(b => b.durum === 'pasif').length || 0}
+                                </p>
+                                <p className="text-sm text-muted-foreground">Pasif</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                                <Clock className="h-5 w-5 text-amber-600" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-amber-600">
+                                    {beneficiariesData?.data.filter(b => b.durum === 'tamamlandi').length || 0}
+                                </p>
+                                <p className="text-sm text-muted-foreground">Tamamlandı</p>
+                            </div>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Alt Kartlar Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Son Başvurular */}
+                <Card className="hover-glow border-border/50 shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between pb-4">
+                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                                <FileText className="h-4 w-4 text-white" />
+                            </div>
+                            Bekleyen Başvurular
+                        </CardTitle>
+                        <Button variant="ghost" size="sm" asChild className="hover:bg-accent">
+                            <Link href="/sosyal-yardim/basvurular">
+                                Tümünü Gör <ArrowRight className="ml-1 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {applicationsData?.data && applicationsData.data.length > 0 ? (
+                                applicationsData.data.slice(0, 5).map((application, index) => (
+                                    <Link
+                                        key={application.id}
+                                        href={`/sosyal-yardim/basvurular/${application.id}`}
+                                        className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-all duration-200 hover:shadow-md border border-border/30"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-9 w-9 ring-2 ring-orange-500/20">
+                                                <AvatarFallback className="bg-gradient-to-br from-orange-500/20 to-red-500/20 text-orange-600 text-sm font-semibold">
+                                                    {getInitials(`${application.basvuranKisi.ad} ${application.basvuranKisi.soyad}`)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-medium text-sm">
+                                                    {application.basvuranKisi.ad} {application.basvuranKisi.soyad}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {formatDate(application.createdAt)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant={STATUS_VARIANTS[application.durum] as "default" | "secondary" | "destructive" | "outline" | "success" | "warning"} className="text-xs">
+                                                {BASVURU_DURUMU_LABELS[application.durum]}
+                                            </Badge>
+                                            <span className="font-semibold text-sm text-primary">
+                                                {formatCurrency(application.talepEdilenTutar || 0)}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                                    <p>Bekleyen başvuru yok</p>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Son Kayıt Olan Üyeler */}
+                <Card className="hover-glow border-border/50 shadow-sm">
+                    <CardHeader className="flex flex-row items-center justify-between pb-4">
+                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                                <UserPlus className="h-4 w-4 text-white" />
+                            </div>
+                            Son Kayıt Olan Üyeler
+                        </CardTitle>
+                        <Button variant="ghost" size="sm" asChild className="hover:bg-accent">
+                            <Link href="/uyeler/liste">
+                                Tümünü Gör <ArrowRight className="ml-1 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {membersData?.data && membersData.data.length > 0 ? (
+                                membersData.data.slice(0, 5).map((member, index) => (
+                                    <div
+                                        key={member.id}
+                                        className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-all duration-200 hover:shadow-md border border-border/30"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-9 w-9 ring-2 ring-emerald-500/20">
+                                                <AvatarFallback className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-600 text-sm font-semibold">
+                                                    {getInitials(`${member.ad} ${member.soyad}`)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-medium text-sm">
+                                                    {member.ad} {member.soyad}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {member.uyeNo}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline" className="text-xs">
+                                                {member.uyeTuru === 'aktif' ? 'Aktif' : member.uyeTuru === 'genc' ? 'Genç' : member.uyeTuru === 'onursal' ? 'Onursal' : 'Destekci'}
+                                            </Badge>
+                                            <span className="text-xs text-muted-foreground">
+                                                {formatDate(member.createdAt)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                                    <p>Henüz üye kaydı yok</p>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }
@@ -295,18 +384,20 @@ function DashboardSkeleton() {
                 <Skeleton className="h-4 w-64" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-32" />
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Skeleton className="h-[380px]" />
-                <Skeleton className="h-[380px]" />
-            </div>
+            <Skeleton className="h-[380px]" />
 
-            <Skeleton className="h-[300px]" />
+            <Skeleton className="h-[180px]" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Skeleton className="h-[350px]" />
+                <Skeleton className="h-[350px]" />
+            </div>
         </div>
     )
 }

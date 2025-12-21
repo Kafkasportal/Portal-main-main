@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import {
     TrendingUp,
     Users,
-    Wallet,
     Heart,
     AlertCircle
 } from 'lucide-react'
@@ -97,15 +96,25 @@ export default function StatisticsPage() {
     const totalApplications = applications?.total || 0
     const pendingApplications = applications?.data?.filter(a => a.durum === 'beklemede').length || 0
 
+    // Aid type colors - deterministic based on index
+    const aidTypeColors = [
+        'hsl(220, 70%, 50%)',
+        'hsl(160, 70%, 50%)',
+        'hsl(280, 70%, 50%)',
+        'hsl(40, 70%, 50%)',
+        'hsl(340, 70%, 50%)',
+        'hsl(100, 70%, 50%)'
+    ]
+
     // Aid type distribution
-    const aidTypeDistribution = Object.keys(AID_TYPE_LABELS).map(key => {
+    const aidTypeDistribution = Object.keys(AID_TYPE_LABELS).map((key, index) => {
         const count = applications?.data?.filter(a => a.yardimTuru === key).length || 0
         const total = applications?.data?.length || 1
         return {
             name: AID_TYPE_LABELS[key as keyof typeof AID_TYPE_LABELS],
             value: Math.round((count / total) * 100),
             count,
-            color: `hsl(${Math.random() * 360}, 70%, 50%)`
+            color: aidTypeColors[index % aidTypeColors.length]
         }
     }).filter(item => item.count > 0)
 
@@ -174,7 +183,7 @@ export default function StatisticsPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value: any) => [`%${value}`, 'Oran']}
+                                        formatter={(value: number) => [`%${value}`, 'Oran']}
                                     />
                                     </PieChart>
                                 </ResponsiveContainer>
@@ -227,7 +236,7 @@ export default function StatisticsPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value: any) => [value, 'Başvuru']}
+                                        formatter={(value: number) => [value, 'Başvuru']}
                                     />
                                     <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
                                     </BarChart>
@@ -276,7 +285,7 @@ export default function StatisticsPage() {
                                         borderRadius: '8px',
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                     }}
-                                    formatter={(value: any) => [formatCurrency(value), 'Tutar']}
+                                    formatter={(value: number) => [formatCurrency(value), 'Tutar']}
                                 />
                                 <Area
                                     type="monotone"

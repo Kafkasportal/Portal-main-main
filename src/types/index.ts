@@ -462,6 +462,7 @@ export interface AidDistributionData {
     name: string;
     value: number;
     color: string;
+    [key: string]: string | number;
 }
 
 // Navigation Types

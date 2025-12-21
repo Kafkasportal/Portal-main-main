@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { 
@@ -39,13 +39,13 @@ import {
     TableRow
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
+import { QueryError } from '@/components/shared/query-error'
 import { fetchApplications } from '@/lib/mock-service'
 import { 
     AID_TYPE_LABELS,
-    STATUS_VARIANTS,
     BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
-import type { SosyalYardimBasvuru, BasvuruDurumu, YardimTuru } from '@/types'
+import type { BasvuruDurumu, YardimTuru } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 // Durum badge renkleri - Modern SaaS palette
@@ -80,7 +80,7 @@ export default function ApplicationsPage() {
     const [filterYardimTuru, setFilterYardimTuru] = useState<string>('all')
     const [operator, setOperator] = useState<string>('~')
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['applications', page, pageSize, searchName, searchTc, filterDurum, filterYardimTuru],
         queryFn: () => fetchApplications({ 
             page, 
@@ -91,17 +91,32 @@ export default function ApplicationsPage() {
         })
     })
 
-    const applications = data?.data || []
+    // Memoize data array to prevent recalculation on every render
+    const applications = useMemo(() => data?.data || [], [data?.data])
     const totalPages = data?.totalPages || 1
     const totalRecords = data?.total || 0
 
-    // İstatistikler
-    const stats = {
+    // İstatistikler - memoized (must be before any conditional returns)
+    const stats = useMemo(() => ({
         toplam: totalRecords,
         beklemede: applications.filter(a => a.durum === 'beklemede').length,
         inceleniyor: applications.filter(a => a.durum === 'inceleniyor').length,
         onaylandi: applications.filter(a => a.durum === 'onaylandi').length,
         reddedildi: applications.filter(a => a.durum === 'reddedildi').length
+    }), [applications, totalRecords])
+
+    // Error state
+    if (isError) {
+        return (
+            <div className="space-y-4">
+                <h1 className="text-2xl font-bold">Başvurular</h1>
+                <QueryError 
+                    title="Başvurular Yüklenemedi"
+                    message="Başvuru listesi yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
     }
 
     const handleSearch = () => {

@@ -51,8 +51,7 @@ import {
     SheetContent,
     SheetDescription,
     SheetHeader,
-    SheetTitle,
-    SheetTrigger
+    SheetTitle
 } from '@/components/ui/sheet'
 import {
     Table,
@@ -158,7 +157,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
     const router = useRouter()
     const queryClient = useQueryClient()
     const isNew = id === 'yeni'
-    const [hasChanges, setHasChanges] = useState(false)
+    const [, setHasChanges] = useState(false)
     const [deleteChecked, setDeleteChecked] = useState(false)
     const [activeSheet, setActiveSheet] = useState<string | null>(null)
     const [photoPreview, setPhotoPreview] = useState<string | null>(null)
@@ -171,37 +170,48 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
     })
 
     // React Hook Form setup
+    const defaultDurum: 'aktif' | 'pasif' | 'arsiv' = (beneficiary?.durum ?? 'aktif') as 'aktif' | 'pasif' | 'arsiv'
+    // Map IhtiyacSahibiKategori to form schema kategori
+    const mapKategoriToFormSchema = (kategori?: string): 'yetiskin' | 'cocuk' | 'yetim' | 'saglik' | 'egitim' | 'engelli' => {
+        if (!kategori) return 'yetiskin'
+        // Simple mapping - you can expand this based on business logic
+        if (kategori.includes('yetim') || kategori.includes('ogrenci')) return 'yetim'
+        if (kategori.includes('multeci') || kategori.includes('ozel')) return 'cocuk'
+        return 'yetiskin'
+    }
+
+    const defaultValues: Partial<BeneficiaryFormData> = {
+        ad: beneficiary?.ad ?? '',
+        soyad: beneficiary?.soyad ?? '',
+        uyruk: beneficiary?.uyruk ?? '',
+        tcKimlikNo: beneficiary?.tcKimlikNo,
+        yabanciKimlikNo: beneficiary?.yabanciKimlikNo,
+        kategori: mapKategoriToFormSchema(beneficiary?.kategori),
+        fonBolgesi: beneficiary?.fonBolgesi,
+        dosyaBaglantisi: beneficiary?.dosyaBaglantisi,
+        cepTelefonu: beneficiary?.cepTelefonu,
+        cepTelefonuOperator: beneficiary?.cepTelefonuOperator,
+        sabitTelefon: beneficiary?.sabitTelefon,
+        yurtdisiTelefon: beneficiary?.yurtdisiTelefon,
+        email: beneficiary?.email ?? '',
+        ulke: beneficiary?.ulke ?? '',
+        sehir: beneficiary?.sehir ?? '',
+        ilce: beneficiary?.ilce,
+        mahalle: beneficiary?.mahalle,
+        adres: beneficiary?.adres,
+        kimlikBilgileri: beneficiary?.kimlikBilgileri,
+        pasaportVizeBilgileri: beneficiary?.pasaportVizeBilgileri,
+        saglikBilgileri: beneficiary?.saglikBilgileri,
+        ekonomikDurum: beneficiary?.ekonomikDurum,
+        aileHaneBilgileri: beneficiary?.aileHaneBilgileri,
+        sponsorlukTipi: beneficiary?.sponsorlukTipi,
+        durum: defaultDurum,
+        rizaBeyaniDurumu: beneficiary?.rizaBeyaniDurumu,
+        notlar: beneficiary?.notlar
+    }
     const form = useForm<BeneficiaryFormData>({
         resolver: zodResolver(beneficiarySchema),
-        defaultValues: beneficiary ? {
-            ad: beneficiary.ad,
-            soyad: beneficiary.soyad,
-            uyruk: beneficiary.uyruk,
-            tcKimlikNo: beneficiary.tcKimlikNo,
-            yabanciKimlikNo: beneficiary.yabanciKimlikNo,
-            kategori: beneficiary.kategori,
-            fonBolgesi: beneficiary.fonBolgesi,
-            dosyaBaglantisi: beneficiary.dosyaBaglantisi,
-            cepTelefonu: beneficiary.cepTelefonu,
-            cepTelefonuOperator: beneficiary.cepTelefonuOperator,
-            sabitTelefon: beneficiary.sabitTelefon,
-            yurtdisiTelefon: beneficiary.yurtdisiTelefon,
-            email: beneficiary.email,
-            ulke: beneficiary.ulke,
-            sehir: beneficiary.sehir,
-            ilce: beneficiary.ilce,
-            mahalle: beneficiary.mahalle,
-            adres: beneficiary.adres,
-            kimlikBilgileri: beneficiary.kimlikBilgileri,
-            pasaportVizeBilgileri: beneficiary.pasaportVizeBilgileri,
-            saglikBilgileri: beneficiary.saglikBilgileri,
-            ekonomikDurum: beneficiary.ekonomikDurum,
-            aileHaneBilgileri: beneficiary.aileHaneBilgileri,
-            sponsorlukTipi: beneficiary.sponsorlukTipi,
-            durum: beneficiary.durum,
-            rizaBeyaniDurumu: beneficiary.rizaBeyaniDurumu,
-            notlar: beneficiary.notlar
-        } : undefined
+        defaultValues
     })
 
     const {
@@ -209,7 +219,6 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
         handleSubmit,
         reset,
         setValue,
-        trigger,
         register
     } = form
 
@@ -387,7 +396,8 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                             />
                             <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-3 border-2 border-dashed border-border overflow-hidden cursor-pointer hover:bg-muted/80 transition-colors" onClick={handlePhotoClick}>
                                 {photoPreview || data.fotografUrl ? (
-                                    <img src={photoPreview || data.fotografUrl} alt="Fotoğraf" className="w-full h-full object-cover rounded-lg" />
+                                    // eslint-disable-next-line @next/next/no-img-element -- Using img for data URLs and dynamic user uploads
+                                    <img src={photoPreview || data.fotografUrl} alt="İhtiyaç sahibi fotoğrafı" className="w-full h-full object-cover rounded-lg" />
                                 ) : (
                                     <div className="text-center text-muted-foreground">
                                         <User className="h-12 w-12 mx-auto mb-2 opacity-30" />
@@ -418,7 +428,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                     <Card>
                         <CardContent className="p-4">
                             <Label className="text-sm text-muted-foreground mb-2 block">Sponsorluk Tipi</Label>
-                            <Select defaultValue={data.sponsorlukTipi} onValueChange={(value: any) => setValue('sponsorlukTipi', value, { shouldDirty: true })}>
+                            <Select defaultValue={data.sponsorlukTipi} onValueChange={(value: string) => setValue('sponsorlukTipi', value, { shouldDirty: true })}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Seçiniz" />
                                 </SelectTrigger>
@@ -573,7 +583,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kategori *</Label>
-                                        <Select defaultValue={data.kategori} onValueChange={(value: any) => setValue('kategori', value, { shouldDirty: true })}>
+                                        <Select defaultValue={data.kategori} onValueChange={(value: string) => setValue('kategori', value, { shouldDirty: true })}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
@@ -1194,6 +1204,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
             >
                 <div className="space-y-4">
                     <Button className="w-full">
+                        {/* eslint-disable-next-line jsx-a11y/alt-text -- This is a Lucide icon, not an img element */}
                         <Image className="mr-2 h-4 w-4" />
                         Yeni Fotoğraf Yükle
                     </Button>
@@ -1205,6 +1216,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                         </div>
                     ) : (
                         <div className="text-center py-8 text-muted-foreground">
+                            {/* eslint-disable-next-line jsx-a11y/alt-text -- This is a Lucide icon, not an img element */}
                             <Image className="h-12 w-12 mx-auto mb-3 opacity-30" />
                             <p>Henüz fotoğraf eklenmemiş</p>
                         </div>

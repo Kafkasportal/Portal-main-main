@@ -56,7 +56,7 @@ export const applicationColumns: ColumnDef<SosyalYardimBasvuru>[] = [
         cell: ({ row }) => {
             const durum = row.original.durum
             return (
-                <Badge variant={STATUS_VARIANTS[durum] as any}>
+                <Badge variant={STATUS_VARIANTS[durum] as "default" | "secondary" | "destructive" | "outline" | "success" | "warning"}>
                     {durum.charAt(0).toUpperCase() + durum.slice(1)}
                 </Badge>
             )

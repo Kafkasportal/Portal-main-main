@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { ProgressBar } from '@/components/layout/progress-bar'
+import DashboardLoading from './loading'
 
 export default function DashboardLayout({
     children,
@@ -23,7 +25,9 @@ export default function DashboardLayout({
                     {/* Page Content */}
                     <main className="flex-1 overflow-y-auto p-4 lg:p-6">
                         <Breadcrumbs />
-                        {children}
+                        <Suspense fallback={<DashboardLoading />}>
+                            {children}
+                        </Suspense>
                     </main>
                 </div>
             </div>

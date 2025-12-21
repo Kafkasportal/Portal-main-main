@@ -43,8 +43,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {
-    Sheet,
+import { Sheet,
     SheetContent,
     SheetDescription,
     SheetHeader,
@@ -52,6 +51,7 @@ import {
     SheetTrigger
 } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
+import { QueryError } from '@/components/shared/query-error'
 import { NewBeneficiaryDialog } from '@/components/features/social-aid/new-beneficiary-dialog'
 import { fetchBeneficiaries } from '@/lib/mock-service'
 import { 
@@ -75,13 +75,6 @@ const kategoriColors: Record<IhtiyacSahibiKategori, string> = {
     'ozel-egitim-kurumu': 'bg-cyan-500/15 text-cyan-600 border-cyan-500/25'
 }
 
-const durumColors: Record<IhtiyacDurumu, string> = {
-    'taslak': 'bg-slate-500/15 text-slate-600 border-slate-500/25',
-    'aktif': 'bg-emerald-500/15 text-emerald-600 border-emerald-500/25',
-    'pasif': 'bg-amber-500/15 text-amber-600 border-amber-500/25',
-    'tamamlandi': 'bg-sky-500/15 text-sky-600 border-sky-500/25'
-}
-
 export default function BeneficiariesPage() {
     const [page, setPage] = useState(1)
     const [pageSize] = useState(20)
@@ -98,7 +91,7 @@ export default function BeneficiariesPage() {
     const [filterDurum, setFilterDurum] = useState<string>('all')
     const [filterTur, setFilterTur] = useState<string>('all')
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['beneficiaries', page, pageSize, searchName, searchKimlik, searchDosyaNo, filterKategori, filterDurum],
         queryFn: () => fetchBeneficiaries({ 
             page, 
@@ -126,6 +119,21 @@ export default function BeneficiariesPage() {
         const today = new Date()
         const birth = new Date(dogumTarihi)
         return today.getFullYear() - birth.getFullYear()
+    }
+
+    if (isError) {
+        return (
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold">İhtiyaç Sahipleri</h1>
+                </div>
+                <QueryError 
+                    title="Veriler Yüklenemedi"
+                    message="İhtiyaç sahipleri listesi yüklenirken bir hata oluştu."
+                    onRetry={refetch}
+                />
+            </div>
+        )
     }
 
     return (

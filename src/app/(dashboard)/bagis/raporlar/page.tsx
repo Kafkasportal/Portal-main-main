@@ -16,7 +16,7 @@ import {
     PieChart,
     Pie,
     Cell
-} from 'recharts'
+} from '@/components/shared/lazy-chart'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { QueryError } from '@/components/shared/query-error'
@@ -34,7 +34,6 @@ import { fetchDonations, fetchDashboardStats } from '@/lib/mock-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { DONATION_PURPOSE_LABELS, STATUS_LABELS } from '@/lib/constants'
 import type { DonationPurpose, PaymentStatus } from '@/types'
-import ExcelJS from 'exceljs'
 
 export default function ReportsPage() {
     const [isMounted, setIsMounted] = useState(false)
@@ -107,6 +106,8 @@ export default function ReportsPage() {
 
     const handleExportExcel = async () => {
         try {
+            // Lazy load ExcelJS sadece export butonuna tıklandığında
+            const ExcelJS = (await import('exceljs')).default
             const workbook = new ExcelJS.Workbook()
             const worksheet = workbook.addWorksheet('Bağış Raporu')
             
@@ -339,7 +340,10 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: number | undefined) => [value ? formatCurrency(value) : '', 'Tutar']}
+                                            formatter={(value) => {
+                                                const numValue = typeof value === 'number' ? value : 0
+                                                return [formatCurrency(numValue), 'Tutar'] as const
+                                            }}
                                         />
                                         <Area
                                             type="monotone"
@@ -388,7 +392,10 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: number | undefined) => [value ? formatCurrency(value) : '', 'Tutar']}
+                                            formatter={(value) => {
+                                                const numValue = typeof value === 'number' ? value : 0
+                                                return [formatCurrency(numValue), 'Tutar'] as const
+                                            }}
                                         />
                                         <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
                                     </BarChart>
@@ -430,7 +437,10 @@ export default function ReportsPage() {
                                                 borderRadius: '8px',
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                             }}
-                                            formatter={(value: number | undefined) => [value ?? 0, 'Adet']}
+                                            formatter={(value) => {
+                                                const numValue = typeof value === 'number' ? value : 0
+                                                return [numValue, 'Adet'] as const
+                                            }}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>

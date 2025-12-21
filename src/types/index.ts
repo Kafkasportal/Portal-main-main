@@ -130,8 +130,8 @@ export type Cinsiyet = 'erkek' | 'kadin';
 export interface UyeAdres {
     il: string;
     ilce: string;
-    mahalle: string;
-    acikAdres: string;
+    mahalle?: string;
+    acikAdres?: string;
 }
 
 export interface Uye extends Timestamps {
@@ -177,6 +177,9 @@ export interface OdemeBilgileri {
     odemeTarihi: Date;
     makbuzNo: string;
     odemeYontemi: PaymentMethod;
+    iban?: string;
+    bankaAdi?: string;
+    durum?: string;
 }
 
 export interface SosyalYardimBasvuru extends Timestamps {
@@ -383,7 +386,7 @@ export interface IhtiyacSahibi extends Timestamps {
     aileHaneBilgileri?: AileHaneBilgileri;
     
     // Sponsorluk
-    sponsorlukTipi?: string;
+    sponsorlukTipi?: 'bireysel' | 'kurumsal' | 'yok';
     
     // Durum ve İstatistikler
     durum: IhtiyacDurumu;

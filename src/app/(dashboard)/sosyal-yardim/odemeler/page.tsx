@@ -19,7 +19,7 @@ export default function PaymentsPage() {
 
     // Filter only approved/completed applications for payments view
     const paymentsData = data?.data.filter(app =>
-        app.durum === 'onaylandi' || app.durum === 'tamamlandi'
+        app.durum === 'onaylandi' || app.durum === 'odendi'
     ) || []
 
     const handleExportExcel = async () => {

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ProgressBar } from "@/components/layout/progress-bar";
+import { WebVitals } from "./web-vitals";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,9 +17,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kafkasder Yönetim Paneli",
-  description: "Kafkas Göçmenleri Derneği Yönetim Sistemi",
-  keywords: ["dernek", "yönetim", "bağış", "sosyal yardım"],
+  title: {
+    default: "Kafkasder Yönetim Paneli",
+    template: "%s | Kafkasder",
+  },
+  description: "Kafkas Göçmenleri Derneği Yönetim Sistemi - Bağış, Üye ve Sosyal Yardım Yönetimi",
+  keywords: ["dernek", "yönetim", "bağış", "sosyal yardım", "kafkasder", "üye takip"],
+  authors: [{ name: "Kafkasder" }],
+  creator: "Kafkasder",
+  publisher: "Kafkasder",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  openGraph: {
+    title: "Kafkasder Yönetim Paneli",
+    description: "Kafkas Göçmenleri Derneği Yönetim Sistemi",
+    type: "website",
+    locale: "tr_TR",
+  },
+  robots: {
+    index: false, // Dashboard sayfaları indexlenmemeli
+    follow: false,
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -31,6 +60,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <WebVitals />
         <QueryProvider>
           <ProgressBar />
           {children}

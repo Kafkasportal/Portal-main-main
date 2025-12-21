@@ -28,13 +28,23 @@ function randomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)]
 }
 
+// Helper to generate Turkish phone numbers
+function generateTurkishPhone(): string {
+    const prefix = '05'
+    const rest = faker.string.numeric(9)
+    return `${prefix}${rest.slice(0, 2)} ${rest.slice(2, 5)} ${rest.slice(5, 7)} ${rest.slice(7, 9)}`
+}
+
+function generateInternationalPhone(): string {
+    return `+${faker.string.numeric(2)} ${faker.string.numeric(3)} ${faker.string.numeric(3)} ${faker.string.numeric(4)}`
+}
 // Generate mock donor
 export function generateMockBagisci(): Bagisci {
     return {
         id: faker.string.uuid(),
         ad: faker.person.firstName(),
         soyad: faker.person.lastName(),
-        telefon: faker.phone.number('05## ### ## ##'),
+        telefon: generateTurkishPhone(),
         email: faker.internet.email(),
         adres: faker.location.streetAddress({ useFullAddress: true })
     }
@@ -70,7 +80,7 @@ export function generateMockUser(): User {
         id: faker.string.uuid(),
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        phone: faker.phone.number('05## ### ## ##'),
+        phone: generateTurkishPhone(),
         role: randomItem(['admin', 'muhasebe', 'gorevli', 'uye']),
         avatar: faker.image.avatar(),
         isActive: faker.datatype.boolean({ probability: 0.9 }),
@@ -128,7 +138,7 @@ export function generateMockUye(): Uye {
         soyad: faker.person.lastName(),
         dogumTarihi: faker.date.birthdate({ min: 18, max: 80, mode: 'age' }),
         cinsiyet: randomItem(['erkek', 'kadin']),
-        telefon: faker.phone.number('05## ### ## ##'),
+        telefon: generateTurkishPhone(),
         email: faker.helpers.maybe(() => faker.internet.email(), { probability: 0.7 }),
         adres: {
             il: faker.location.city(),
@@ -165,7 +175,7 @@ export function generateMockSosyalYardimBasvuru(): SosyalYardimBasvuru {
             ad: faker.person.firstName(),
             soyad: faker.person.lastName(),
             tcKimlikNo: faker.string.numeric({ length: 11 }),
-            telefon: faker.phone.number('05## ### ## ##'),
+            telefon: generateTurkishPhone(),
             adres: faker.location.streetAddress({ useFullAddress: true })
         },
         yardimTuru: randomItem<YardimTuru>(['ayni', 'nakdi', 'egitim', 'saglik', 'kira', 'fatura']),
@@ -251,10 +261,10 @@ export function generateMockIhtiyacSahibi(): IhtiyacSahibi {
         dosyaBaglantisiDetay: faker.company.name(),
         
         // İletişim
-        cepTelefonu: faker.phone.number('### ### ## ##'),
+        cepTelefonu: generateTurkishPhone(),
         cepTelefonuOperator: randomItem(['530', '532', '535', '542', '545', '505']),
-        sabitTelefon: faker.helpers.maybe(() => faker.phone.number('### ### ## ##'), { probability: 0.3 }),
-        yurtdisiTelefon: faker.helpers.maybe(() => faker.phone.number('+## ### ### ####'), { probability: 0.2 }),
+        sabitTelefon: faker.helpers.maybe(() => generateTurkishPhone(), { probability: 0.3 }),
+        yurtdisiTelefon: faker.helpers.maybe(() => generateInternationalPhone(), { probability: 0.2 }),
         email: faker.helpers.maybe(() => faker.internet.email(), { probability: 0.5 }),
         
         // Adres Bilgileri
@@ -317,7 +327,7 @@ export function generateMockIhtiyacSahibi(): IhtiyacSahibi {
         aileHaneBilgileri: {
             medeniHal: randomItem<MedeniHal>(['evli', 'bekar', 'dul', 'bosanmis']),
             esAdi: faker.helpers.maybe(() => faker.person.fullName(), { probability: 0.5 }),
-            esTelefon: faker.helpers.maybe(() => faker.phone.number('05## ### ## ##'), { probability: 0.4 }),
+            esTelefon: faker.helpers.maybe(() => generateTurkishPhone(), { probability: 0.4 }),
             ailedekiKisiSayisi: faker.number.int({ min: 1, max: 10 }),
             cocukSayisi: faker.number.int({ min: 0, max: 6 }),
             yetimSayisi: faker.number.int({ min: 0, max: 3 }),

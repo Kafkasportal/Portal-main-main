@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Camera, QrCode, X, SwitchCamera } from 'lucide-react'
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library'
 
 import {
     Dialog,
@@ -36,7 +35,7 @@ export function QRScannerDialog({
     const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
     
     const videoRef = useRef<HTMLVideoElement>(null)
-    const readerRef = useRef<BrowserMultiFormatReader | null>(null)
+    const readerRef = useRef<any>(null)
     const streamRef = useRef<MediaStream | null>(null)
 
     // Kamerayı durdur
@@ -69,9 +68,10 @@ export function QRScannerDialog({
                 videoRef.current.srcObject = stream
                 await videoRef.current.play()
 
-                // QR kod okuyucu başlat
+                // QR kod okuyucu başlat - lazy load @zxing/library
+                const { BrowserMultiFormatReader, NotFoundException } = await import('@zxing/library')
                 readerRef.current = new BrowserMultiFormatReader()
-                
+
                 const decode = async () => {
                     if (!videoRef.current || !readerRef.current || !isScanning) return
 

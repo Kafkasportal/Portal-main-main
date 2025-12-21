@@ -1,5 +1,14 @@
+import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { FileX, Search, AlertCircle, Inbox } from 'lucide-react'
+import {
+    Empty,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyContent
+} from '@/components/ui/empty'
 
 type EmptyStateVariant = 'default' | 'search' | 'error' | 'no-data'
 
@@ -45,20 +54,17 @@ export function EmptyState({
     const Icon = config.icon
 
     return (
-        <div className={cn(
-            'flex flex-col items-center justify-center py-12 px-4 text-center',
-            className
-        )}>
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Icon className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">
-                {title || config.title}
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-sm mb-4">
-                {description || config.description}
-            </p>
-            {action}
-        </div>
+        <Empty className={cn('border-0', className)}>
+            <EmptyHeader>
+                <EmptyMedia variant="icon">
+                    <Icon className="h-5 w-5" />
+                </EmptyMedia>
+                <EmptyTitle>{title || config.title}</EmptyTitle>
+                <EmptyDescription>
+                    {description || config.description}
+                </EmptyDescription>
+            </EmptyHeader>
+            {action && <EmptyContent>{action}</EmptyContent>}
+        </Empty>
     )
 }

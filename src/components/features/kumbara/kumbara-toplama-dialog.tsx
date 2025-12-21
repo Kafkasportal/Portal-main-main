@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { PiggyBank, QrCode, Camera, Banknote, Loader2, MapPin, User, Calendar } from 'lucide-react'
+import { PiggyBank, QrCode, Camera, Banknote, MapPin, User, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
@@ -16,6 +16,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { Spinner } from '@/components/ui/spinner'
 import {
     Form,
     FormControl,
@@ -170,7 +171,7 @@ export function KumbaraToplamaDialog({
 
                     {isSearching ? (
                         <div className="flex flex-col items-center justify-center gap-4 py-12">
-                            <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
+                            <Spinner className="h-12 w-12" />
                             <p className="text-muted-foreground">Kumbara aranıyor...</p>
                         </div>
                     ) : currentStep === 'scan' ? (
@@ -295,15 +296,8 @@ export function KumbaraToplamaDialog({
                                         >
                                             {initialKumbara ? 'İptal' : 'Geri'}
                                         </Button>
-                                        <Button type="submit" disabled={isPending || form.getValues('tutar') <= 0}>
-                                            {isPending ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Kaydediliyor...
-                                                </>
-                                            ) : (
-                                                'Toplamayı Kaydet'
-                                            )}
+                                        <Button type="submit" disabled={form.getValues('tutar') <= 0} loading={isPending}>
+                                            {isPending ? 'Kaydediliyor...' : 'Toplamayı Kaydet'}
                                         </Button>
                                     </DialogFooter>
                                 </form>

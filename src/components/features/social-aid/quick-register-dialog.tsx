@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -142,15 +141,8 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
                         />
 
                         <DialogFooter>
-                            <Button type="submit" disabled={isLoading}>
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Oluşturuluyor...
-                                    </>
-                                ) : (
-                                    'Kaydet ve Devam Et'
-                                )}
+                            <Button type="submit" loading={isLoading}>
+                                {isLoading ? 'Oluşturuluyor...' : 'Kaydet ve Devam Et'}
                             </Button>
                         </DialogFooter>
                     </form>

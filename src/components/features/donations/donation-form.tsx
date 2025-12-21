@@ -3,7 +3,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -296,15 +295,8 @@ export function DonationForm({ onSuccess }: DonationFormProps) {
                     <Button type="button" variant="outline" onClick={onSuccess}>
                         İptal
                     </Button>
-                    <Button type="submit" disabled={isPending}>
-                        {isPending ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Kaydediliyor...
-                            </>
-                        ) : (
-                            'Kaydet'
-                        )}
+                    <Button type="submit" loading={isPending}>
+                        {isPending ? 'Kaydediliyor...' : 'Kaydet'}
                     </Button>
                 </div>
             </form>

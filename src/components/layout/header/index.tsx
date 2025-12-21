@@ -1,8 +1,8 @@
 'use client'
 
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Search, Bell, Settings, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,11 +19,30 @@ import { useUserStore } from '@/stores/user-store'
 import { useRouter } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-media-query'
 
+// Lazy load Command Palette - only needed when user opens it
+const CommandPalette = lazy(() => 
+    import('@/components/shared/command-palette').then(mod => ({ default: mod.CommandPalette }))
+)
+
 export function Header() {
     const { isCollapsed, setCollapsed, setOpen } = useSidebarStore()
     const { logout } = useUserStore()
     const router = useRouter()
     const isMobile = useIsMobile()
+    const [commandOpen, setCommandOpen] = useState(false)
+
+    // Keyboard shortcut for command palette
+    useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                setCommandOpen((open) => !open)
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
 
     const handleLogout = () => {
         logout()
@@ -56,21 +75,29 @@ export function Header() {
                     <Menu className="h-5 w-5" />
                 </Button>
 
-                {/* Search */}
-                <div className="relative hidden sm:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Ara... (Ctrl+K)"
-                        className="w-64 pl-9 bg-background border-border focus-visible:ring-primary focus-visible:border-primary transition-all"
-                    />
-                </div>
+                {/* Search - Command Palette Trigger */}
+                <Button
+                    variant="outline"
+                    className="hidden sm:flex items-center gap-2 w-64 justify-start text-muted-foreground bg-background border-border hover:bg-accent/50 hover:text-foreground transition-all"
+                    onClick={() => setCommandOpen(true)}
+                >
+                    <Search className="h-4 w-4" />
+                    <span className="flex-1 text-left">Ara...</span>
+                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                        <span className="text-xs">⌘</span>K
+                    </kbd>
+                </Button>
             </div>
 
             {/* Right side - Notifications + User menu */}
             <div className="flex items-center gap-2">
                 {/* Mobile search button */}
-                <Button variant="ghost" size="icon" className="sm:hidden hover:bg-accent">
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="sm:hidden hover:bg-accent"
+                    onClick={() => setCommandOpen(true)}
+                >
                     <Search className="h-5 w-5" />
                 </Button>
 
@@ -121,6 +148,13 @@ export function Header() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+
+            {/* Command Palette - Lazy loaded */}
+            {commandOpen && (
+                <Suspense fallback={null}>
+                    <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+                </Suspense>
+            )}
         </header>
     )
 }

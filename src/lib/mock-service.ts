@@ -12,7 +12,8 @@ import type {
     PaginatedResponse,
     PaymentStatus,
     DonationPurpose,
-    BasvuruDurumu
+    BasvuruDurumu,
+    YardimTuru
 } from '@/types'
 import {
     generateMockDonations,
@@ -407,9 +408,9 @@ export async function updateApplicationStatus(
         id: 'current-user',
         name: 'Mevcut Kullanıcı',
         email: 'user@example.com',
-        role: 'yonetici',
+        role: 'admin',
         isActive: true,
-        permissions: ['applications.update'],
+        permissions: ['social-aid.approve'],
         createdAt: new Date(),
         updatedAt: new Date()
     }

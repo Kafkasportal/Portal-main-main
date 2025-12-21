@@ -1,9 +1,17 @@
+'use client'
+
 import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
-import { ProgressBar } from '@/components/layout/progress-bar'
 import DashboardLoading from './loading'
+
+// Lazy load ProgressBar - sadece client'ta gerekli
+const ProgressBar = dynamic(
+    () => import('@/components/layout/progress-bar').then(mod => ({ default: mod.ProgressBar })),
+    { ssr: false }
+)
 
 export default function DashboardLayout({
     children,

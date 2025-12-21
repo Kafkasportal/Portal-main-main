@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -371,16 +371,10 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={!isFormValid || mutation.isPending}
+                                disabled={!isFormValid}
+                                loading={mutation.isPending}
                             >
-                                {mutation.isPending ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Kaydediliyor...
-                                    </>
-                                ) : (
-                                    'Kaydet'
-                                )}
+                                {mutation.isPending ? 'Kaydediliyor...' : 'Kaydet'}
                             </Button>
                         </DialogFooter>
                     </form>

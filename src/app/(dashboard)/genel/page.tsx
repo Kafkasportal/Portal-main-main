@@ -15,15 +15,12 @@ import {
     Clock
 } from 'lucide-react'
 import {
-    XAxis,
-    YAxis,
-    CartesianGrid,
     Tooltip,
     ResponsiveContainer,
     PieChart,
     Pie,
     Cell
-} from 'recharts'
+} from '@/components/shared/lazy-chart'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
@@ -172,7 +169,10 @@ export default function DashboardPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value?: number) => [value != null ? `%${value}` : '', 'Oran']}
+                                        formatter={(value) => {
+                                            const numValue = typeof value === 'number' ? value : 0
+                                            return [`%${numValue}`, 'Oran'] as const
+                                        }}
                                     />
                                     </PieChart>
                                 </ResponsiveContainer>

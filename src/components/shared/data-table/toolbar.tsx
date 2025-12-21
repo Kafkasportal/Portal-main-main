@@ -3,7 +3,11 @@
 import { Table } from '@tanstack/react-table'
 import { X, SlidersHorizontal, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupInput
+} from '@/components/ui/input-group'
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -42,9 +46,12 @@ export function DataTableToolbar<TData>({
     return (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             {/* Search */}
-            <div className="relative flex-1 w-full sm:max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+            {/* Search Field with InputGroup */}
+            <InputGroup className="flex-1 w-full sm:max-w-sm">
+                <InputGroupAddon>
+                    <Search className="h-4 w-4 text-muted-foreground" />
+                </InputGroupAddon>
+                <InputGroupInput
                     placeholder={searchPlaceholder}
                     value={
                         searchColumn
@@ -56,9 +63,8 @@ export function DataTableToolbar<TData>({
                             table.getColumn(searchColumn)?.setFilterValue(event.target.value)
                         }
                     }}
-                    className="pl-9"
                 />
-            </div>
+            </InputGroup>
 
             {/* Filters */}
             <div className="flex items-center gap-2 w-full sm:w-auto">

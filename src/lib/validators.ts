@@ -255,8 +255,8 @@ export const beneficiarySchema = z.object({
 
     // Sponsorluk ve Durum
     sponsorlukTipi: z.enum(['bireysel', 'kurumsal', 'yok']).optional(),
-    durum: z.enum(['aktif', 'pasif', 'arsiv']).default('aktif'),
-    rizaBeyaniDurumu: z.enum(['onaylandi', 'beklemede', 'reddedildi']).optional(),
+    durum: z.enum(['aktif', 'pasif', 'arsiv']).optional().default('aktif'),
+    rizaBeyaniDurumu: z.enum(['alinmadi', 'alindi', 'reddetti']).optional(),
 
     // Notlar
     notlar: z.string().max(2000, 'Notlar en fazla 2000 karakter olabilir').optional()

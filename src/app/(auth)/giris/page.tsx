@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -197,15 +197,8 @@ export default function LoginPage() {
                             )}
                         />
 
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Giriş yapılıyor...
-                                </>
-                            ) : (
-                                'Giriş Yap'
-                            )}
+                        <Button type="submit" className="w-full" loading={isLoading}>
+                            {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
                         </Button>
                     </form>
                 </Form>

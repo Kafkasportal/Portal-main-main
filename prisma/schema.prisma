@@ -1,0 +1,576 @@
+// Prisma Schema for Kafkasder Yönetim Paneli
+// Database: Neon PostgreSQL (Serverless)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// KULLANICI (User Management)
+// ============================================
+
+model Kullanici {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  sifre     String   // Hashed password
+  ad        String
+  soyad     String
+  telefon   String?
+  rol       KullaniciRol @default(PERSONEL)
+  aktif     Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bagislar          Bagis[]
+  uyeKayitlari      Uye[]
+  basvuruIslemleri  SosyalYardimBasvuru[]
+  kumbaralar        Kumbara[]
+  dosyaYuklemeleri  Dosya[]
+
+  @@map("kullanicilar")
+}
+
+enum KullaniciRol {
+  ADMIN
+  YONETICI
+  PERSONEL
+  GONULLU
+}
+
+// ============================================
+// BAĞIŞ (Donations)
+// ============================================
+
+model Bagisci {
+  id          String   @id @default(cuid())
+  adSoyad     String
+  telefon     String?
+  email       String?
+  adres       String?
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bagislar    Bagis[]
+
+  @@map("bagiscilar")
+}
+
+model Bagis {
+  id          String   @id @default(cuid())
+  bagisciId   String
+  kaydedenId  String
+
+  tutar       Decimal  @db.Decimal(10, 2)
+  para_birimi String   @default("TRY")
+  odeme_yontemi OdemeYontemi
+  amac        BagisAmaci
+
+  aciklama    String?
+  makbuz_no   String?  @unique
+
+  tarih       DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bagisci     Bagisci  @relation(fields: [bagisciId], references: [id], onDelete: Cascade)
+  kaydeden    Kullanici @relation(fields: [kaydedenId], references: [id])
+
+  @@index([bagisciId])
+  @@index([tarih])
+  @@index([odeme_yontemi])
+  @@index([amac])
+  @@map("bagislar")
+}
+
+enum OdemeYontemi {
+  NAKIT
+  KREDI_KARTI
+  BANKA_HAVALESI
+  EFT
+  KUMBARA
+}
+
+enum BagisAmaci {
+  GENEL
+  EGITIM
+  SAGLIK
+  SOSYAL_YARDIM
+  ALT_YAPI
+  DIGER
+}
+
+// ============================================
+// KUMBARA (Collection Boxes)
+// ============================================
+
+model Kumbara {
+  id            String   @id @default(cuid())
+  kod           String   @unique
+  konum         String
+  sorumluId     String
+
+  durum         KumbaraDurum @default(AKTIF)
+  son_toplama   DateTime?
+  toplam_tutar  Decimal  @default(0) @db.Decimal(10, 2)
+
+  notlar        String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  sorumlu       Kullanici @relation(fields: [sorumluId], references: [id])
+  toplamaKayitlari KumbaraToplamaKaydi[]
+
+  @@index([durum])
+  @@index([sorumluId])
+  @@map("kumbaralar")
+}
+
+enum KumbaraDurum {
+  AKTIF
+  PASIF
+  KAYIP
+  BAKIM
+}
+
+model KumbaraToplamaKaydi {
+  id          String   @id @default(cuid())
+  kumbaraId   String
+  toplayanId  String
+
+  tutar       Decimal  @db.Decimal(10, 2)
+  toplama_tarihi DateTime @default(now())
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+
+  // Relations
+  kumbara     Kumbara @relation(fields: [kumbaraId], references: [id], onDelete: Cascade)
+  toplayan    Kullanici @relation(fields: [toplayanId], references: [id])
+
+  @@index([kumbaraId])
+  @@index([toplama_tarihi])
+  @@map("kumbara_toplama_kayitlari")
+}
+
+// ============================================
+// ÜYE (Members)
+// ============================================
+
+model Uye {
+  id          String   @id @default(cuid())
+  kaydedenId  String
+
+  // Kişisel Bilgiler
+  ad          String
+  soyad       String
+  tc_no       String?  @unique
+  dogum_tarihi DateTime?
+  cinsiyet    Cinsiyet?
+
+  // İletişim
+  telefon     String
+  email       String?
+  adres       String?
+  sehir       String?
+  ilce        String?
+
+  // Üyelik Bilgileri
+  uyelik_no   String   @unique
+  uyelik_tarihi DateTime @default(now())
+  uyelik_turu UyelikTuru @default(STANDART)
+  aidat_durumu AidatDurumu @default(GECMIS)
+  son_aidat_tarihi DateTime?
+
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  kaydeden    Kullanici @relation(fields: [kaydedenId], references: [id])
+
+  @@index([uyelik_no])
+  @@index([telefon])
+  @@index([aidat_durumu])
+  @@map("uyeler")
+}
+
+enum Cinsiyet {
+  ERKEK
+  KADIN
+  DIGER
+}
+
+enum UyelikTuru {
+  STANDART
+  ONURSAL
+  OGRENCI
+  EMEKLI
+}
+
+enum AidatDurumu {
+  GUNCEL
+  GECMIS
+  MUAF
+}
+
+// ============================================
+// İHTIYAÇ SAHİBİ (Beneficiaries) - Comprehensive
+// ============================================
+
+model IhtiyacSahibi {
+  id          String   @id @default(cuid())
+
+  // Temel Bilgiler
+  ad          String
+  soyad       String
+  uyruk       String
+  dogum_tarihi DateTime?
+  cinsiyet    Cinsiyet?
+
+  // Kimlik Bilgileri
+  tc_no       String?
+  yabanci_kimlik_no String?
+  pasaport_no String?
+  pasaport_gecerlilik DateTime?
+  vize_turu   String?
+  vize_gecerlilik DateTime?
+
+  // İletişim
+  cep_telefonu String?
+  ev_telefonu String?
+  uluslararasi_telefon String?
+  email       String?
+
+  // Adres
+  ulke        String?
+  sehir       String?
+  ilce        String?
+  mahalle     String?
+  adres       String?
+
+  // Göç İkamet Bilgileri
+  gecici_koruma Boolean @default(false)
+  giris_tarihi DateTime?
+  giris_kapisi String?
+  ikamet_izni String?
+  ikamet_gecerlilik DateTime?
+
+  // Aile Bilgileri
+  medeni_durum MedeniDurum?
+  cocuk_sayisi Int?
+  yetim_sayisi Int?
+  hane_nufusu Int?
+
+  // Ekonomik Durum
+  calisma_durumu CalisamaDurumu?
+  gelir_durumu GelirDurumu?
+  meslek      String?
+  aylik_gelir Decimal? @db.Decimal(10, 2)
+  borc_durumu BorcDurumu?
+  borc_miktari Decimal? @db.Decimal(10, 2)
+  ev_durumu   EvDurumu?
+  kira_miktari Decimal? @db.Decimal(10, 2)
+
+  // Sağlık Bilgileri
+  kronik_hastalik Boolean @default(false)
+  hastalik_aciklama String?
+  engellilik  Boolean @default(false)
+  engellilik_orani Int?
+  saglik_sigortasi Boolean @default(false)
+
+  // Yardım İstatistikleri
+  basvuru_sayisi Int @default(0)
+  yardim_sayisi Int @default(0)
+  toplam_yardim Decimal @default(0) @db.Decimal(10, 2)
+  son_yardim_tarihi DateTime?
+
+  // Mernis Doğrulama
+  mernis_dogrulandi Boolean @default(false)
+  mernis_tarih DateTime?
+
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  basvurular  SosyalYardimBasvuru[]
+  dosyalar    Dosya[]
+  fotograflar Fotograf[]
+  sponsorlar  SponsorIliskisi[]
+  gorusmeler  Gorusme[]
+
+  @@index([ad, soyad])
+  @@index([tc_no])
+  @@index([telefon: cep_telefonu])
+  @@index([uyruk])
+  @@index([sehir])
+  @@map("ihtiyac_sahipleri")
+}
+
+enum MedeniDurum {
+  BEKAR
+  EVLI
+  BOŞANMIŞ
+  DUL
+}
+
+enum CalisamaDurumu {
+  CALISIYOR
+  CALISMIYOR
+  EMEKLI
+  OGRENCI
+}
+
+enum GelirDurumu {
+  YOK
+  DUSUK
+  ORTA
+  YUKSEK
+}
+
+enum BorcDurumu {
+  YOK
+  AZ
+  ORTA
+  COK
+}
+
+enum EvDurumu {
+  MULK
+  KIRACIK
+  LOJMAN
+  YAKININDA
+  DIGER
+}
+
+// ============================================
+// SOSYAL YARDIM (Social Aid)
+// ============================================
+
+model SosyalYardimBasvuru {
+  id          String   @id @default(cuid())
+  basvuruNo   String   @unique
+
+  ihtiyacSahibiId String
+  kaydedenId  String
+
+  yardim_turu YardimTuru
+  durum       BasvuruDurum @default(BEKLEMEDE)
+  oncelik     OncelikDurumu @default(NORMAL)
+
+  talep_edilen_tutar Decimal? @db.Decimal(10, 2)
+  onaylanan_tutar Decimal? @db.Decimal(10, 2)
+
+  basvuru_tarihi DateTime @default(now())
+  degerlendirme_tarihi DateTime?
+  odeme_tarihi DateTime?
+
+  basvuru_aciklama String?
+  degerlendirme_notu String?
+  red_nedeni String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ihtiyacSahibi IhtiyacSahibi @relation(fields: [ihtiyacSahibiId], references: [id], onDelete: Cascade)
+  kaydeden    Kullanici @relation(fields: [kaydedenId], references: [id])
+  odemeler    Odeme[]
+
+  @@index([basvuruNo])
+  @@index([ihtiyacSahibiId])
+  @@index([durum])
+  @@index([basvuru_tarihi])
+  @@map("sosyal_yardim_basvurulari")
+}
+
+enum YardimTuru {
+  GIDA
+  GIYIM
+  BARINMA
+  EGITIM
+  SAGLIK
+  YAKACAK
+  NAKIT
+  DIGER
+}
+
+enum BasvuruDurum {
+  BEKLEMEDE
+  INCELENIYOR
+  ONAYLANDI
+  REDDEDILDI
+  TAMAMLANDI
+  IPTAL
+}
+
+enum OncelikDurumu {
+  DUSUK
+  NORMAL
+  YUKSEK
+  ACIL
+}
+
+model Odeme {
+  id          String   @id @default(cuid())
+  basvuruId   String
+
+  tutar       Decimal  @db.Decimal(10, 2)
+  odeme_tarihi DateTime @default(now())
+  odeme_yontemi OdemeYontemi
+
+  dekont_no   String?
+  aciklama    String?
+
+  createdAt   DateTime @default(now())
+
+  // Relations
+  basvuru     SosyalYardimBasvuru @relation(fields: [basvuruId], references: [id], onDelete: Cascade)
+
+  @@index([basvuruId])
+  @@index([odeme_tarihi])
+  @@map("odemeler")
+}
+
+// ============================================
+// DOSYA YÖNETİMİ (File Management)
+// ============================================
+
+model Dosya {
+  id          String   @id @default(cuid())
+
+  // File Info
+  dosya_adi   String
+  dosya_url   String   // Vercel Blob or S3 URL
+  dosya_tipi  String   // MIME type (application/pdf, image/jpeg, etc.)
+  dosya_boyutu Int     // in bytes
+
+  // Metadata
+  kategori    DosyaKategori
+  aciklama    String?
+
+  // Relations
+  yukleyenId  String
+  ihtiyacSahibiId String?
+
+  createdAt   DateTime @default(now())
+
+  // Relations
+  yukleyen    Kullanici @relation(fields: [yukleyenId], references: [id])
+  ihtiyacSahibi IhtiyacSahibi? @relation(fields: [ihtiyacSahibiId], references: [id], onDelete: Cascade)
+
+  @@index([ihtiyacSahibiId])
+  @@index([kategori])
+  @@index([createdAt])
+  @@map("dosyalar")
+}
+
+enum DosyaKategori {
+  KIMLIK
+  PASAPORT
+  VIZE
+  IKAMET_IZNI
+  SAGLIK_RAPORU
+  GELIR_BELGESI
+  IKAMETGAH
+  FATURA
+  DIGER_BELGE
+}
+
+model Fotograf {
+  id          String   @id @default(cuid())
+
+  fotograf_url String  // Vercel Blob or S3 URL
+  aciklama    String?
+
+  // Relations
+  ihtiyacSahibiId String
+  yukleyenId  String
+
+  createdAt   DateTime @default(now())
+
+  // Relations (temporarily removed to avoid circular references)
+  ihtiyacSahibi IhtiyacSahibi @relation(fields: [ihtiyacSahibiId], references: [id], onDelete: Cascade)
+
+  @@index([ihtiyacSahibiId])
+  @@map("fotograflar")
+}
+
+// ============================================
+// SPONSOR & GÖRÜŞME (Sponsorship & Interviews)
+// ============================================
+
+model SponsorIliskisi {
+  id          String   @id @default(cuid())
+
+  ihtiyacSahibiId String
+  sponsor_ad  String
+  sponsor_telefon String?
+  sponsor_email String?
+
+  baslangic_tarihi DateTime @default(now())
+  bitis_tarihi DateTime?
+  durum       SponsorDurum @default(AKTIF)
+
+  aylik_tutar Decimal? @db.Decimal(10, 2)
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ihtiyacSahibi IhtiyacSahibi @relation(fields: [ihtiyacSahibiId], references: [id], onDelete: Cascade)
+
+  @@index([ihtiyacSahibiId])
+  @@index([durum])
+  @@map("sponsor_iliskileri")
+}
+
+enum SponsorDurum {
+  AKTIF
+  PASIF
+  SONA_ERDI
+}
+
+model Gorusme {
+  id          String   @id @default(cuid())
+
+  ihtiyacSahibiId String
+  gorusme_tarihi DateTime @default(now())
+  gorusen_kisi String
+
+  gorusme_turu GorusmeTuru
+  notlar      String?
+
+  createdAt   DateTime @default(now())
+
+  // Relations
+  ihtiyacSahibi IhtiyacSahibi @relation(fields: [ihtiyacSahibiId], references: [id], onDelete: Cascade)
+
+  @@index([ihtiyacSahibiId])
+  @@index([gorusme_tarihi])
+  @@map("gorusmeler")
+}
+
+enum GorusmeTuru {
+  TELEFON
+  YUZAYUZE
+  EV_ZIYARETI
+  DIGER
+}

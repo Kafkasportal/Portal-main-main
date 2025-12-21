@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { QrCode, Camera, Navigation, Loader2, Printer, RefreshCw } from 'lucide-react'
+import { QrCode, Camera, Navigation, Printer, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import QRCode from 'react-qr-code'
 
@@ -17,6 +17,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { Spinner } from '@/components/ui/spinner'
 import {
     Form,
     FormControl,
@@ -533,7 +534,7 @@ export function YeniKumbaraDialog({
                                                     disabled={isGettingLocation}
                                                 >
                                                     {isGettingLocation ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                        <Spinner />
                                                     ) : (
                                                         <Navigation className="h-4 w-4" />
                                                     )}
@@ -605,15 +606,8 @@ export function YeniKumbaraDialog({
                                             >
                                                 {initialQrCode ? 'İptal' : 'Geri'}
                                             </Button>
-                                            <Button type="submit" disabled={isPending}>
-                                                {isPending ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                        Kaydediliyor...
-                                                    </>
-                                                ) : (
-                                                    'Kumbarayı Ekle'
-                                                )}
+                                            <Button type="submit" loading={isPending}>
+                                                {isPending ? 'Kaydediliyor...' : 'Kumbarayı Ekle'}
                                             </Button>
                                         </DialogFooter>
                                     </form>

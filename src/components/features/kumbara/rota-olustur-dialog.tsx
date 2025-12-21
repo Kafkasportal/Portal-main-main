@@ -6,7 +6,6 @@ import {
     Navigation, 
     Route, 
     ExternalLink, 
-    Loader2,
     Map,
     ArrowRight
 } from 'lucide-react'
@@ -20,6 +19,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -288,7 +288,7 @@ export function RotaOlusturDialog({
                                 disabled={isGettingLocation}
                             >
                                 {isGettingLocation ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Spinner />
                                 ) : (
                                     <>
                                         <Navigation className="h-4 w-4 mr-1" />

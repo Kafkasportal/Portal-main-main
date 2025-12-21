@@ -11,6 +11,8 @@ import {
 import {
     AreaChart,
     Area,
+    BarChart,
+    Bar,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -18,10 +20,8 @@ import {
     ResponsiveContainer,
     PieChart,
     Pie,
-    Cell,
-    BarChart,
-    Bar
-} from 'recharts'
+    Cell
+} from '@/components/shared/lazy-chart'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
@@ -183,7 +183,7 @@ export default function StatisticsPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value: number) => [`%${value}`, 'Oran']}
+                                        formatter={(value) => [`%${value}`, 'Oran']}
                                     />
                                     </PieChart>
                                 </ResponsiveContainer>
@@ -236,7 +236,7 @@ export default function StatisticsPage() {
                                             borderRadius: '8px',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                         }}
-                                        formatter={(value: number) => [value, 'Başvuru']}
+                                        formatter={(value) => [value, 'Başvuru']}
                                     />
                                     <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
                                     </BarChart>
@@ -285,7 +285,7 @@ export default function StatisticsPage() {
                                         borderRadius: '8px',
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                     }}
-                                    formatter={(value: number) => [formatCurrency(value), 'Tutar']}
+                                    formatter={(value) => [formatCurrency(value as number), 'Tutar']}
                                 />
                                 <Area
                                     type="monotone"

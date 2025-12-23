@@ -3,13 +3,13 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import { 
-    Plus, 
-    Download, 
-    Search, 
-    Filter, 
-    Settings, 
-    ChevronLeft, 
+import {
+    Plus,
+    Download,
+    Search,
+    Filter,
+    Settings,
+    ChevronLeft,
     ChevronRight,
     Eye,
     MoreHorizontal,
@@ -43,7 +43,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Sheet,
+import {
+    Sheet,
     SheetContent,
     SheetDescription,
     SheetHeader,
@@ -53,13 +54,13 @@ import { Sheet,
 import { Skeleton } from '@/components/ui/skeleton'
 import { QueryError } from '@/components/shared/query-error'
 import { NewBeneficiaryDialog } from '@/components/features/social-aid/new-beneficiary-dialog'
-import { fetchBeneficiaries } from '@/lib/mock-service'
-import { 
-    IHTIYAC_SAHIBI_KATEGORI_LABELS, 
+import { fetchBeneficiaries } from '@/lib/supabase-service'
+import {
+    IHTIYAC_SAHIBI_KATEGORI_LABELS,
     IHTIYAC_SAHIBI_TURU_LABELS,
-    IHTIYAC_DURUMU_LABELS 
+    IHTIYAC_DURUMU_LABELS
 } from '@/lib/constants'
-import type { IhtiyacSahibi, IhtiyacSahibiKategori, IhtiyacDurumu } from '@/types'
+import type { IhtiyacSahibi, IhtiyacSahibiKategori } from '@/types'
 import { formatDate } from '@/lib/utils'
 
 // Kategori badge renkleri - Modern SaaS palette
@@ -80,7 +81,7 @@ export default function BeneficiariesPage() {
     const [pageSize] = useState(20)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isFilterOpen, setIsFilterOpen] = useState(false)
-    
+
     // Filtreler
     const [searchId, setSearchId] = useState('')
     const [searchName, setSearchName] = useState('')
@@ -93,14 +94,12 @@ export default function BeneficiariesPage() {
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['beneficiaries', page, pageSize, searchName, searchKimlik, searchDosyaNo, filterKategori, filterDurum],
-        queryFn: () => fetchBeneficiaries({ 
-            page, 
+        queryFn: () => fetchBeneficiaries({
+            page,
             pageSize,
-            search: searchName,
-            kimlikNo: searchKimlik,
-            dosyaNo: searchDosyaNo,
-            kategori: filterKategori !== 'all' ? filterKategori as IhtiyacSahibiKategori : undefined,
-            status: filterDurum !== 'all' ? filterDurum as IhtiyacDurumu : undefined
+            search: searchName || searchKimlik || searchDosyaNo || undefined,
+            durum: filterKategori !== 'all' ? filterKategori : undefined,
+            ihtiyacDurumu: filterDurum !== 'all' ? filterDurum : undefined
         })
     })
 
@@ -127,7 +126,7 @@ export default function BeneficiariesPage() {
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">İhtiyaç Sahipleri</h1>
                 </div>
-                <QueryError 
+                <QueryError
                     title="Veriler Yüklenemedi"
                     message="İhtiyaç sahipleri listesi yüklenirken bir hata oluştu."
                     onRetry={refetch}
@@ -141,17 +140,17 @@ export default function BeneficiariesPage() {
             {/* Üst Başlık ve Navigasyon */}
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">İhtiyaç Sahipleri</h1>
-                
+
                 <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-md">
                         {totalRecords.toLocaleString('tr-TR')} Kayıt
                     </span>
-                    
+
                     {/* Sayfa Navigasyonu */}
                     <div className="flex items-center gap-1 bg-muted rounded-md">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8"
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
@@ -161,9 +160,9 @@ export default function BeneficiariesPage() {
                         <span className="text-sm px-2 min-w-[80px] text-center">
                             {page} / {totalPages}
                         </span>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8"
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
@@ -171,7 +170,7 @@ export default function BeneficiariesPage() {
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>
-                    
+
                     <Button variant="ghost" size="icon">
                         <Settings className="h-4 w-4" />
                     </Button>
@@ -182,44 +181,44 @@ export default function BeneficiariesPage() {
             <div className="flex flex-wrap items-end gap-3 p-4 bg-card rounded-lg border">
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">ID</label>
-                    <Input 
-                        placeholder="ID" 
+                    <Input
+                        placeholder="ID"
                         className="w-24 h-9"
                         value={searchId}
                         onChange={(e) => setSearchId(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Kişi / Kurum Ünvanı</label>
-                    <Input 
-                        placeholder="Ad Soyad veya Kurum" 
+                    <Input
+                        placeholder="Ad Soyad veya Kurum"
                         className="w-56 h-9"
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Kimlik No</label>
-                    <Input 
-                        placeholder="TC / Yabancı Kimlik" 
+                    <Input
+                        placeholder="TC / Yabancı Kimlik"
                         className="w-40 h-9"
                         value={searchKimlik}
                         onChange={(e) => setSearchKimlik(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Dosya No</label>
-                    <Input 
-                        placeholder="DSY-XXXXXX" 
+                    <Input
+                        placeholder="DSY-XXXXXX"
                         className="w-36 h-9"
                         value={searchDosyaNo}
                         onChange={(e) => setSearchDosyaNo(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Operatör</label>
                     <Select value={operator} onValueChange={setOperator}>
@@ -234,7 +233,7 @@ export default function BeneficiariesPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="flex gap-2 ml-auto">
                     <Button
                         onClick={handleSearch}
@@ -339,7 +338,7 @@ export default function BeneficiariesPage() {
                             </div>
                         </SheetContent>
                     </Sheet>
-                    <Button 
+                    <Button
                         className="bg-primary hover:bg-primary/90 h-9"
                         onClick={() => setIsDialogOpen(true)}
                     >
@@ -403,7 +402,7 @@ export default function BeneficiariesPage() {
                                 </TableRow>
                             ) : (
                                 filteredData.map((item: IhtiyacSahibi, index: number) => (
-                                    <TableRow 
+                                    <TableRow
                                         key={item.id}
                                         className={`
                                             cursor-pointer transition-colors
@@ -424,7 +423,7 @@ export default function BeneficiariesPage() {
                                             </span>
                                         </TableCell>
                                         <TableCell>
-                                            <Link 
+                                            <Link
                                                 href={`/sosyal-yardim/ihtiyac-sahipleri/${item.id}`}
                                                 className="font-medium text-primary hover:underline"
                                             >
@@ -432,8 +431,8 @@ export default function BeneficiariesPage() {
                                             </Link>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge 
-                                                variant="outline" 
+                                            <Badge
+                                                variant="outline"
                                                 className={`text-[10px] ${kategoriColors[item.kategori]}`}
                                             >
                                                 {IHTIYAC_SAHIBI_KATEGORI_LABELS[item.kategori]}
@@ -449,7 +448,7 @@ export default function BeneficiariesPage() {
                                             {item.tcKimlikNo || item.yabanciKimlikNo || '-'}
                                         </TableCell>
                                         <TableCell className="font-mono text-xs">
-                                            {item.cepTelefonuOperator && item.cepTelefonu 
+                                            {item.cepTelefonuOperator && item.cepTelefonu
                                                 ? `${item.cepTelefonuOperator} ${item.cepTelefonu}`
                                                 : '-'
                                             }
@@ -548,9 +547,9 @@ export default function BeneficiariesPage() {
             </div>
 
             {/* Yeni Kayıt Dialog */}
-            <NewBeneficiaryDialog 
-                open={isDialogOpen} 
-                onOpenChange={setIsDialogOpen} 
+            <NewBeneficiaryDialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
             />
         </div>
     )

@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { fetchApplicationById, updateApplicationStatus } from '@/lib/mock-service'
-import { 
+import { fetchApplicationById, updateApplicationStatus } from '@/lib/supabase-service'
+import {
     AID_TYPE_LABELS,
     BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
@@ -37,8 +37,8 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
     })
 
     const updateStatusMutation = useMutation({
-        mutationFn: ({ durum, notu }: { durum: BasvuruDurumu; notu?: string }) =>
-            updateApplicationStatus(id, durum, notu),
+        mutationFn: ({ durum }: { durum: BasvuruDurumu; notu?: string }) =>
+            updateApplicationStatus(id, durum as 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['application', id] })
             queryClient.invalidateQueries({ queryKey: ['applications'] })
@@ -113,7 +113,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
             <div className="flex gap-2 flex-wrap">
                 {application.durum === 'beklemede' && (
                     <>
-                        <Button 
+                        <Button
                             className="bg-emerald-600 hover:bg-emerald-700"
                             onClick={handleApprove}
                             disabled={updateStatusMutation.isPending}
@@ -121,7 +121,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Onayla
                         </Button>
-                        <Button 
+                        <Button
                             variant="destructive"
                             onClick={handleReject}
                             disabled={updateStatusMutation.isPending}
@@ -129,7 +129,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                             <XCircle className="mr-2 h-4 w-4" />
                             Reddet
                         </Button>
-                        <Button 
+                        <Button
                             variant="outline"
                             onClick={handleReview}
                             disabled={updateStatusMutation.isPending}
@@ -141,7 +141,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                 )}
                 {application.durum === 'inceleniyor' && (
                     <>
-                        <Button 
+                        <Button
                             className="bg-emerald-600 hover:bg-emerald-700"
                             onClick={handleApprove}
                             disabled={updateStatusMutation.isPending}
@@ -149,7 +149,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Onayla
                         </Button>
-                        <Button 
+                        <Button
                             variant="destructive"
                             onClick={handleReject}
                             disabled={updateStatusMutation.isPending}

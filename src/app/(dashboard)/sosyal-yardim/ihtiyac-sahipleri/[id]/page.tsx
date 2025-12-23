@@ -62,7 +62,7 @@ import {
     TableRow
 } from '@/components/ui/table'
 
-import { fetchBeneficiaryById, updateBeneficiary } from '@/lib/mock-service'
+import { fetchBeneficiaryById, updateBeneficiary, fetchDependentPersons } from '@/lib/supabase-service'
 import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validators'
 import {
     IHTIYAC_SAHIBI_KATEGORI_LABELS,
@@ -166,6 +166,13 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
         queryKey: ['beneficiary', id],
         queryFn: () => fetchBeneficiaryById(id),
         enabled: !isNew
+    })
+
+    // Bağımlı kişiler için query
+    const { data: dependentPersons, isLoading: isLoadingDependents } = useQuery({
+        queryKey: ['dependent-persons', id],
+        queryFn: () => fetchDependentPersons(id),
+        enabled: !isNew && beneficiary?.tur === 'ihtiyac-sahibi-kisi'
     })
 
     // React Hook Form setup
@@ -1266,14 +1273,74 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                         <Users className="mr-2 h-4 w-4" />
                         Yeni Kişi Bağlantısı Ekle
                     </Button>
-                    {data.baglantiliKayitlar?.baktigiKisiler && data.baglantiliKayitlar.baktigiKisiler > 0 ? (
-                        <p className="text-sm text-muted-foreground">
-                            Toplam {data.baglantiliKayitlar.baktigiKisiler} kişi bulunmaktadır.
-                        </p>
+                    {isLoadingDependents ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                                <span>Yükleniyor...</span>
+                            </div>
+                        </div>
+                    ) : dependentPersons && dependentPersons.length > 0 ? (
+                        <div className="space-y-4">
+                            <div className="text-sm text-muted-foreground mb-4">
+                                Toplam {dependentPersons.length} kişi bulunmaktadır.
+                            </div>
+                            <div className="space-y-3">
+                                {dependentPersons.map((person) => (
+                                    <div key={person.id} className="border rounded-lg p-4 hover:bg-muted/30 transition-colors">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <h4 className="font-medium text-foreground">
+                                                        {person.ad} {person.soyad}
+                                                    </h4>
+                                                    <Badge variant="outline" className="text-xs">
+                                                        Bakmakla Yükümlü
+                                                    </Badge>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                                                    <div>
+                                                        <span className="font-medium">TC No: </span>
+                                                        <span className="font-mono">{person.tcKimlikNo || 'Belirtilmemiş'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium">Telefon: </span>
+                                                        <span className="font-mono">{person.cepTelefonu || 'Belirtilmemiş'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium">Yaş: </span>
+                                                        <span>{person.dogumTarihi ? new Date().getFullYear() - new Date(person.dogumTarihi).getFullYear() : 'Belirtilmemiş'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium">Durum: </span>
+                                                        <Badge variant={person.durum === 'aktif' ? 'default' : 'secondary'} className="text-xs">
+                                                            {person.durum === 'aktif' ? 'Aktif' : person.durum === 'pasif' ? 'Pasif' : 'Bilinmiyor'}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                                {person.adres && (
+                                                    <div className="text-sm text-muted-foreground mt-2">
+                                                        <span className="font-medium">Adres: </span>
+                                                        <span>{person.adres}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2 ml-4">
+                                                <Button variant="outline" size="sm" onClick={() => router.push(`/sosyal-yardim/ihtiyac-sahipleri/${person.id}`)}>
+                                                    <User className="h-4 w-4 mr-1" />
+                                                    Görüntüle
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     ) : (
                         <div className="text-center py-8 text-muted-foreground">
                             <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                            <p>Henüz kişi bağlantısı eklenmemiş</p>
+                            <p>Bu kişinin baktığı başka kimse bulunmamaktadır</p>
+                            <p className="text-xs mt-1">Hane reisi ise, ona bağımlı kişiler burada görünecektir</p>
                         </div>
                     )}
                 </div>

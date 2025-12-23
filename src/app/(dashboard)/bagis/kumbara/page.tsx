@@ -2,11 +2,11 @@
 
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { 
-    PiggyBank, 
-    MapPin, 
-    Plus, 
-    QrCode, 
+import {
+    PiggyBank,
+    MapPin,
+    Plus,
+    QrCode,
     Banknote,
     Route,
     History
@@ -47,7 +47,7 @@ export default function KumbaraPage() {
 
     // Memoize data array to prevent recalculation
     const kumbaras = useMemo(() => data?.data || [], [data?.data])
-    
+
     // Memoize expensive calculations
     const stats = useMemo(() => ({
         activeCount: kumbaras.filter(k => k.durum === 'aktif').length,
@@ -70,7 +70,7 @@ export default function KumbaraPage() {
                     title="Kumbara Yönetimi"
                     description="Bağış kumbaralarını takip edin ve yönetin"
                 />
-                <QueryError 
+                <QueryError
                     title="Kumbaralar Yüklenemedi"
                     message="Kumbara listesi yüklenirken bir hata oluştu."
                     onRetry={refetch}
@@ -87,8 +87,8 @@ export default function KumbaraPage() {
                 action={
                     <div className="flex items-center gap-2">
                         {/* Rota Oluştur Butonu */}
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => setRotaOpen(true)}
                             className="gap-1.5"
@@ -98,8 +98,8 @@ export default function KumbaraPage() {
                         </Button>
 
                         {/* Kumbarayı Tara (Toplama) */}
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => {
                                 setSelectedKumbara(null)
@@ -197,15 +197,15 @@ export default function KumbaraPage() {
                 </TabsContent>
 
                 <TabsContent value="aktif" className="space-y-4">
-                    <KumbaraGrid 
-                        kumbaras={kumbaras.filter(k => k.durum === 'aktif')} 
+                    <KumbaraGrid
+                        kumbaras={kumbaras.filter(k => k.durum === 'aktif')}
                         onKumbaraClick={handleKumbaraClick}
                     />
                 </TabsContent>
 
                 <TabsContent value="bakim" className="space-y-4">
-                    <KumbaraGrid 
-                        kumbaras={kumbaras.filter(k => k.durum === 'bakim')} 
+                    <KumbaraGrid
+                        kumbaras={kumbaras.filter(k => k.durum === 'bakim')}
                         onKumbaraClick={handleKumbaraClick}
                     />
                 </TabsContent>
@@ -232,12 +232,12 @@ export default function KumbaraPage() {
     )
 }
 
-function KumbaraGrid({ 
-    kumbaras, 
-    onKumbaraClick 
-}: { 
+function KumbaraGrid({
+    kumbaras,
+    onKumbaraClick
+}: {
     kumbaras: Kumbara[]
-    onKumbaraClick: (kumbara: Kumbara) => void 
+    onKumbaraClick: (kumbara: Kumbara) => void
 }) {
     if (kumbaras.length === 0) {
         return (
@@ -250,8 +250,8 @@ function KumbaraGrid({
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
             {kumbaras.map((kumbara) => (
-                <Card 
-                    key={kumbara.id} 
+                <Card
+                    key={kumbara.id}
                     className="hover-glow cursor-pointer transition-all hover:border-primary"
                     onClick={() => onKumbaraClick(kumbara)}
                 >
@@ -260,7 +260,7 @@ function KumbaraGrid({
                             <h4 className="text-xs font-semibold truncate flex-1">
                                 {kumbara.ad || kumbara.kod}
                             </h4>
-                            <Badge 
+                            <Badge
                                 variant={statusLabels[kumbara.durum as keyof typeof statusLabels].variant}
                                 className="text-[10px] px-1.5 py-0 flex-shrink-0"
                             >

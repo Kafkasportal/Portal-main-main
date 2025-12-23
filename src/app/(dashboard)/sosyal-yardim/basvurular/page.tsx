@@ -3,13 +3,13 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { 
-    Plus, 
-    Download, 
-    Search, 
-    Filter, 
-    Settings, 
-    ChevronLeft, 
+import {
+    Plus,
+    Download,
+    Search,
+    Filter,
+    Settings,
+    ChevronLeft,
     ChevronRight,
     Eye,
     CheckCircle,
@@ -40,12 +40,12 @@ import {
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { QueryError } from '@/components/shared/query-error'
-import { fetchApplications } from '@/lib/mock-service'
-import { 
+import { fetchApplications } from '@/lib/supabase-service'
+import {
     AID_TYPE_LABELS,
     BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
-import type { BasvuruDurumu, YardimTuru } from '@/types'
+import type { BasvuruDurumu, YardimTuru, SosyalYardimBasvuru } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 // Durum badge renkleri - Modern SaaS palette
@@ -71,7 +71,7 @@ export default function ApplicationsPage() {
     const router = useRouter()
     const [page, setPage] = useState(1)
     const [pageSize] = useState(20)
-    
+
     // Filtreler
     const [searchId, setSearchId] = useState('')
     const [searchName, setSearchName] = useState('')
@@ -82,19 +82,40 @@ export default function ApplicationsPage() {
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['applications', page, pageSize, searchName, searchTc, filterDurum, filterYardimTuru],
-        queryFn: () => fetchApplications({ 
-            page, 
-            pageSize,
-            search: searchName,
-            status: filterDurum !== 'all' ? filterDurum as BasvuruDurumu : undefined,
-            yardimTuru: filterYardimTuru !== 'all' ? filterYardimTuru as YardimTuru : undefined
-        })
+        queryFn: async () => {
+            const result = await fetchApplications({
+                page,
+                limit: pageSize,
+                durum: filterDurum !== 'all' ? filterDurum : undefined
+            })
+            // Map raw DB data to SosyalYardimBasvuru type
+            const mappedData: SosyalYardimBasvuru[] = (result.data || []).map((app: Record<string, unknown>) => ({
+                id: app.id as string,
+                basvuranKisi: {
+                    ad: (app.beneficiaries as Record<string, unknown>)?.ad as string || '',
+                    soyad: (app.beneficiaries as Record<string, unknown>)?.soyad as string || '',
+                    tcKimlikNo: (app.beneficiaries as Record<string, unknown>)?.tc_kimlik_no as string || '',
+                    telefon: (app.beneficiaries as Record<string, unknown>)?.telefon as string || '',
+                    adres: ''
+                },
+                yardimTuru: app.yardim_turu as YardimTuru,
+                talepEdilenTutar: app.talep_edilen_tutar as number,
+                gerekce: app.aciklama as string || '',
+                belgeler: [],
+                durum: app.durum as BasvuruDurumu,
+                degerlendirmeNotu: app.red_sebebi as string || undefined,
+                createdAt: new Date(app.created_at as string),
+                updatedAt: new Date(app.updated_at as string)
+            }))
+            return { ...result, data: mappedData }
+        }
     })
 
     // Memoize data array to prevent recalculation on every render
     const applications = useMemo(() => data?.data || [], [data?.data])
-    const totalPages = data?.totalPages || 1
-    const totalRecords = data?.total || 0
+    const limit = data?.limit || pageSize
+    const totalRecords = data?.count || 0
+    const totalPages = Math.ceil(totalRecords / limit) || 1
 
     // İstatistikler - memoized (must be before any conditional returns)
     const stats = useMemo(() => ({
@@ -110,7 +131,7 @@ export default function ApplicationsPage() {
         return (
             <div className="space-y-4">
                 <h1 className="text-2xl font-bold">Başvurular</h1>
-                <QueryError 
+                <QueryError
                     title="Başvurular Yüklenemedi"
                     message="Başvuru listesi yüklenirken bir hata oluştu."
                     onRetry={refetch}
@@ -129,12 +150,12 @@ export default function ApplicationsPage() {
         filteredApplications = filteredApplications.filter(a => a.yardimTuru === filterYardimTuru)
     }
     if (searchTc) {
-        filteredApplications = filteredApplications.filter(a => 
+        filteredApplications = filteredApplications.filter(a =>
             a.basvuranKisi.tcKimlikNo.includes(searchTc)
         )
     }
     if (searchId) {
-        filteredApplications = filteredApplications.filter(a => 
+        filteredApplications = filteredApplications.filter(a =>
             a.id.toLowerCase().includes(searchId.toLowerCase())
         )
     }
@@ -144,17 +165,17 @@ export default function ApplicationsPage() {
             {/* Üst Başlık ve Navigasyon */}
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Yardım Başvuruları</h1>
-                
+
                 <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-md">
                         {totalRecords.toLocaleString('tr-TR')} Başvuru
                     </span>
-                    
+
                     {/* Sayfa Navigasyonu */}
                     <div className="flex items-center gap-1 bg-muted rounded-md">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8"
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
@@ -164,9 +185,9 @@ export default function ApplicationsPage() {
                         <span className="text-sm px-2 min-w-[80px] text-center">
                             {page} / {totalPages}
                         </span>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8"
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
@@ -174,7 +195,7 @@ export default function ApplicationsPage() {
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>
-                    
+
                     <Button variant="ghost" size="icon">
                         <Settings className="h-4 w-4" />
                     </Button>
@@ -244,34 +265,34 @@ export default function ApplicationsPage() {
             <div className="flex flex-wrap items-end gap-3 p-4 bg-card rounded-lg border">
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Başvuru ID</label>
-                    <Input 
-                        placeholder="ID" 
+                    <Input
+                        placeholder="ID"
                         className="w-32 h-9"
                         value={searchId}
                         onChange={(e) => setSearchId(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Başvuran Adı</label>
-                    <Input 
-                        placeholder="Ad Soyad" 
+                    <Input
+                        placeholder="Ad Soyad"
                         className="w-56 h-9"
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">TC Kimlik No</label>
-                    <Input 
-                        placeholder="TC Kimlik" 
+                    <Input
+                        placeholder="TC Kimlik"
                         className="w-40 h-9"
                         value={searchTc}
                         onChange={(e) => setSearchTc(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Durum</label>
                     <Select value={filterDurum} onValueChange={setFilterDurum}>
@@ -288,7 +309,7 @@ export default function ApplicationsPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Yardım Türü</label>
                     <Select value={filterYardimTuru} onValueChange={setFilterYardimTuru}>
@@ -303,7 +324,7 @@ export default function ApplicationsPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="space-y-1.5">
                     <label className="text-xs text-muted-foreground">Operatör</label>
                     <Select value={operator} onValueChange={setOperator}>
@@ -318,7 +339,7 @@ export default function ApplicationsPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="flex gap-2">
                     <Button onClick={handleSearch}>
                         <Search className="mr-2 h-4 w-4" />
@@ -371,15 +392,15 @@ export default function ApplicationsPage() {
                                 </TableRow>
                             ) : (
                                 filteredApplications.map((application) => (
-                                    <TableRow 
+                                    <TableRow
                                         key={application.id}
                                         className="cursor-pointer hover:bg-muted/50"
                                         onClick={() => router.push(`/sosyal-yardim/basvurular/${application.id}`)}
                                     >
                                         <TableCell>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
                                                 className="h-8 w-8"
                                                 onClick={(e) => {
                                                     e.stopPropagation()

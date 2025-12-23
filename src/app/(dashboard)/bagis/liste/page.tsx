@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/sheet'
 import { donationColumns } from '@/components/features/donations/columns'
 import { DonationForm } from '@/components/features/donations/donation-form'
-import { fetchDonations } from '@/lib/mock-service'
+import { fetchDonations } from '@/lib/supabase-service'
 import type { Bagis } from '@/types'
 import { DONATION_PURPOSE_LABELS } from '@/lib/constants'
 import { formatDate } from '@/lib/utils'
@@ -27,16 +27,16 @@ export default function DonationsListPage() {
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['donations'],
-        queryFn: () => fetchDonations({ pageSize: 1000 }) // Get more for export
+        queryFn: () => fetchDonations({ limit: 1000 }) // Get more for export
     })
 
     const handleExportExcel = async () => {
         try {
             const donationsData = data?.data || []
-            
+
             const workbook = new ExcelJS.Workbook()
             const worksheet = workbook.addWorksheet('Bağışlar')
-            
+
             worksheet.columns = [
                 { header: 'Makbuz No', key: 'makbuzNo', width: 15 },
                 { header: 'Bağışçı Ad', key: 'ad', width: 15 },
@@ -49,7 +49,7 @@ export default function DonationsListPage() {
                 { header: 'Tarih', key: 'tarih', width: 12 },
                 { header: 'Açıklama', key: 'aciklama', width: 25 }
             ]
-            
+
             donationsData.forEach((item: Bagis) => {
                 worksheet.addRow({
                     makbuzNo: item.makbuzNo || '-',
@@ -60,15 +60,15 @@ export default function DonationsListPage() {
                     paraBirimi: item.currency || 'TRY',
                     amac: DONATION_PURPOSE_LABELS[item.amac] || item.amac,
                     durum: item.durum === 'tamamlandi' ? 'Tamamlandı' :
-                           item.durum === 'beklemede' ? 'Beklemede' :
-                           item.durum === 'iptal' ? 'İptal' : item.durum,
+                        item.durum === 'beklemede' ? 'Beklemede' :
+                            item.durum === 'iptal' ? 'İptal' : item.durum,
                     tarih: formatDate(new Date(item.createdAt)),
                     aciklama: item.aciklama || '-'
                 })
             })
-            
+
             worksheet.getRow(1).font = { bold: true }
-            
+
             const buffer = await workbook.xlsx.writeBuffer()
             const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
             const url = URL.createObjectURL(blob)
@@ -89,7 +89,7 @@ export default function DonationsListPage() {
                     title="Bağış Listesi"
                     description="Tüm bağışları görüntüleyin ve yönetin"
                 />
-                <QueryError 
+                <QueryError
                     title="Bağışlar Yüklenemedi"
                     message="Bağış listesi yüklenirken bir hata oluştu."
                     onRetry={refetch}

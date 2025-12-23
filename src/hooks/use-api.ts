@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import * as mockService from '@/lib/mock-service'
+import * as apiService from '@/lib/api-service'
 import type { PaginatedResponse } from '@/types'
+
+// API Toggle: .env'deki NEXT_PUBLIC_USE_MOCK_API değerine göre servis seçimi
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false'
+const service = USE_MOCK ? mockService : apiService
 
 // Query Keys - Merkezi olarak yönetilen cache key'leri
 export const queryKeys = {
@@ -48,41 +53,41 @@ export const queryKeys = {
 // Generic hooks
 
 // Dashboard Stats Hook
-export function useDashboardStats(options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchDashboardStats>>>, 'queryKey' | 'queryFn'>) {
+export function useDashboardStats(options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchDashboardStats>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.dashboard.stats,
-        queryFn: mockService.fetchDashboardStats,
+        queryFn: service.fetchDashboardStats,
         ...options,
     })
 }
 
 // Donations Hooks
 export function useDonations(
-    params?: Parameters<typeof mockService.fetchDonations>[0],
+    params?: Parameters<typeof service.fetchDonations>[0],
     options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.donations.list(params),
-        queryFn: () => mockService.fetchDonations(params || {}),
+        queryFn: () => service.fetchDonations(params || {}),
         ...options,
     })
 }
 
-export function useDonation(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchDonation>>>, 'queryKey' | 'queryFn'>) {
+export function useDonation(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchDonation>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.donations.detail(id),
-        queryFn: () => mockService.fetchDonation(id),
+        queryFn: () => service.fetchDonation(id),
         enabled: !!id,
         ...options,
     })
 }
 
 // Create Donation Mutation
-export function useCreateDonation(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.createDonation>>, Error, Parameters<typeof mockService.createDonation>[0]>) {
+export function useCreateDonation(options?: UseMutationOptions<Awaited<ReturnType<typeof service.createDonation>>, Error, Parameters<typeof service.createDonation>[0]>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: mockService.createDonation,
+        mutationFn: service.createDonation,
         onSuccess: () => {
             // Cache'i invalidate et
             queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
@@ -99,31 +104,31 @@ export function useCreateDonation(options?: UseMutationOptions<Awaited<ReturnTyp
 
 // Members Hooks
 export function useMembers(
-    params?: Parameters<typeof mockService.fetchMembers>[0],
+    params?: Parameters<typeof service.fetchMembers>[0],
     options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.members.list(params),
-        queryFn: () => mockService.fetchMembers(params || {}),
+        queryFn: () => service.fetchMembers(params || {}),
         ...options,
     })
 }
 
-export function useMember(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchMember>>>, 'queryKey' | 'queryFn'>) {
+export function useMember(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchMember>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.members.detail(id),
-        queryFn: () => mockService.fetchMember(id),
+        queryFn: () => service.fetchMember(id),
         enabled: !!id,
         ...options,
     })
 }
 
 // Create Member Mutation
-export function useCreateMember(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.createMember>>, Error, Parameters<typeof mockService.createMember>[0]>) {
+export function useCreateMember(options?: UseMutationOptions<Awaited<ReturnType<typeof service.createMember>>, Error, Parameters<typeof service.createMember>[0]>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: mockService.createMember,
+        mutationFn: service.createMember,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.members.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
@@ -139,31 +144,31 @@ export function useCreateMember(options?: UseMutationOptions<Awaited<ReturnType<
 
 // Beneficiaries Hooks
 export function useBeneficiaries(
-    params?: Parameters<typeof mockService.fetchBeneficiaries>[0],
+    params?: Parameters<typeof service.fetchBeneficiaries>[0],
     options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.socialAid.beneficiaries.list(params),
-        queryFn: () => mockService.fetchBeneficiaries(params || {}),
+        queryFn: () => service.fetchBeneficiaries(params || {}),
         ...options,
     })
 }
 
-export function useBeneficiary(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchBeneficiaryById>>>, 'queryKey' | 'queryFn'>) {
+export function useBeneficiary(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchBeneficiaryById>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.socialAid.beneficiaries.detail(id),
-        queryFn: () => mockService.fetchBeneficiaryById(id),
+        queryFn: () => service.fetchBeneficiaryById(id),
         enabled: !!id,
         ...options,
     })
 }
 
 // Create Beneficiary Mutation
-export function useCreateBeneficiary(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.createBeneficiary>>, Error, Parameters<typeof mockService.createBeneficiary>[0]>) {
+export function useCreateBeneficiary(options?: UseMutationOptions<Awaited<ReturnType<typeof service.createBeneficiary>>, Error, Parameters<typeof service.createBeneficiary>[0]>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: mockService.createBeneficiary,
+        mutationFn: service.createBeneficiary,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
@@ -178,11 +183,11 @@ export function useCreateBeneficiary(options?: UseMutationOptions<Awaited<Return
 }
 
 // Update Beneficiary Mutation
-export function useUpdateBeneficiary(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.updateBeneficiary>>, Error, { id: string; data: Parameters<typeof mockService.updateBeneficiary>[1] }>) {
+export function useUpdateBeneficiary(options?: UseMutationOptions<Awaited<ReturnType<typeof service.updateBeneficiary>>, Error, { id: string; data: Parameters<typeof service.updateBeneficiary>[1] }>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ id, data }) => mockService.updateBeneficiary(id, data),
+        mutationFn: ({ id, data }) => service.updateBeneficiary(id, data),
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.detail(variables.id) })
@@ -198,31 +203,31 @@ export function useUpdateBeneficiary(options?: UseMutationOptions<Awaited<Return
 
 // Applications Hooks
 export function useApplications(
-    params?: Parameters<typeof mockService.fetchApplications>[0],
+    params?: Parameters<typeof service.fetchApplications>[0],
     options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.socialAid.applications.list(params),
-        queryFn: () => mockService.fetchApplications(params || {}),
+        queryFn: () => service.fetchApplications(params || {}),
         ...options,
     })
 }
 
-export function useApplication(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchApplicationById>>>, 'queryKey' | 'queryFn'>) {
+export function useApplication(id: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchApplicationById>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.socialAid.applications.detail(id),
-        queryFn: () => mockService.fetchApplicationById(id),
+        queryFn: () => service.fetchApplicationById(id),
         enabled: !!id,
         ...options,
     })
 }
 
 // Update Application Status Mutation
-export function useUpdateApplicationStatus(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.updateApplicationStatus>>, Error, Parameters<typeof mockService.updateApplicationStatus>>) {
+export function useUpdateApplicationStatus(options?: UseMutationOptions<Awaited<ReturnType<typeof service.updateApplicationStatus>>, Error, Parameters<typeof service.updateApplicationStatus>>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (args) => mockService.updateApplicationStatus(...args),
+        mutationFn: (args) => service.updateApplicationStatus(...args),
         onSuccess: (_data, [id]) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.detail(id) })
@@ -239,31 +244,31 @@ export function useUpdateApplicationStatus(options?: UseMutationOptions<Awaited<
 
 // Kumbaras Hooks
 export function useKumbaras(
-    params?: Parameters<typeof mockService.fetchKumbaras>[0],
+    params?: Parameters<typeof service.fetchKumbaras>[0],
     options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.kumbaras.list(params),
-        queryFn: () => mockService.fetchKumbaras(params || {}),
+        queryFn: () => service.fetchKumbaras(params || {}),
         ...options,
     })
 }
 
-export function useKumbaraByCode(code: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof mockService.fetchKumbaraByCode>>>, 'queryKey' | 'queryFn'>) {
+export function useKumbaraByCode(code: string, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof service.fetchKumbaraByCode>>>, 'queryKey' | 'queryFn'>) {
     return useQuery({
         queryKey: queryKeys.kumbaras.byCode(code),
-        queryFn: () => mockService.fetchKumbaraByCode(code),
+        queryFn: () => service.fetchKumbaraByCode(code),
         enabled: !!code,
         ...options,
     })
 }
 
 // Create Kumbara Mutation
-export function useCreateKumbara(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.createKumbara>>, Error, Parameters<typeof mockService.createKumbara>[0]>) {
+export function useCreateKumbara(options?: UseMutationOptions<Awaited<ReturnType<typeof service.createKumbara>>, Error, Parameters<typeof service.createKumbara>[0]>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: mockService.createKumbara,
+        mutationFn: service.createKumbara,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
             toast.success('Kumbara başarıyla oluşturuldu')
@@ -277,11 +282,11 @@ export function useCreateKumbara(options?: UseMutationOptions<Awaited<ReturnType
 }
 
 // Collect Kumbara Mutation
-export function useCollectKumbara(options?: UseMutationOptions<Awaited<ReturnType<typeof mockService.collectKumbara>>, Error, Parameters<typeof mockService.collectKumbara>[0]>) {
+export function useCollectKumbara(options?: UseMutationOptions<Awaited<ReturnType<typeof service.collectKumbara>>, Error, Parameters<typeof service.collectKumbara>[0]>) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: mockService.collectKumbara,
+        mutationFn: service.collectKumbara,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })

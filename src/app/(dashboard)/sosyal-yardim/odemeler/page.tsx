@@ -25,7 +25,7 @@ export default function PaymentsPage() {
     const handleExportExcel = async () => {
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Ödemeler')
-        
+
         // Header row
         worksheet.columns = [
             { header: 'Ad Soyad', key: 'adSoyad', width: 25 },
@@ -37,7 +37,7 @@ export default function PaymentsPage() {
             { header: 'Ödeme Tarihi', key: 'odemeTarihi', width: 15 },
             { header: 'Durum', key: 'durum', width: 12 }
         ]
-        
+
         // Add data rows
         paymentsData.forEach(item => {
             worksheet.addRow({
@@ -51,10 +51,10 @@ export default function PaymentsPage() {
                 durum: item.odemeBilgileri?.durum === 'odendi' ? 'Ödendi' : 'Bekliyor'
             })
         })
-        
+
         // Style header row
         worksheet.getRow(1).font = { bold: true }
-        
+
         // Generate and download
         const buffer = await workbook.xlsx.writeBuffer()
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })

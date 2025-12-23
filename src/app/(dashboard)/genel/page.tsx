@@ -30,9 +30,10 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { fetchDashboardStats, fetchApplications, fetchMembers, fetchBeneficiaries } from '@/lib/mock-service'
+import { fetchDashboardStats, fetchBeneficiaries, fetchApplications, fetchMembers } from '@/lib/supabase-service'
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils'
 import { STATUS_VARIANTS, BASVURU_DURUMU_LABELS } from '@/lib/constants'
+import type { SosyalYardimBasvuru } from '@/types'
 
 export default function DashboardPage() {
     const [isMounted, setIsMounted] = useState(false)
@@ -44,13 +45,54 @@ export default function DashboardPage() {
     // Son başvurular
     const { data: applicationsData } = useQuery({
         queryKey: ['dashboard-applications'],
-        queryFn: () => fetchApplications({ page: 1, pageSize: 5, status: 'beklemede' })
+        queryFn: async () => {
+            const result = await fetchApplications({ page: 1, limit: 5, durum: 'beklemede' })
+            // Map raw DB data to expected format
+            const mappedData: SosyalYardimBasvuru[] = (result.data || []).map((app: Record<string, unknown>) => ({
+                id: app.id as string,
+                basvuranKisi: {
+                    ad: (app.beneficiaries as Record<string, unknown>)?.ad as string || '',
+                    soyad: (app.beneficiaries as Record<string, unknown>)?.soyad as string || '',
+                    tcKimlikNo: '',
+                    telefon: (app.beneficiaries as Record<string, unknown>)?.telefon as string || '',
+                    adres: ''
+                },
+                yardimTuru: app.yardim_turu as string,
+                talepEdilenTutar: app.talep_edilen_tutar as number,
+                gerekce: app.aciklama as string || '',
+                belgeler: [],
+                durum: app.durum as 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi' | 'odendi',
+                createdAt: new Date(app.created_at as string),
+                updatedAt: new Date(app.updated_at as string)
+            }))
+            return { ...result, data: mappedData }
+        }
     })
 
     // Son üyeler
     const { data: membersData } = useQuery({
         queryKey: ['dashboard-members'],
-        queryFn: () => fetchMembers({ page: 1, pageSize: 5 })
+        queryFn: async () => {
+            const result = await fetchMembers({ page: 1, limit: 5 })
+            // Map raw DB data to expected format
+            type MappedMember = {
+                id: string
+                ad: string
+                soyad: string
+                uyeNo: string
+                uyeTuru: string
+                createdAt: Date
+            }
+            const mappedData: MappedMember[] = (result.data || []).map((m: Record<string, unknown>) => ({
+                id: m.id as string,
+                ad: m.ad as string || '',
+                soyad: m.soyad as string || '',
+                uyeNo: m.uye_no as string || '',
+                uyeTuru: m.uye_turu as string || 'aktif',
+                createdAt: new Date(m.created_at as string)
+            }))
+            return { ...result, data: mappedData }
+        }
     })
 
     // İhtiyaç sahipleri
@@ -64,13 +106,13 @@ export default function DashboardPage() {
         const timer = setTimeout(() => {
             setIsMounted(true)
         }, 300)
-        
+
         // Also trigger on window resize
         const handleResize = () => {
             setIsMounted(true)
         }
         window.addEventListener('resize', handleResize)
-        
+
         return () => {
             clearTimeout(timer)
             window.removeEventListener('resize', handleResize)
@@ -88,7 +130,7 @@ export default function DashboardPage() {
                     title="Genel Bakış"
                     description="Dernek istatistikleri ve son aktiviteler"
                 />
-                <QueryError 
+                <QueryError
                     title="Dashboard Yüklenemedi"
                     message="İstatistikler yüklenirken bir hata oluştu."
                     onRetry={refetch}
@@ -162,18 +204,18 @@ export default function DashboardPage() {
                                                 <Cell key={`cell-${index}`} fill={entry.color} />
                                             ))}
                                         </Pie>
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--card))',
-                                            border: '1px solid hsl(var(--border))',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                        }}
-                                        formatter={(value) => {
-                                            const numValue = typeof value === 'number' ? value : 0
-                                            return [`%${numValue}`, 'Oran'] as const
-                                        }}
-                                    />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                border: '1px solid hsl(var(--border))',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            }}
+                                            formatter={(value) => {
+                                                const numValue = typeof value === 'number' ? value : 0
+                                                return [`%${numValue}`, 'Oran'] as const
+                                            }}
+                                        />
                                     </PieChart>
                                 </ResponsiveContainer>
                             ) : (

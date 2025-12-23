@@ -9,8 +9,6 @@ import {
     AlertCircle
 } from 'lucide-react'
 import {
-    AreaChart,
-    Area,
     BarChart,
     Bar,
     XAxis,
@@ -28,8 +26,8 @@ import { StatCard } from '@/components/shared/stat-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { fetchDashboardStats, fetchBeneficiaries, fetchApplications } from '@/lib/mock-service'
-import { formatCurrency } from '@/lib/utils'
+import { fetchDashboardStats, fetchBeneficiaries, fetchApplications } from '@/lib/supabase-service'
+// formatCurrency removed - not used after removing monthly chart
 import { AID_TYPE_LABELS } from '@/lib/constants'
 
 export default function StatisticsPage() {
@@ -44,13 +42,13 @@ export default function StatisticsPage() {
         const timer = setTimeout(() => {
             setIsMounted(true)
         }, 300)
-        
+
         // Also trigger on window resize
         const handleResize = () => {
             setIsMounted(true)
         }
         window.addEventListener('resize', handleResize)
-        
+
         return () => {
             clearTimeout(timer)
             window.removeEventListener('resize', handleResize)
@@ -64,7 +62,7 @@ export default function StatisticsPage() {
 
     const { data: applications, isLoading: applicationsLoading } = useQuery({
         queryKey: ['applications'],
-        queryFn: () => fetchApplications({ pageSize: 1000 })
+        queryFn: () => fetchApplications({ limit: 1000 })
     })
 
     const isLoading = statsLoading || beneficiariesLoading || applicationsLoading
@@ -93,8 +91,8 @@ export default function StatisticsPage() {
     // Calculate statistics
     const totalBeneficiaries = beneficiaries?.total || 0
     const activeBeneficiaries = beneficiaries?.data?.filter(b => b.durum === 'aktif').length || 0
-    const totalApplications = applications?.total || 0
-    const pendingApplications = applications?.data?.filter(a => a.durum === 'beklemede').length || 0
+    const totalApplications = applications?.count || 0
+    const pendingApplications = (applications?.data as Array<{ durum: string }> || []).filter(a => a.durum === 'beklemede').length || 0
 
     // Aid type colors - deterministic based on index
     const aidTypeColors = [
@@ -108,8 +106,9 @@ export default function StatisticsPage() {
 
     // Aid type distribution
     const aidTypeDistribution = Object.keys(AID_TYPE_LABELS).map((key, index) => {
-        const count = applications?.data?.filter(a => a.yardimTuru === key).length || 0
-        const total = applications?.data?.length || 1
+        const appData = applications?.data as Array<{ yardim_turu: string }> || []
+        const count = appData.filter(a => a.yardim_turu === key).length || 0
+        const total = appData.length || 1
         return {
             name: AID_TYPE_LABELS[key as keyof typeof AID_TYPE_LABELS],
             value: Math.round((count / total) * 100),
@@ -176,15 +175,15 @@ export default function StatisticsPage() {
                                                 <Cell key={`cell-${index}`} fill={entry.color} />
                                             ))}
                                         </Pie>
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--card))',
-                                            border: '1px solid hsl(var(--border))',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                        }}
-                                        formatter={(value) => [`%${value}`, 'Oran']}
-                                    />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                border: '1px solid hsl(var(--border))',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            }}
+                                            formatter={(value) => [`%${value}`, 'Oran']}
+                                        />
                                     </PieChart>
                                 </ResponsiveContainer>
                             ) : (
@@ -216,29 +215,29 @@ export default function StatisticsPage() {
                             {isMounted && !applicationsLoading && aidTypeDistribution && aidTypeDistribution.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                                     <BarChart data={aidTypeDistribution}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                                    <XAxis
-                                        dataKey="name"
-                                        stroke="hsl(var(--muted-foreground))"
-                                        fontSize={11}
-                                        angle={-45}
-                                        textAnchor="end"
-                                        height={80}
-                                    />
-                                    <YAxis
-                                        stroke="hsl(var(--muted-foreground))"
-                                        fontSize={11}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--card))',
-                                            border: '1px solid hsl(var(--border))',
-                                            borderRadius: '8px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                        }}
-                                        formatter={(value) => [value, 'Başvuru']}
-                                    />
-                                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                                        <XAxis
+                                            dataKey="name"
+                                            stroke="hsl(var(--muted-foreground))"
+                                            fontSize={11}
+                                            angle={-45}
+                                            textAnchor="end"
+                                            height={80}
+                                        />
+                                        <YAxis
+                                            stroke="hsl(var(--muted-foreground))"
+                                            fontSize={11}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                border: '1px solid hsl(var(--border))',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            }}
+                                            formatter={(value) => [value, 'Başvuru']}
+                                        />
+                                        <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             ) : (
@@ -248,61 +247,6 @@ export default function StatisticsPage() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Monthly Aid Chart */}
-            <Card className="hover-glow border-border/50 shadow-sm">
-                <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Aylık Yardım Grafiği</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-[300px] min-h-[300px] w-full" style={{ minWidth: 0, minHeight: 300, width: '100%', position: 'relative' }}>
-                        {isMounted && !statsLoading && stats?.monthlyDonations && stats.monthlyDonations.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                                <AreaChart data={stats.monthlyDonations}>
-                                <defs>
-                                    <linearGradient id="colorAid" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                                <XAxis
-                                    dataKey="month"
-                                    stroke="hsl(var(--muted-foreground))"
-                                    fontSize={11}
-                                    fontWeight={500}
-                                />
-                                <YAxis
-                                    stroke="hsl(var(--muted-foreground))"
-                                    fontSize={11}
-                                    fontWeight={500}
-                                    tickFormatter={(value) => `₺${(value / 1000).toFixed(0)}K`}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: 'hsl(var(--card))',
-                                        border: '1px solid hsl(var(--border))',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                    }}
-                                    formatter={(value) => [formatCurrency(value as number), 'Tutar']}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="amount"
-                                    stroke="hsl(var(--primary))"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorAid)"
-                                />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground">Veri yok</div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     )
 }

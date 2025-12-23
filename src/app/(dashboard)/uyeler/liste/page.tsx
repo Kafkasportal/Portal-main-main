@@ -18,7 +18,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { fetchMembers } from '@/lib/mock-service'
+import { fetchMembers } from '@/lib/supabase-service'
 import { formatDate, getInitials, formatPhoneNumber } from '@/lib/utils'
 import { MEMBER_TYPE_LABELS } from '@/lib/constants'
 import type { Uye } from '@/types'
@@ -138,7 +138,7 @@ const memberColumns: ColumnDef<Uye>[] = [
 export default function MembersListPage() {
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['members'],
-        queryFn: () => fetchMembers({ pageSize: 1000 }) // Get all for client-side pagination
+        queryFn: () => fetchMembers({ limit: 1000 }) // Get all for client-side pagination
     })
 
     if (isError) {
@@ -148,7 +148,7 @@ export default function MembersListPage() {
                     title="Üye Listesi"
                     description="Dernek üyelerini görüntüleyin ve yönetin"
                 />
-                <QueryError 
+                <QueryError
                     title="Üyeler Yüklenemedi"
                     message="Üye listesi yüklenirken bir hata oluştu."
                     onRetry={refetch}

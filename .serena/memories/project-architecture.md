@@ -229,14 +229,121 @@ interface DataTableProps<T> {
 
 ---
 
-## 📁 Dosya Sayıları
+## 🚀 Performance Optimizations (Aralık 2025)
+
+### Lazy Loading
+- `CommandPalette` - React.lazy ile yükleniyor
+- `ProgressBar` - dynamic import (ssr: false)
+- Grafik componentleri lazy load
+
+### React.memo
+- `StatCard` - gereksiz re-render önleme
+
+### Next.js Config
+```typescript
+// next.config.ts
+experimental: {
+  optimizePackageImports: ['lucide-react', 'recharts', 'date-fns', '@radix-ui/react-icons']
+}
+```
+
+---
+
+## ⌨️ Command Palette (Ctrl+K)
+
+**Dosya:** `src/components/shared/command-palette.tsx`
+
+**Özellikler:**
+- Tüm sayfalarda hızlı geçiş
+- Son ziyaret edilen sayfalar (localStorage)
+- Fuzzy search
+- Klavye navigasyonu
+
+**Kullanım:**
+- `Ctrl+K` veya `⌘+K` ile aç
+- Arrow keys ile gezin
+- Enter ile seç
+- Escape ile kapat
+
+---
+
+## 🎨 Yeni UI Components (shadcn/ui)
+
+| Component | Dosya | Açıklama |
+|-----------|-------|----------|
+| `Command` | `ui/command.tsx` | cmdk tabanlı command palette |
+| `Spinner` | `ui/spinner.tsx` | Loading spinner |
+| `Field` | `ui/field.tsx` | Form field wrapper |
+| `Empty` | `ui/empty.tsx` | Boş durum gösterimi |
+| `Tooltip` | `ui/tooltip.tsx` | Tooltip component |
+| `ButtonGroup` | `ui/button-group.tsx` | Buton grupları |
+| `InputGroup` | `ui/input-group.tsx` | Input grupları |
+| `Item` | `ui/item.tsx` | Liste öğesi |
+
+### Button Loading Prop
+```tsx
+<Button loading={isSubmitting}>Kaydet</Button>
+```
+
+---
+
+## 🪝 Yeni Hooks
+
+| Hook | Dosya | Açıklama |
+|------|-------|----------|
+| `useApi` | `hooks/use-api.ts` | API çağrıları için hook |
+
+---
+
+## 🔗 API Altyapısı
+
+### API Client (`src/lib/api-client.ts`)
+- Axios tabanlı HTTP client
+- Interceptors (auth, error handling)
+- Base URL configuration
+
+### API Service (`src/lib/api-service.ts`)
+- Typed API fonksiyonları
+- CRUD işlemleri
+
+---
+
+## 🗃️ Database
+
+### Supabase (Önerilen)
+**Dosyalar:**
+- `src/lib/supabase/client.ts` - Browser client
+- `src/lib/supabase/server.ts` - Server client  
+- `src/lib/supabase/middleware.ts` - Auth middleware
+- `src/lib/supabase-service.ts` - CRUD operations
+- `src/types/supabase.ts` - Database types
+- `supabase/schema.sql` - SQL schema
+- `docs/SUPABASE_SETUP.md` - Kurulum rehberi
+
+**Tablolar:**
+- users, members, donations, beneficiaries
+- kumbaras, social_aid_applications, payments
+- audit_logs
+
+**Özellikler:**
+- Row Level Security (RLS)
+- Real-time subscriptions
+- Auth entegrasyonu
+- Storage (dosya yükleme)
+
+### Prisma (Alternatif)
+**Schema:** `prisma/schema.prisma`
+
+---
+
+## 📁 Dosya Sayıları (Güncel)
 
 | Kategori | Sayı |
 |----------|------|
-| Toplam TypeScript/TSX | 80+ |
+| Toplam TypeScript/TSX | 95+ |
 | Sayfalar | 17 |
-| UI Components | 21 |
+| UI Components | 29 |
 | Feature Components | 10 |
-| Shared Components | 6 |
+| Shared Components | 10 |
 | Types/Interfaces | 50+ |
 | Zod Schemas | 12 |

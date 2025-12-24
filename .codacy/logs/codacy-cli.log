@@ -324,3 +324,310 @@
 2025-12-24T07:49:03+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
 2025-12-24T07:49:12+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
 2025-12-24T07:49:12+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[] command=install
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/Portal/src/components/ui/command.tsx --format sarif] args=[/home/isa/Portal/src/components/ui/command.tsx]
+2025-12-24T07:49:32+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T07:49:41+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T07:49:41+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[]
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/.vscode/extensions/ms-vscode.vscode-typescript-next-6.0.20251223/node_modules/typescript/lib/lib.es5.d.ts --format sarif] args=[/home/isa/.vscode/extensions/ms-vscode.vscode-typescript-next-6.0.20251223/node_modules/typescript/lib/lib.es5.d.ts]
+2025-12-24T07:49:42+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T07:49:51+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T07:49:51+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[]
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/Portal/src/components/layout/sidebar/index.tsx --format sarif] args=[/home/isa/Portal/src/components/layout/sidebar/index.tsx] command=analyze
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T07:56:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T08:01:32+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:01:32+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install]
+2025-12-24T08:01:32+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T08:01:43+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:01:43+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[]
+2025-12-24T08:01:43+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[]
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx --format sarif]
+2025-12-24T08:07:51+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T08:08:00+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T08:08:00+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install] args=[]
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx --format sarif]
+2025-12-24T08:08:10+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T08:08:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T08:08:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 install]
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.364.sha.2651163 (2651163) built at 2025-12-09T15:39:30Z
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.364.sha.2651163/codacy-cli-v2 analyze /home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx --format sarif] args=[/home/isa/Portal/src/components/features/social-aid/new-beneficiary-dialog.tsx]
+2025-12-24T08:08:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T08:08:36+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T08:08:36+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T09:31:33+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:33+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 update] args=[] command=update
+2025-12-24T09:31:33+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:33+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=reset full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 config reset --provider gh --organization Kafkasportal --repository Portal --api-token ***] args=[]
+2025-12-24T09:31:34+03:00 [INFO] (codacy-cli-v2/tools/getTools.go:49) Supported tools: supported_tools=[map[name:pmd uuid:ed7e8287-707d-485a-a0cb-e211004432c2] map[name:pmd uuid:9ed24812-b6ee-4a58-9004-0ed183c45b8f] map[name:pylint uuid:31677b6d-4ae0-4f56-8041-606a8d7a8e61] map[name:dartanalyzer uuid:d203d615-6cf1-41f9-be5f-e2f660f7850f] map[name:lizard uuid:76348462-84b3-409a-90d3-955e90abfb87] map[name:semgrep uuid:6792c561-236d-41b7-ba5e-9d6bee0d548b] map[name:eslint uuid:2a30ab97-477f-4769-8b88-af596ce7a94c] map[name:trivy uuid:2fd7fbe0-33f9-4ab3-ab73-e9b62404e2cb] map[name:revive uuid:bd81d1f4-1406-402d-9181-1274ee09f1aa] map[name:eslint uuid:f8b29663-2cb2-498d-b923-a10c6a8c05cd]]
+2025-12-24T09:31:35+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:35+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T09:31:35+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:31:35+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:35+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/.config/Code/User/mcp.json] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/.config/Code/User/mcp.json --format sarif]
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/package.json --format sarif] args=[/home/isa/Portal/package.json]
+2025-12-24T09:31:38+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T09:31:41+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:31:41+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[] command=install
+2025-12-24T09:31:41+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/.config/Code/User/mcp.json --format sarif] args=[/home/isa/.config/Code/User/mcp.json] command=analyze
+2025-12-24T09:32:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T09:33:31+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T09:34:04+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:04+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T09:34:04+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:34:04+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:04+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/docs/SUPABASE_SETUP.md --format sarif] args=[/home/isa/Portal/docs/SUPABASE_SETUP.md] command=analyze
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/.config/Code/User/mcp.json --format sarif] args=[/home/isa/.config/Code/User/mcp.json]
+2025-12-24T09:34:49+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/Portal/supabase/schema.sql] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/supabase/schema.sql --format sarif]
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=pmd toolConfigPath=.codacy/tools-configs/ruleset.xml
+2025-12-24T09:34:58+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:32) PMD binary path pmdBinary=/home/isa/.cache/codacy/tools/pmd@6.55.0/pmd-bin-6.55.0/bin/run.sh
+2025-12-24T09:34:58+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:102) Setting up Java environment javaHome=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7
+2025-12-24T09:34:58+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:148) Updated environment variables javaHome=JAVA_HOME=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7 path=PATH=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin:/home/isa/.opencode/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin binDir=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin javaBinary=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin/java
+2025-12-24T09:34:58+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:164) Running PMD command command=/home/isa/.cache/codacy/tools/pmd@6.55.0/pmd-bin-6.55.0/bin/run.sh pmd -R .codacy/tools-configs/ruleset.xml -d /home/isa/Portal/supabase/schema.sql -f sarif -r /tmp/codacy-analysis-2446129917/pmd.sarif
+2025-12-24T09:34:58+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T09:35:13+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:35:13+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:35:13+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:35:13+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:35:13+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=discover full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 config discover /home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql --provider gh --organization Kafkasportal --repository Portal --api-token ***] args=[/home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql]
+2025-12-24T09:35:13+03:00 [DEBUG] (codacy-cli-v2/cmd/config.go:181) Detected recognizable file extensions path=/home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql extensions=[.sql (1 files)]
+2025-12-24T09:35:13+03:00 [DEBUG] (codacy-cli-v2/config/detector.go:109) Found relevant tool for extension extension=.sql count=1 tool=pmd
+2025-12-24T09:35:13+03:00 [DEBUG] (codacy-cli-v2/config/detector.go:109) Found relevant tool for extension tool=semgrep extension=.sql count=1
+2025-12-24T09:35:13+03:00 [DEBUG] (codacy-cli-v2/config/detector.go:121) Detected relevant tools for path tools=[pmd semgrep] path=/home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql
+2025-12-24T09:35:14+03:00 [INFO] (codacy-cli-v2/tools/getTools.go:49) Supported tools: supported_tools=[map[name:pmd uuid:9ed24812-b6ee-4a58-9004-0ed183c45b8f] map[name:pylint uuid:31677b6d-4ae0-4f56-8041-606a8d7a8e61] map[name:trivy uuid:2fd7fbe0-33f9-4ab3-ab73-e9b62404e2cb] map[name:dartanalyzer uuid:d203d615-6cf1-41f9-be5f-e2f660f7850f] map[name:lizard uuid:76348462-84b3-409a-90d3-955e90abfb87] map[name:eslint uuid:2a30ab97-477f-4769-8b88-af596ce7a94c] map[name:semgrep uuid:6792c561-236d-41b7-ba5e-9d6bee0d548b] map[name:revive uuid:bd81d1f4-1406-402d-9181-1274ee09f1aa] map[name:eslint uuid:f8b29663-2cb2-498d-b923-a10c6a8c05cd] map[name:pmd uuid:ed7e8287-707d-485a-a0cb-e211004432c2]]
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql --format sarif] args=[/home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql]
+2025-12-24T09:35:16+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T09:35:24+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=pmd toolConfigPath=.codacy/tools-configs/ruleset.xml
+2025-12-24T09:35:24+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:32) PMD binary path pmdBinary=/home/isa/.cache/codacy/tools/pmd@6.55.0/pmd-bin-6.55.0/bin/run.sh
+2025-12-24T09:35:24+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:102) Setting up Java environment javaHome=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7
+2025-12-24T09:35:24+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:148) Updated environment variables binDir=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin javaBinary=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin/java javaHome=JAVA_HOME=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7 path=PATH=/home/isa/.cache/codacy/runtimes/jdk-17.0.10+7/bin:/home/isa/.opencode/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+2025-12-24T09:35:24+03:00 [DEBUG] (codacy-cli-v2/tools/pmdRunner.go:164) Running PMD command command=/home/isa/.cache/codacy/tools/pmd@6.55.0/pmd-bin-6.55.0/bin/run.sh pmd -R .codacy/tools-configs/ruleset.xml -d /home/isa/Portal/supabase/migrations/20251224_add_documents_table.sql -f sarif -r /tmp/codacy-analysis-2378425990/pmd.sarif
+2025-12-24T09:36:12+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:36:12+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=update full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 update] args=[]
+2025-12-24T09:36:12+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:36:12+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 config reset --provider gh --organization Kafkasportal --repository Portal --api-token ***] args=[] command=reset
+2025-12-24T09:36:12+03:00 [INFO] (codacy-cli-v2/tools/getTools.go:49) Supported tools: supported_tools=[map[name:semgrep uuid:6792c561-236d-41b7-ba5e-9d6bee0d548b] map[name:revive uuid:bd81d1f4-1406-402d-9181-1274ee09f1aa] map[name:eslint uuid:f8b29663-2cb2-498d-b923-a10c6a8c05cd] map[name:pmd uuid:ed7e8287-707d-485a-a0cb-e211004432c2] map[name:dartanalyzer uuid:d203d615-6cf1-41f9-be5f-e2f660f7850f] map[name:lizard uuid:76348462-84b3-409a-90d3-955e90abfb87] map[name:eslint uuid:2a30ab97-477f-4769-8b88-af596ce7a94c] map[name:pmd uuid:9ed24812-b6ee-4a58-9004-0ed183c45b8f] map[name:pylint uuid:31677b6d-4ae0-4f56-8041-606a8d7a8e61] map[name:trivy uuid:2fd7fbe0-33f9-4ab3-ab73-e9b62404e2cb]]
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/package.json --format sarif] args=[/home/isa/Portal/package.json]
+2025-12-24T09:36:14+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T09:36:20+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:36:20+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:36:20+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json] command=analyze
+2025-12-24T09:37:25+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/components/layout/progress-bar.tsx --format sarif] args=[/home/isa/Portal/src/components/layout/progress-bar.tsx] command=analyze
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T09:38:42+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T09:38:50+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T09:38:50+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T09:39:07+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:39:07+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze src/components/layout/progress-bar.tsx --format sarif] args=[src/components/layout/progress-bar.tsx]
+2025-12-24T09:39:07+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/lizard.yaml tool=lizard
+2025-12-24T09:39:07+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T09:39:15+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T09:39:15+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/.config/Code/User/1766558403605-mcp.json --format sarif] args=[/home/isa/.config/Code/User/1766558403605-mcp.json]
+2025-12-24T09:40:03+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/components/layout/progress-bar.tsx --format sarif] args=[/home/isa/Portal/src/components/layout/progress-bar.tsx]
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T09:41:54+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T09:42:03+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T09:42:03+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T12:49:12+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:12+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=update full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 update] args=[]
+2025-12-24T12:49:12+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:12+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=reset full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 config reset --provider gh --organization Kafkasportal --repository Portal --api-token ***]
+2025-12-24T12:49:13+03:00 [INFO] (codacy-cli-v2/tools/getTools.go:49) Supported tools: supported_tools=[map[name:eslint uuid:2a30ab97-477f-4769-8b88-af596ce7a94c] map[name:eslint uuid:f8b29663-2cb2-498d-b923-a10c6a8c05cd] map[name:pmd uuid:ed7e8287-707d-485a-a0cb-e211004432c2] map[name:pylint uuid:31677b6d-4ae0-4f56-8041-606a8d7a8e61] map[name:lizard uuid:76348462-84b3-409a-90d3-955e90abfb87] map[name:revive uuid:bd81d1f4-1406-402d-9181-1274ee09f1aa] map[name:pmd uuid:9ed24812-b6ee-4a58-9004-0ed183c45b8f] map[name:trivy uuid:2fd7fbe0-33f9-4ab3-ab73-e9b62404e2cb] map[name:dartanalyzer uuid:d203d615-6cf1-41f9-be5f-e2f660f7850f] map[name:semgrep uuid:6792c561-236d-41b7-ba5e-9d6bee0d548b]]
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T12:49:14+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/package.json --format sarif] args=[/home/isa/Portal/package.json] command=analyze
+2025-12-24T12:49:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T12:49:21+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:49:21+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T12:49:21+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T12:52:23+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T12:52:37+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json] command=analyze
+2025-12-24T13:10:16+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts]
+2025-12-24T13:10:20+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:10:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T13:10:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T13:10:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts] command=analyze
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T13:10:36+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:10:45+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T13:10:45+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts] command=analyze
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T13:10:47+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:10:55+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T13:10:55+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts] command=analyze
+2025-12-24T13:11:09+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:11:17+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T13:11:17+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T13:11:17+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/lizard.yaml tool=lizard
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts]
+2025-12-24T13:15:47+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/lib/supabase-service.ts --format sarif] args=[/home/isa/Portal/src/lib/supabase-service.ts] command=analyze
+2025-12-24T13:17:09+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=semgrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
+2025-12-24T13:17:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/trivy.yaml tool=trivy
+2025-12-24T13:17:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=eslint toolConfigPath=.codacy/tools-configs/eslint.config.mjs
+2025-12-24T13:17:18+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/lizard.yaml tool=lizard
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/src/types/index.ts --format sarif] args=[/home/isa/Portal/src/types/index.ts]
+2025-12-24T13:17:20+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/semgrep.yaml tool=semgrep
+2025-12-24T13:17:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T13:17:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/eslint.config.mjs tool=eslint
+2025-12-24T13:17:28+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=lizard toolConfigPath=.codacy/tools-configs/lizard.yaml
+2025-12-24T18:19:21+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:21+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=update full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 update] args=[]
+2025-12-24T18:19:21+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:21+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=reset full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 config reset --provider gh --organization Kafkasportal --repository Portal --api-token ***]
+2025-12-24T18:19:22+03:00 [INFO] (codacy-cli-v2/tools/getTools.go:49) Supported tools: supported_tools=[map[name:pmd uuid:ed7e8287-707d-485a-a0cb-e211004432c2] map[name:pmd uuid:9ed24812-b6ee-4a58-9004-0ed183c45b8f] map[name:trivy uuid:2fd7fbe0-33f9-4ab3-ab73-e9b62404e2cb] map[name:lizard uuid:76348462-84b3-409a-90d3-955e90abfb87] map[name:semgrep uuid:6792c561-236d-41b7-ba5e-9d6bee0d548b] map[name:revive uuid:bd81d1f4-1406-402d-9181-1274ee09f1aa] map[name:eslint uuid:2a30ab97-477f-4769-8b88-af596ce7a94c] map[name:eslint uuid:f8b29663-2cb2-498d-b923-a10c6a8c05cd] map[name:pylint uuid:31677b6d-4ae0-4f56-8041-606a8d7a8e61] map[name:dartanalyzer uuid:d203d615-6cf1-41f9-be5f-e2f660f7850f]]
+2025-12-24T18:19:23+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:23+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T18:19:23+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T18:19:23+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:23+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[]
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/Portal/package.json] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/package.json --format sarif]
+2025-12-24T18:19:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T18:19:39+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:19:39+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install]
+2025-12-24T18:19:39+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[] command=install
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/home/isa/Portal/.vscode/mcp.json] command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif]
+2025-12-24T18:33:51+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 install] args=[] command=install
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cmd/install.go:72) All components are already installed
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.365.sha.cf4ddcc (cf4ddcc) built at 2025-12-15T14:45:31Z
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=analyze full_command=[/home/isa/.cache/codacy/codacy-cli-v2/1.0.0-main.365.sha.cf4ddcc/codacy-cli-v2 analyze /home/isa/Portal/.vscode/mcp.json --format sarif] args=[/home/isa/Portal/.vscode/mcp.json]
+2025-12-24T18:34:26+03:00 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml

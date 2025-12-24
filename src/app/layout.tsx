@@ -1,59 +1,70 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner";
-import { QueryProvider } from "@/providers/query-provider";
-import { ProgressBar } from "@/components/layout/progress-bar";
-import { WebVitals } from "./web-vitals";
-import "./globals.css";
+import { AuthInitializer } from '@/components/layout/auth-initializer'
+import { ProgressBar } from '@/components/layout/progress-bar'
+import { Toaster } from '@/components/ui/sonner'
+import { QueryProvider } from '@/providers/query-provider'
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import { WebVitals } from './web-vitals'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: {
-    default: "Kafkasder Yönetim Paneli",
-    template: "%s | Kafkasder",
+    default: 'Kafkasder Yönetim Paneli',
+    template: '%s | Kafkasder',
   },
-  description: "Kafkas Göçmenleri Derneği Yönetim Sistemi - Bağış, Üye ve Sosyal Yardım Yönetimi",
-  keywords: ["dernek", "yönetim", "bağış", "sosyal yardım", "kafkasder", "üye takip"],
-  authors: [{ name: "Kafkasder" }],
-  creator: "Kafkasder",
-  publisher: "Kafkasder",
+  description:
+    'Kafkas Göçmenleri Derneği Yönetim Sistemi - Bağış, Üye ve Sosyal Yardım Yönetimi',
+  keywords: [
+    'dernek',
+    'yönetim',
+    'bağış',
+    'sosyal yardım',
+    'kafkasder',
+    'üye takip',
+  ],
+  authors: [{ name: 'Kafkasder' }],
+  creator: 'Kafkasder',
+  publisher: 'Kafkasder',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  ),
   openGraph: {
-    title: "Kafkasder Yönetim Paneli",
-    description: "Kafkas Göçmenleri Derneği Yönetim Sistemi",
-    type: "website",
-    locale: "tr_TR",
+    title: 'Kafkasder Yönetim Paneli',
+    description: 'Kafkas Göçmenleri Derneği Yönetim Sistemi',
+    type: 'website',
+    locale: 'tr_TR',
   },
   robots: {
     index: false, // Dashboard sayfaları indexlenmemeli
     follow: false,
   },
-};
+}
 
 export const viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="tr">
@@ -63,10 +74,11 @@ export default function RootLayout({
         <WebVitals />
         <QueryProvider>
           <ProgressBar />
+          <AuthInitializer />
           {children}
           <Toaster position="top-right" richColors closeButton />
         </QueryProvider>
       </body>
     </html>
-  );
+  )
 }

@@ -56,7 +56,7 @@ export default function StatisticsPage() {
 
   const { data: beneficiaries, isLoading: beneficiariesLoading } = useQuery({
     queryKey: ['beneficiaries'],
-    queryFn: () => fetchBeneficiaries({ pageSize: 1000 }),
+    queryFn: () => fetchBeneficiaries({ limit: 1000 }),
   })
 
   const { data: applications, isLoading: applicationsLoading } = useQuery({
@@ -97,11 +97,10 @@ export default function StatisticsPage() {
   const totalBeneficiaries = beneficiaries?.total || 0
   const activeBeneficiaries =
     beneficiaries?.data?.filter((b) => b.durum === 'aktif').length || 0
-  const totalApplications = applications?.count || 0
+  const totalApplications = applications?.total || 0
   const pendingApplications =
-    ((applications?.data as Array<{ durum: string }>) || []).filter(
-      (a) => a.durum === 'beklemede'
-    ).length || 0
+    (applications?.data || []).filter((a) => a.durum === 'beklemede').length ||
+    0
 
   // Aid type colors - deterministic based on index
   const aidTypeColors = [
@@ -116,9 +115,8 @@ export default function StatisticsPage() {
   // Aid type distribution
   const aidTypeDistribution = Object.keys(AID_TYPE_LABELS)
     .map((key, index) => {
-      const appData =
-        (applications?.data as Array<{ yardim_turu: string }>) || []
-      const count = appData.filter((a) => a.yardim_turu === key).length || 0
+      const appData = applications?.data || []
+      const count = appData.filter((a) => a.yardimTuru === key).length || 0
       const total = appData.length || 1
       return {
         name: AID_TYPE_LABELS[key as keyof typeof AID_TYPE_LABELS],

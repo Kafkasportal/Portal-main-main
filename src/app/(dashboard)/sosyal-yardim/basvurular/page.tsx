@@ -1,6 +1,5 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import {
   AlertCircle,
   CheckCircle,
@@ -40,8 +39,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useApplications } from '@/hooks/use-api'
 import { AID_TYPE_LABELS, BASVURU_DURUMU_LABELS } from '@/lib/constants'
-import { fetchApplications } from '@/lib/supabase-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { BasvuruDurumu, SosyalYardimBasvuru, YardimTuru } from '@/types'
 
@@ -77,69 +76,34 @@ export default function ApplicationsPage() {
   const [filterYardimTuru, setFilterYardimTuru] = useState<string>('all')
   const [operator, setOperator] = useState<string>('~')
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [
-      'applications',
-      page,
-      pageSize,
-      searchName,
-      searchTc,
-      filterDurum,
-      filterYardimTuru,
-    ],
-    queryFn: async () => {
-      const result = await fetchApplications({
-        page,
-        limit: pageSize,
-        durum: filterDurum !== 'all' ? filterDurum : undefined,
-      })
-      // Map raw DB data to SosyalYardimBasvuru type
-      const mappedData: SosyalYardimBasvuru[] = (result.data || []).map(
-        (app: Record<string, unknown>) => ({
-          id: app.id as string,
-          basvuranKisi: {
-            ad:
-              ((app.beneficiaries as Record<string, unknown>).ad as string) ||
-              '',
-            soyad:
-              ((app.beneficiaries as Record<string, unknown>)
-                .soyad as string) || '',
-            tcKimlikNo:
-              ((app.beneficiaries as Record<string, unknown>)
-                .tc_kimlik_no as string) || '',
-            telefon:
-              ((app.beneficiaries as Record<string, unknown>)
-                .telefon as string) || '',
-            adres: '',
-          },
-          yardimTuru: app.yardim_turu as YardimTuru,
-          talepEdilenTutar: app.talep_edilen_tutar as number,
-          gerekce: (app.aciklama as string) || '',
-          belgeler: [],
-          durum: app.durum as BasvuruDurumu,
-          degerlendirmeNotu: (app.red_sebebi as string) || undefined,
-          createdAt: new Date(app.created_at as string),
-          updatedAt: new Date(app.updated_at as string),
-        })
-      )
-      return { ...result, data: mappedData }
-    },
+  const { data, isLoading, isError, refetch } = useApplications({
+    page,
+    limit: pageSize,
+    durum: filterDurum !== 'all' ? filterDurum : undefined,
   })
 
   // Memoize data array to prevent recalculation on every render
   const applications = useMemo(() => data?.data || [], [data?.data])
-  const limit = data?.limit || pageSize
-  const totalRecords = data?.count || 0
+  const limit = data?.pageSize || pageSize
+  const totalRecords = data?.total || 0
   const totalPages = Math.ceil(totalRecords / limit) || 1
 
   // İstatistikler - memoized (must be before any conditional returns)
   const stats = useMemo(
     () => ({
       toplam: totalRecords,
-      beklemede: applications.filter((a) => a.durum === 'beklemede').length,
-      inceleniyor: applications.filter((a) => a.durum === 'inceleniyor').length,
-      onaylandi: applications.filter((a) => a.durum === 'onaylandi').length,
-      reddedildi: applications.filter((a) => a.durum === 'reddedildi').length,
+      beklemede: applications.filter(
+        (a: SosyalYardimBasvuru) => a.durum === 'beklemede'
+      ).length,
+      inceleniyor: applications.filter(
+        (a: SosyalYardimBasvuru) => a.durum === 'inceleniyor'
+      ).length,
+      onaylandi: applications.filter(
+        (a: SosyalYardimBasvuru) => a.durum === 'onaylandi'
+      ).length,
+      reddedildi: applications.filter(
+        (a: SosyalYardimBasvuru) => a.durum === 'reddedildi'
+      ).length,
     }),
     [applications, totalRecords]
   )
@@ -166,17 +130,18 @@ export default function ApplicationsPage() {
   let filteredApplications = applications
   if (filterYardimTuru !== 'all') {
     filteredApplications = filteredApplications.filter(
-      (a) => a.yardimTuru === filterYardimTuru
+      (a: SosyalYardimBasvuru) => a.yardimTuru === filterYardimTuru
     )
   }
   if (searchTc) {
-    filteredApplications = filteredApplications.filter((a) =>
-      a.basvuranKisi.tcKimlikNo.includes(searchTc)
+    filteredApplications = filteredApplications.filter(
+      (a: SosyalYardimBasvuru) => a.basvuranKisi.tcKimlikNo.includes(searchTc)
     )
   }
   if (searchId) {
-    filteredApplications = filteredApplications.filter((a) =>
-      a.id.toLowerCase().includes(searchId.toLowerCase())
+    filteredApplications = filteredApplications.filter(
+      (a: SosyalYardimBasvuru) =>
+        a.id.toLowerCase().includes(searchId.toLowerCase())
     )
   }
 
@@ -434,7 +399,7 @@ export default function ApplicationsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredApplications.map((application) => (
+                filteredApplications.map((application: SosyalYardimBasvuru) => (
                   <TableRow
                     key={application.id}
                     className="hover:bg-muted/50 cursor-pointer"

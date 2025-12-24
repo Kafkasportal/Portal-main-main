@@ -7,7 +7,6 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from '@/components/shared/lazy-chart'
-import { useQuery } from '@tanstack/react-query'
 import {
   AlertCircle,
   ArrowRight,
@@ -15,8 +14,8 @@ import {
   FileText,
   UserCheck,
   UserPlus,
-  Users,
   UserX,
+  Users,
   Wallet,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -30,105 +29,32 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BASVURU_DURUMU_LABELS, STATUS_VARIANTS } from '@/lib/constants'
 import {
-  fetchApplications,
-  fetchBeneficiaries,
-  fetchDashboardStats,
-  fetchMembers,
-} from '@/lib/supabase-service'
+  useApplications,
+  useBeneficiaries,
+  useDashboardStats,
+  useMembers,
+} from '@/hooks/use-api'
+import { BASVURU_DURUMU_LABELS, STATUS_VARIANTS } from '@/lib/constants'
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils'
-import type { SosyalYardimBasvuru } from '@/types'
 
 export default function DashboardPage() {
   const [isMounted, setIsMounted] = useState(false)
-  const {
-    data: stats,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: fetchDashboardStats,
-  })
+
+  const { data: stats, isLoading, isError, refetch } = useDashboardStats()
 
   // Son başvurular
-  const { data: applicationsData } = useQuery({
-    queryKey: ['dashboard-applications'],
-    queryFn: async () => {
-      const result = await fetchApplications({
-        page: 1,
-        limit: 5,
-        durum: 'beklemede',
-      })
-      // Map raw DB data to expected format
-      const mappedData: SosyalYardimBasvuru[] = (result.data || []).map(
-        (app: Record<string, unknown>) => ({
-          id: app.id as string,
-          basvuranKisi: {
-            ad:
-              ((app.beneficiaries as Record<string, unknown>).ad as string) ||
-              '',
-            soyad:
-              ((app.beneficiaries as Record<string, unknown>)
-                .soyad as string) || '',
-            tcKimlikNo: '',
-            telefon:
-              ((app.beneficiaries as Record<string, unknown>)
-                .telefon as string) || '',
-            adres: '',
-          },
-          yardimTuru: app.yardim_turu as string,
-          talepEdilenTutar: app.talep_edilen_tutar as number,
-          gerekce: (app.aciklama as string) || '',
-          belgeler: [],
-          durum: app.durum as
-            | 'beklemede'
-            | 'inceleniyor'
-            | 'onaylandi'
-            | 'reddedildi'
-            | 'odendi',
-          createdAt: new Date(app.created_at as string),
-          updatedAt: new Date(app.updated_at as string),
-        })
-      )
-      return { ...result, data: mappedData }
-    },
+  const { data: applicationsData } = useApplications({
+    page: 1,
+    limit: 5,
+    durum: 'beklemede',
   })
 
   // Son üyeler
-  const { data: membersData } = useQuery({
-    queryKey: ['dashboard-members'],
-    queryFn: async () => {
-      const result = await fetchMembers({ page: 1, limit: 5 })
-      // Map raw DB data to expected format
-      type MappedMember = {
-        id: string
-        ad: string
-        soyad: string
-        uyeNo: string
-        uyeTuru: string
-        createdAt: Date
-      }
-      const mappedData: MappedMember[] = (result.data || []).map(
-        (m: Record<string, unknown>) => ({
-          id: m.id as string,
-          ad: (m.ad as string) || '',
-          soyad: (m.soyad as string) || '',
-          uyeNo: (m.uye_no as string) || '',
-          uyeTuru: (m.uye_turu as string) || 'aktif',
-          createdAt: new Date(m.created_at as string),
-        })
-      )
-      return { ...result, data: mappedData }
-    },
-  })
+  const { data: membersData } = useMembers({ page: 1, limit: 5 })
 
   // İhtiyaç sahipleri
-  const { data: beneficiariesData } = useQuery({
-    queryKey: ['dashboard-beneficiaries'],
-    queryFn: () => fetchBeneficiaries({ page: 1, pageSize: 100 }),
-  })
+  const { data: beneficiariesData } = useBeneficiaries({ page: 1, limit: 100 })
 
   useEffect(() => {
     // Delay to ensure container dimensions are calculated

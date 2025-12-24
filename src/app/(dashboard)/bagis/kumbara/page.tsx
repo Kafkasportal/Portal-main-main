@@ -1,6 +1,5 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import {
   Banknote,
   History,
@@ -24,7 +23,7 @@ import { KumbaraToplamaDialog } from '@/components/features/kumbara/kumbara-topl
 import { RotaOlusturDialog } from '@/components/features/kumbara/rota-olustur-dialog'
 import { YeniKumbaraDialog } from '@/components/features/kumbara/yeni-kumbara-dialog'
 
-import { fetchKumbaras } from '@/lib/mock-service'
+import { useKumbaras } from '@/hooks/use-api'
 import { formatCurrency } from '@/lib/utils'
 import type { Kumbara } from '@/types'
 
@@ -40,10 +39,7 @@ export default function KumbaraPage() {
   const [rotaOpen, setRotaOpen] = useState(false)
   const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(null)
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['kumbaras'],
-    queryFn: () => fetchKumbaras({ pageSize: 50 }),
-  })
+  const { data, isLoading, isError, refetch } = useKumbaras({ limit: 50 })
 
   // Memoize data array to prevent recalculation
   const kumbaras = useMemo(() => data?.data || [], [data?.data])
@@ -51,10 +47,13 @@ export default function KumbaraPage() {
   // Memoize expensive calculations
   const stats = useMemo(
     () => ({
-      activeCount: kumbaras.filter((k) => k.durum === 'aktif').length,
-      totalAmount: kumbaras.reduce((sum, k) => sum + k.toplamTutar, 0),
+      activeCount: kumbaras.filter((k: Kumbara) => k.durum === 'aktif').length,
+      totalAmount: kumbaras.reduce(
+        (sum: number, k: Kumbara) => sum + k.toplamTutar,
+        0
+      ),
       totalCollected: kumbaras.reduce(
-        (sum, k) => sum + (k.toplamaBaşarina || 0),
+        (sum: number, k: Kumbara) => sum + (k.toplamaBaşarina || 0),
         0
       ),
     }),
@@ -199,10 +198,12 @@ export default function KumbaraPage() {
         <TabsList>
           <TabsTrigger value="all">Tümü ({kumbaras.length})</TabsTrigger>
           <TabsTrigger value="aktif">
-            Aktif ({kumbaras.filter((k) => k.durum === 'aktif').length})
+            Aktif ({kumbaras.filter((k: Kumbara) => k.durum === 'aktif').length}
+            )
           </TabsTrigger>
           <TabsTrigger value="bakim">
-            Bakımda ({kumbaras.filter((k) => k.durum === 'bakim').length})
+            Bakımda (
+            {kumbaras.filter((k: Kumbara) => k.durum === 'bakim').length})
           </TabsTrigger>
         </TabsList>
 
@@ -219,14 +220,14 @@ export default function KumbaraPage() {
 
         <TabsContent value="aktif" className="space-y-4">
           <KumbaraGrid
-            kumbaras={kumbaras.filter((k) => k.durum === 'aktif')}
+            kumbaras={kumbaras.filter((k: Kumbara) => k.durum === 'aktif')}
             onKumbaraClick={handleKumbaraClick}
           />
         </TabsContent>
 
         <TabsContent value="bakim" className="space-y-4">
           <KumbaraGrid
-            kumbaras={kumbaras.filter((k) => k.durum === 'bakim')}
+            kumbaras={kumbaras.filter((k: Kumbara) => k.durum === 'bakim')}
             onKumbaraClick={handleKumbaraClick}
           />
         </TabsContent>

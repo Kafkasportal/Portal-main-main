@@ -1,6 +1,5 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import {
   ChevronLeft,
   ChevronRight,
@@ -54,12 +53,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useBeneficiaries } from '@/hooks/use-api'
 import {
   IHTIYAC_DURUMU_LABELS,
   IHTIYAC_SAHIBI_KATEGORI_LABELS,
   IHTIYAC_SAHIBI_TURU_LABELS,
 } from '@/lib/constants'
-import { fetchBeneficiaries } from '@/lib/supabase-service'
 import { formatDate } from '@/lib/utils'
 import type { IhtiyacSahibi, IhtiyacSahibiKategori } from '@/types'
 
@@ -93,25 +92,12 @@ export default function BeneficiariesPage() {
   const [filterDurum, setFilterDurum] = useState<string>('all')
   const [filterTur, setFilterTur] = useState<string>('all')
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [
-      'beneficiaries',
-      page,
-      pageSize,
-      searchName,
-      searchKimlik,
-      searchDosyaNo,
-      filterKategori,
-      filterDurum,
-    ],
-    queryFn: () =>
-      fetchBeneficiaries({
-        page,
-        pageSize,
-        search: searchName || searchKimlik || searchDosyaNo || undefined,
-        durum: filterKategori !== 'all' ? filterKategori : undefined,
-        ihtiyacDurumu: filterDurum !== 'all' ? filterDurum : undefined,
-      }),
+  const { data, isLoading, isError, refetch } = useBeneficiaries({
+    page,
+    limit: pageSize,
+    search: searchName || searchKimlik || searchDosyaNo || undefined,
+    durum: filterKategori !== 'all' ? filterKategori : undefined,
+    ihtiyacDurumu: filterDurum !== 'all' ? filterDurum : undefined,
   })
 
   // Use data directly from query (filtering is done server-side)

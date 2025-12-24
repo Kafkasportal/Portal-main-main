@@ -31,9 +31,9 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DONATION_PURPOSE_LABELS, STATUS_LABELS } from '@/lib/constants'
-import { fetchDashboardStats, fetchDonations } from '@/lib/mock-service'
+import { fetchDashboardStats, fetchDonations } from '@/lib/supabase-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import type { DonationPurpose, PaymentStatus } from '@/types'
+import type { DonationPurpose } from '@/types'
 
 export default function ReportsPage() {
   const [isMounted, setIsMounted] = useState(false)
@@ -65,9 +65,8 @@ export default function ReportsPage() {
     queryKey: ['donations-report', purpose, status],
     queryFn: () =>
       fetchDonations({
-        pageSize: 1000,
-        purpose: purpose !== 'all' ? (purpose as DonationPurpose) : undefined,
-        status: status !== 'all' ? (status as PaymentStatus) : undefined,
+        limit: 1000,
+        amac: purpose !== 'all' ? (purpose as DonationPurpose) : undefined,
       }),
   })
 

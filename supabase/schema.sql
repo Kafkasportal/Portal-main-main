@@ -134,6 +134,21 @@ CREATE TABLE IF NOT EXISTS public.payments (
 );
 
 -- =============================================
+-- DOCUMENTS TABLE (Dosya Metadata)
+-- =============================================
+CREATE TABLE IF NOT EXISTS public.documents (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  beneficiary_id UUID NOT NULL REFERENCES public.beneficiaries(id) ON DELETE CASCADE,
+  file_name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  file_type TEXT NOT NULL,
+  file_size INTEGER NOT NULL,
+  document_type TEXT NOT NULL CHECK (document_type IN ('kimlik', 'ikamet', 'saglik', 'gelir', 'diger')),
+  uploaded_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- =============================================
 -- AUDIT LOG TABLE
 -- =============================================
 CREATE TABLE IF NOT EXISTS public.audit_logs (
@@ -163,6 +178,8 @@ CREATE INDEX IF NOT EXISTS idx_kumbaras_durum ON public.kumbaras(durum);
 CREATE INDEX IF NOT EXISTS idx_applications_durum ON public.social_aid_applications(durum);
 CREATE INDEX IF NOT EXISTS idx_applications_basvuran ON public.social_aid_applications(basvuran_id);
 CREATE INDEX IF NOT EXISTS idx_payments_beneficiary ON public.payments(beneficiary_id);
+CREATE INDEX IF NOT EXISTS idx_documents_beneficiary ON public.documents(beneficiary_id);
+CREATE INDEX IF NOT EXISTS idx_documents_type ON public.documents(document_type);
 CREATE INDEX IF NOT EXISTS idx_audit_user ON public.audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_table ON public.audit_logs(table_name);
 
@@ -176,6 +193,7 @@ ALTER TABLE public.beneficiaries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.kumbaras ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.social_aid_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- =============================================
@@ -220,6 +238,10 @@ CREATE POLICY "Authenticated users can manage applications" ON public.social_aid
 
 -- Authenticated users can view/manage payments
 CREATE POLICY "Authenticated users can manage payments" ON public.payments
+  FOR ALL USING (auth.role() = 'authenticated');
+
+-- Authenticated users can view/manage documents
+CREATE POLICY "Authenticated users can manage documents" ON public.documents
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Only admins can view audit logs

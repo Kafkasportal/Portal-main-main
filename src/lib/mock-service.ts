@@ -1,31 +1,32 @@
 import type {
-    Bagis,
-    Kumbara,
-    KumbaraToplama,
-    GpsKoordinat,
-    Uye,
-    SosyalYardimBasvuru,
-    IhtiyacSahibi,
-    IhtiyacDurumu,
-    IhtiyacSahibiKategori,
-    DashboardStats,
-    PaginatedResponse,
-    PaymentStatus,
-    DonationPurpose,
-    BasvuruDurumu,
-    YardimTuru
+  Bagis,
+  BasvuruDurumu,
+  DashboardStats,
+  DonationPurpose,
+  GpsKoordinat,
+  IhtiyacDurumu,
+  IhtiyacSahibi,
+  IhtiyacSahibiKategori,
+  Kumbara,
+  KumbaraToplama,
+  PaginatedResponse,
+  PaymentStatus,
+  SosyalYardimBasvuru,
+  Uye,
+  YardimTuru,
 } from '@/types'
 import {
-    generateMockDonations,
-    generateMockKumbaras,
-    generateMockUyeler,
-    generateMockBasvurular,
-    generateMockIhtiyacSahipleri,
-    generateDashboardStats
+  generateDashboardStats,
+  generateMockBasvurular,
+  generateMockDonations,
+  generateMockIhtiyacSahipleri,
+  generateMockKumbaras,
+  generateMockUyeler,
 } from './mock-data'
 
 // Simulated network delay - minimal for smooth UX
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, Math.min(ms, 50)))
+const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, Math.min(ms, 50)))
 
 // Cache for consistent data during session
 let donationsCache: Bagis[] | null = null
@@ -36,597 +37,631 @@ let beneficiariesCache: IhtiyacSahibi[] | null = null
 
 // Initialize caches
 function getDonations(): Bagis[] {
-    if (!donationsCache) {
-        donationsCache = generateMockDonations(100)
-    }
-    return donationsCache
+  if (!donationsCache) {
+    donationsCache = generateMockDonations(100)
+  }
+  return donationsCache
 }
 
 function getKumbaras(): Kumbara[] {
-    if (!kumbarasCache) {
-        kumbarasCache = generateMockKumbaras(25)
-    }
-    return kumbarasCache
+  if (!kumbarasCache) {
+    kumbarasCache = generateMockKumbaras(25)
+  }
+  return kumbarasCache
 }
 
 function getMembers(): Uye[] {
-    if (!membersCache) {
-        membersCache = generateMockUyeler(150)
-    }
-    return membersCache
+  if (!membersCache) {
+    membersCache = generateMockUyeler(150)
+  }
+  return membersCache
 }
 
 function getApplications(): SosyalYardimBasvuru[] {
-    if (!applicationsCache) {
-        applicationsCache = generateMockBasvurular(50)
-    }
-    return applicationsCache
+  if (!applicationsCache) {
+    applicationsCache = generateMockBasvurular(50)
+  }
+  return applicationsCache
 }
 
 function getBeneficiaries(): IhtiyacSahibi[] {
-    if (!beneficiariesCache) {
-        beneficiariesCache = generateMockIhtiyacSahipleri(80)
-    }
-    return beneficiariesCache
+  if (!beneficiariesCache) {
+    beneficiariesCache = generateMockIhtiyacSahipleri(80)
+  }
+  return beneficiariesCache
 }
 
 // Fetch dashboard stats
 export async function fetchDashboardStats(): Promise<DashboardStats> {
-    await delay(500)
-    return generateDashboardStats()
+  await delay(500)
+  return generateDashboardStats()
 }
 
 // Fetch donations with pagination, sorting, and filtering
 export async function fetchDonations(options: {
-    page?: number
-    pageSize?: number
-    search?: string
-    status?: PaymentStatus
-    purpose?: DonationPurpose
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
+  page?: number
+  pageSize?: number
+  search?: string
+  status?: PaymentStatus
+  purpose?: DonationPurpose
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }): Promise<PaginatedResponse<Bagis>> {
-    await delay(300)
+  await delay(300)
 
-    const {
-        page = 1,
-        pageSize = 10,
-        search = '',
-        status,
-        purpose,
-        sortBy = 'createdAt',
-        sortOrder = 'desc'
-    } = options
+  const {
+    page = 1,
+    pageSize = 10,
+    search = '',
+    status,
+    purpose,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+  } = options
 
-    let data = [...getDonations()]
+  let data = [...getDonations()]
 
-    // Filter by search
-    if (search) {
-        const searchLower = search.toLowerCase()
-        data = data.filter(d =>
-            d.bagisci.ad.toLowerCase().includes(searchLower) ||
-            d.bagisci.soyad.toLowerCase().includes(searchLower) ||
-            d.makbuzNo?.toLowerCase().includes(searchLower)
-        )
+  // Filter by search
+  if (search) {
+    const searchLower = search.toLowerCase()
+    data = data.filter(
+      (d) =>
+        d.bagisci.ad.toLowerCase().includes(searchLower) ||
+        d.bagisci.soyad.toLowerCase().includes(searchLower) ||
+        d.makbuzNo?.toLowerCase().includes(searchLower)
+    )
+  }
+
+  // Filter by status
+  if (status) {
+    data = data.filter((d) => d.durum === status)
+  }
+
+  // Filter by purpose
+  if (purpose) {
+    data = data.filter((d) => d.amac === purpose)
+  }
+
+  // Sort
+  data.sort((a, b) => {
+    const aValue = a[sortBy as keyof Bagis]
+    const bValue = b[sortBy as keyof Bagis]
+
+    if (aValue instanceof Date && bValue instanceof Date) {
+      return sortOrder === 'asc'
+        ? aValue.getTime() - bValue.getTime()
+        : bValue.getTime() - aValue.getTime()
     }
 
-    // Filter by status
-    if (status) {
-        data = data.filter(d => d.durum === status)
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
     }
 
-    // Filter by purpose
-    if (purpose) {
-        data = data.filter(d => d.amac === purpose)
-    }
+    return 0
+  })
 
-    // Sort
-    data.sort((a, b) => {
-        const aValue = a[sortBy as keyof Bagis]
-        const bValue = b[sortBy as keyof Bagis]
+  // Paginate
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-        if (aValue instanceof Date && bValue instanceof Date) {
-            return sortOrder === 'asc'
-                ? aValue.getTime() - bValue.getTime()
-                : bValue.getTime() - aValue.getTime()
-        }
-
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
-        }
-
-        return 0
-    })
-
-    // Paginate
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
-
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch single donation
 export async function fetchDonation(id: string): Promise<Bagis | null> {
-    await delay(200)
-    const donations = getDonations()
-    return donations.find(d => d.id === id) || null
+  await delay(200)
+  const donations = getDonations()
+  return donations.find((d) => d.id === id) || null
 }
 
 // Fetch kumbaras
 export async function fetchKumbaras(options: {
-    page?: number
-    pageSize?: number
-    status?: 'aktif' | 'pasif' | 'bakim'
+  page?: number
+  pageSize?: number
+  status?: 'aktif' | 'pasif' | 'bakim'
 }): Promise<PaginatedResponse<Kumbara>> {
-    await delay(300)
+  await delay(300)
 
-    const { page = 1, pageSize = 10, status } = options
-    let data = [...getKumbaras()]
+  const { page = 1, pageSize = 10, status } = options
+  let data = [...getKumbaras()]
 
-    if (status) {
-        data = data.filter(k => k.durum === status)
-    }
+  if (status) {
+    data = data.filter((k) => k.durum === status)
+  }
 
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch kumbara by code (for QR scan)
 export async function fetchKumbaraByCode(kod: string): Promise<Kumbara | null> {
-    await delay(200)
-    const kumbaras = getKumbaras()
-    return kumbaras.find(k => k.kod === kod || k.qrKod?.kod === kod) || null
+  await delay(200)
+  const kumbaras = getKumbaras()
+  return kumbaras.find((k) => k.kod === kod || k.qrKod?.kod === kod) || null
 }
 
 // Create new kumbara
 export async function createKumbara(data: {
-    qrKod: string
-    ad: string
-    konum: string
-    koordinat?: GpsKoordinat
-    sorumluId: string
-    notlar?: string
+  qrKod: string
+  ad: string
+  konum: string
+  koordinat?: GpsKoordinat
+  sorumluId: string
+  notlar?: string
 }): Promise<Kumbara> {
-    await delay(300)
-    
-    const newKumbara: Kumbara = {
-        id: crypto.randomUUID(),
-        kod: data.qrKod,
-        ad: data.ad,
-        konum: data.konum,
-        koordinat: data.koordinat,
-        qrKod: {
-            kod: data.qrKod,
-            tapilanTarih: new Date()
-        },
-        sorumlu: {
-            id: data.sorumluId,
-            name: 'Sorumlu Kişi',
-            email: 'sorumlu@example.com',
-            role: 'gorevli',
-            isActive: true,
-            permissions: ['donations.view'],
-            createdAt: new Date(),
-            updatedAt: new Date()
-        },
-        sonBosaltma: undefined,
-        toplamTutar: 0,
-        toplamaBaşarina: 0,
-        toplamaGecmisi: [],
-        durum: 'aktif',
-        notlar: data.notlar,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
-    
-    // Cache'e ekle
-    if (kumbarasCache) {
-        kumbarasCache.unshift(newKumbara)
-    }
-    
-    return newKumbara
+  await delay(300)
+
+  const newKumbara: Kumbara = {
+    id: crypto.randomUUID(),
+    kod: data.qrKod,
+    ad: data.ad,
+    konum: data.konum,
+    koordinat: data.koordinat,
+    qrKod: {
+      kod: data.qrKod,
+      tapilanTarih: new Date(),
+    },
+    sorumlu: {
+      id: data.sorumluId,
+      name: 'Sorumlu Kişi',
+      email: 'sorumlu@example.com',
+      role: 'gorevli',
+      isActive: true,
+      permissions: ['donations.view'],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    sonBosaltma: undefined,
+    toplamTutar: 0,
+    toplamaBaşarina: 0,
+    toplamaGecmisi: [],
+    durum: 'aktif',
+    notlar: data.notlar,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  // Cache'e ekle
+  if (kumbarasCache) {
+    kumbarasCache.unshift(newKumbara)
+  }
+
+  return newKumbara
 }
 
 // Collect (empty) kumbara
 export async function collectKumbara(data: {
-    kumbaraId: string
-    tutar: number
-    notlar?: string
+  kumbaraId: string
+  tutar: number
+  notlar?: string
 }): Promise<KumbaraToplama> {
-    await delay(300)
-    
-    const kumbaras = getKumbaras()
-    const kumbara = kumbaras.find(k => k.id === data.kumbaraId)
-    
-    if (!kumbara) {
-        throw new Error('Kumbara bulunamadı')
-    }
-    
-    const toplama: KumbaraToplama = {
-        id: crypto.randomUUID(),
-        kumbaraId: data.kumbaraId,
-        tarih: new Date(),
-        tutar: data.tutar,
-        toplayanKisi: {
-            id: 'current-user',
-            name: 'Mevcut Kullanıcı',
-            email: 'user@example.com',
-            role: 'gorevli',
-            isActive: true,
-            permissions: ['donations.view'],
-            createdAt: new Date(),
-            updatedAt: new Date()
-        },
-        notlar: data.notlar
-    }
-    
-    // Kumbara bilgilerini güncelle
-    kumbara.toplamTutar = 0 // Boşaltıldı
-    kumbara.toplamaBaşarina = (kumbara.toplamaBaşarina || 0) + data.tutar
-    kumbara.sonBosaltma = new Date()
-    kumbara.toplamaGecmisi = kumbara.toplamaGecmisi || []
-    kumbara.toplamaGecmisi.unshift(toplama)
-    kumbara.updatedAt = new Date()
-    
-    return toplama
+  await delay(300)
+
+  const kumbaras = getKumbaras()
+  const kumbara = kumbaras.find((k) => k.id === data.kumbaraId)
+
+  if (!kumbara) {
+    throw new Error('Kumbara bulunamadı')
+  }
+
+  const toplama: KumbaraToplama = {
+    id: crypto.randomUUID(),
+    kumbaraId: data.kumbaraId,
+    tarih: new Date(),
+    tutar: data.tutar,
+    toplayanKisi: {
+      id: 'current-user',
+      name: 'Mevcut Kullanıcı',
+      email: 'user@example.com',
+      role: 'gorevli',
+      isActive: true,
+      permissions: ['donations.view'],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    notlar: data.notlar,
+  }
+
+  // Kumbara bilgilerini güncelle
+  kumbara.toplamTutar = 0 // Boşaltıldı
+  kumbara.toplamaBaşarina = (kumbara.toplamaBaşarina || 0) + data.tutar
+  kumbara.sonBosaltma = new Date()
+  kumbara.toplamaGecmisi = kumbara.toplamaGecmisi || []
+  kumbara.toplamaGecmisi.unshift(toplama)
+  kumbara.updatedAt = new Date()
+
+  return toplama
 }
 
 // Fetch members
 export async function fetchMembers(options: {
-    page?: number
-    pageSize?: number
-    search?: string
-    type?: string
+  page?: number
+  pageSize?: number
+  search?: string
+  type?: string
 }): Promise<PaginatedResponse<Uye>> {
-    await delay(300)
+  await delay(300)
 
-    const { page = 1, pageSize = 10, search = '', type } = options
-    let data = [...getMembers()]
+  const { page = 1, pageSize = 10, search = '', type } = options
+  let data = [...getMembers()]
 
-    if (search) {
-        const searchLower = search.toLowerCase()
-        data = data.filter(m =>
-            m.ad.toLowerCase().includes(searchLower) ||
-            m.soyad.toLowerCase().includes(searchLower) ||
-            m.uyeNo.toLowerCase().includes(searchLower) ||
-            m.telefon.includes(search)
-        )
-    }
+  if (search) {
+    const searchLower = search.toLowerCase()
+    data = data.filter(
+      (m) =>
+        m.ad.toLowerCase().includes(searchLower) ||
+        m.soyad.toLowerCase().includes(searchLower) ||
+        m.uyeNo.toLowerCase().includes(searchLower) ||
+        m.telefon.includes(search)
+    )
+  }
 
-    if (type) {
-        data = data.filter(m => m.uyeTuru === type)
-    }
+  if (type) {
+    data = data.filter((m) => m.uyeTuru === type)
+  }
 
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch single member
 export async function fetchMember(id: string): Promise<Uye | null> {
-    await delay(200)
-    const members = getMembers()
-    return members.find(m => m.id === id) || null
+  await delay(200)
+  const members = getMembers()
+  return members.find((m) => m.id === id) || null
 }
 
 // Fetch social aid applications
 export async function fetchApplications(options: {
-    page?: number
-    pageSize?: number
-    status?: BasvuruDurumu
-    search?: string
-    yardimTuru?: YardimTuru
+  page?: number
+  pageSize?: number
+  status?: BasvuruDurumu
+  search?: string
+  yardimTuru?: YardimTuru
 }): Promise<PaginatedResponse<SosyalYardimBasvuru>> {
-    await delay(300)
+  await delay(300)
 
-    const { page = 1, pageSize = 10, status, search = '', yardimTuru } = options
-    let data = [...getApplications()]
+  const { page = 1, pageSize = 10, status, search = '', yardimTuru } = options
+  let data = [...getApplications()]
 
-    if (status) {
-        data = data.filter(a => a.durum === status)
-    }
+  if (status) {
+    data = data.filter((a) => a.durum === status)
+  }
 
-    if (yardimTuru) {
-        data = data.filter(a => a.yardimTuru === yardimTuru)
-    }
+  if (yardimTuru) {
+    data = data.filter((a) => a.yardimTuru === yardimTuru)
+  }
 
-    if (search) {
-        const searchLower = search.toLowerCase()
-        data = data.filter(a =>
-            a.basvuranKisi.ad.toLowerCase().includes(searchLower) ||
-            a.basvuranKisi.soyad.toLowerCase().includes(searchLower) ||
-            a.basvuranKisi.tcKimlikNo.includes(search)
-        )
-    }
+  if (search) {
+    const searchLower = search.toLowerCase()
+    data = data.filter(
+      (a) =>
+        a.basvuranKisi.ad.toLowerCase().includes(searchLower) ||
+        a.basvuranKisi.soyad.toLowerCase().includes(searchLower) ||
+        a.basvuranKisi.tcKimlikNo.includes(search)
+    )
+  }
 
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch single application by ID
-export async function fetchApplicationById(id: string): Promise<SosyalYardimBasvuru | null> {
-    await delay(200)
-    const applications = getApplications()
-    return applications.find(a => a.id === id) || null
+export async function fetchApplicationById(
+  id: string
+): Promise<SosyalYardimBasvuru | null> {
+  await delay(200)
+  const applications = getApplications()
+  return applications.find((a) => a.id === id) || null
 }
 
 // Update application status
 export async function updateApplicationStatus(
-    id: string, 
-    durum: BasvuruDurumu,
-    degerlendirmeNotu?: string
+  id: string,
+  durum: BasvuruDurumu,
+  degerlendirmeNotu?: string
 ): Promise<SosyalYardimBasvuru> {
-    await delay(300)
-    
-    const applications = getApplications()
-    const application = applications.find(a => a.id === id)
-    
-    if (!application) {
-        throw new Error('Başvuru bulunamadı')
-    }
-    
-    // Update application status
-    application.durum = durum
-    application.degerlendiren = {
-        id: 'current-user',
-        name: 'Mevcut Kullanıcı',
-        email: 'user@example.com',
-        role: 'admin',
-        isActive: true,
-        permissions: ['social-aid.approve'],
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
-    
-    if (degerlendirmeNotu) {
-        application.degerlendirmeNotu = degerlendirmeNotu
-    }
-    
-    application.updatedAt = new Date()
-    
-    return application
+  await delay(300)
+
+  const applications = getApplications()
+  const application = applications.find((a) => a.id === id)
+
+  if (!application) {
+    throw new Error('Başvuru bulunamadı')
+  }
+
+  // Update application status
+  application.durum = durum
+  application.degerlendiren = {
+    id: 'current-user',
+    name: 'Mevcut Kullanıcı',
+    email: 'user@example.com',
+    role: 'admin',
+    isActive: true,
+    permissions: ['social-aid.approve'],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  if (degerlendirmeNotu) {
+    application.degerlendirmeNotu = degerlendirmeNotu
+  }
+
+  application.updatedAt = new Date()
+
+  return application
 }
 
 // Fetch payments (approved applications)
 export async function fetchPayments(options: {
-    page?: number
-    pageSize?: number
+  page?: number
+  pageSize?: number
 }): Promise<PaginatedResponse<SosyalYardimBasvuru>> {
-    await delay(300)
+  await delay(300)
 
-    const { page = 1, pageSize = 10 } = options
-    const data = getApplications().filter(a => a.durum === 'odendi')
+  const { page = 1, pageSize = 10 } = options
+  const data = getApplications().filter((a) => a.durum === 'odendi')
 
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch beneficiaries (ihtiyaç sahipleri) - Genişletilmiş
 export async function fetchBeneficiaries(options: {
-    page?: number
-    pageSize?: number
-    status?: IhtiyacDurumu
-    kategori?: IhtiyacSahibiKategori
-    search?: string
-    city?: string
-    dosyaNo?: string
-    kimlikNo?: string
+  page?: number
+  pageSize?: number
+  status?: IhtiyacDurumu
+  kategori?: IhtiyacSahibiKategori
+  search?: string
+  city?: string
+  dosyaNo?: string
+  kimlikNo?: string
 }): Promise<PaginatedResponse<IhtiyacSahibi>> {
-    await delay(300)
+  await delay(300)
 
-    const { page = 1, pageSize = 20, status, kategori, search = '', city, dosyaNo, kimlikNo } = options
-    let data = [...getBeneficiaries()]
+  const {
+    page = 1,
+    pageSize = 20,
+    status,
+    kategori,
+    search = '',
+    city,
+    dosyaNo,
+    kimlikNo,
+  } = options
+  let data = [...getBeneficiaries()]
 
-    if (status) {
-        data = data.filter(b => b.durum === status)
-    }
+  if (status) {
+    data = data.filter((b) => b.durum === status)
+  }
 
-    if (kategori) {
-        data = data.filter(b => b.kategori === kategori)
-    }
+  if (kategori) {
+    data = data.filter((b) => b.kategori === kategori)
+  }
 
-    if (city) {
-        data = data.filter(b => b.sehir === city)
-    }
+  if (city) {
+    data = data.filter((b) => b.sehir === city)
+  }
 
-    if (dosyaNo) {
-        data = data.filter(b => b.dosyaNo.toLowerCase().includes(dosyaNo.toLowerCase()))
-    }
+  if (dosyaNo) {
+    data = data.filter((b) =>
+      b.dosyaNo.toLowerCase().includes(dosyaNo.toLowerCase())
+    )
+  }
 
-    if (kimlikNo) {
-        data = data.filter(b => 
-            (b.tcKimlikNo && b.tcKimlikNo.includes(kimlikNo)) ||
-            (b.yabanciKimlikNo && b.yabanciKimlikNo.includes(kimlikNo))
-        )
-    }
+  if (kimlikNo) {
+    data = data.filter(
+      (b) =>
+        (b.tcKimlikNo && b.tcKimlikNo.includes(kimlikNo)) ||
+        (b.yabanciKimlikNo && b.yabanciKimlikNo.includes(kimlikNo))
+    )
+  }
 
-    if (search) {
-        const searchLower = search.toLowerCase()
-        data = data.filter(b =>
-            b.ad.toLowerCase().includes(searchLower) ||
-            b.soyad.toLowerCase().includes(searchLower) ||
-            (b.tcKimlikNo && b.tcKimlikNo.includes(search)) ||
-            (b.yabanciKimlikNo && b.yabanciKimlikNo.toLowerCase().includes(searchLower)) ||
-            (b.cepTelefonu && b.cepTelefonu.includes(search)) ||
-            b.dosyaNo.toLowerCase().includes(searchLower)
-        )
-    }
+  if (search) {
+    const searchLower = search.toLowerCase()
+    data = data.filter(
+      (b) =>
+        b.ad.toLowerCase().includes(searchLower) ||
+        b.soyad.toLowerCase().includes(searchLower) ||
+        (b.tcKimlikNo && b.tcKimlikNo.includes(search)) ||
+        (b.yabanciKimlikNo &&
+          b.yabanciKimlikNo.toLowerCase().includes(searchLower)) ||
+        (b.cepTelefonu && b.cepTelefonu.includes(search)) ||
+        b.dosyaNo.toLowerCase().includes(searchLower)
+    )
+  }
 
-    // Sort by most recent
-    data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  // Sort by most recent
+  data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    const total = data.length
-    const totalPages = Math.ceil(total / pageSize)
-    const start = (page - 1) * pageSize
-    const paginatedData = data.slice(start, start + pageSize)
+  const total = data.length
+  const totalPages = Math.ceil(total / pageSize)
+  const start = (page - 1) * pageSize
+  const paginatedData = data.slice(start, start + pageSize)
 
-    return {
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages
-    }
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  }
 }
 
 // Fetch single beneficiary by ID
-export async function fetchBeneficiaryById(id: string): Promise<IhtiyacSahibi | null> {
-    await delay(200)
-    const beneficiaries = getBeneficiaries()
-    return beneficiaries.find(b => b.id === id) || null
+export async function fetchBeneficiaryById(
+  id: string
+): Promise<IhtiyacSahibi | null> {
+  await delay(200)
+  const beneficiaries = getBeneficiaries()
+  return beneficiaries.find((b) => b.id === id) || null
 }
 
 // Create new beneficiary
-export async function createBeneficiary(data: Partial<IhtiyacSahibi>): Promise<IhtiyacSahibi> {
-    await delay(500)
-    
-    const newBeneficiary: IhtiyacSahibi = {
-        id: crypto.randomUUID(),
-        tur: data.tur || 'ihtiyac-sahibi-kisi',
-        kategori: data.kategori || 'ihtiyac-sahibi-aile',
-        ad: data.ad || '',
-        soyad: data.soyad || '',
-        uyruk: data.uyruk || 'Türkiye',
-        dosyaNo: data.dosyaNo || `DSY-${Math.random().toString().slice(2, 8)}`,
-        ulke: data.ulke || 'Türkiye',
-        sehir: data.sehir || '',
-        durum: 'taslak',
-        rizaBeyaniDurumu: 'alinmadi',
-        kayitTarihi: new Date(),
-        basvuruSayisi: 0,
-        yardimSayisi: 0,
-        toplamYardimTutari: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        ...data
-    } as IhtiyacSahibi
-    
-    getBeneficiaries().unshift(newBeneficiary)
-    return newBeneficiary
+export async function createBeneficiary(
+  data: Partial<IhtiyacSahibi>
+): Promise<IhtiyacSahibi> {
+  await delay(500)
+
+  const newBeneficiary: IhtiyacSahibi = {
+    id: crypto.randomUUID(),
+    tur: data.tur || 'ihtiyac-sahibi-kisi',
+    kategori: data.kategori || 'ihtiyac-sahibi-aile',
+    ad: data.ad || '',
+    soyad: data.soyad || '',
+    uyruk: data.uyruk || 'Türkiye',
+    dosyaNo: data.dosyaNo || `DSY-${Math.random().toString().slice(2, 8)}`,
+    ulke: data.ulke || 'Türkiye',
+    sehir: data.sehir || '',
+    durum: 'taslak',
+    rizaBeyaniDurumu: 'alinmadi',
+    kayitTarihi: new Date(),
+    basvuruSayisi: 0,
+    yardimSayisi: 0,
+    toplamYardimTutari: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...data,
+  } as IhtiyacSahibi
+
+  getBeneficiaries().unshift(newBeneficiary)
+  return newBeneficiary
 }
 
 // Update beneficiary
-export async function updateBeneficiary(id: string, data: Partial<IhtiyacSahibi>): Promise<IhtiyacSahibi | null> {
-    await delay(400)
-    
-    const beneficiaries = getBeneficiaries()
-    const index = beneficiaries.findIndex(b => b.id === id)
-    
-    if (index === -1) return null
-    
-    beneficiaries[index] = {
-        ...beneficiaries[index],
-        ...data,
-        updatedAt: new Date()
-    }
-    
-    return beneficiaries[index]
+export async function updateBeneficiary(
+  id: string,
+  data: Partial<IhtiyacSahibi>
+): Promise<IhtiyacSahibi | null> {
+  await delay(400)
+
+  const beneficiaries = getBeneficiaries()
+  const index = beneficiaries.findIndex((b) => b.id === id)
+
+  if (index === -1) return null
+
+  beneficiaries[index] = {
+    ...beneficiaries[index],
+    ...data,
+    updatedAt: new Date(),
+  }
+
+  return beneficiaries[index]
 }
 
 // Mock create donation
 export async function createDonation(data: Partial<Bagis>): Promise<Bagis> {
-    await delay(500)
+  await delay(500)
 
-    const newDonation: Bagis = {
-        id: crypto.randomUUID(),
-        bagisci: data.bagisci || {
-            id: crypto.randomUUID(),
-            ad: '',
-            soyad: ''
-        },
-        tutar: data.tutar || 0,
-        currency: data.currency || 'TRY',
-        amac: data.amac || 'genel',
-        odemeYontemi: data.odemeYontemi || 'nakit',
-        durum: 'tamamlandi',
-        makbuzNo: `MKB-2024-${Math.random().toString().slice(2, 6)}`,
-        aciklama: data.aciklama,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
+  const newDonation: Bagis = {
+    id: crypto.randomUUID(),
+    bagisci: data.bagisci || {
+      id: crypto.randomUUID(),
+      ad: '',
+      soyad: '',
+    },
+    tutar: data.tutar || 0,
+    currency: data.currency || 'TRY',
+    amac: data.amac || 'genel',
+    odemeYontemi: data.odemeYontemi || 'nakit',
+    durum: 'tamamlandi',
+    makbuzNo: `MKB-2024-${Math.random().toString().slice(2, 6)}`,
+    aciklama: data.aciklama,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 
-    getDonations().unshift(newDonation)
-    return newDonation
+  getDonations().unshift(newDonation)
+  return newDonation
 }
 
 // Mock create member
 export async function createMember(data: Partial<Uye>): Promise<Uye> {
-    await delay(500)
+  await delay(500)
 
-    const newMember: Uye = {
-        id: crypto.randomUUID(),
-        tcKimlikNo: data.tcKimlikNo || '',
-        ad: data.ad || '',
-        soyad: data.soyad || '',
-        dogumTarihi: data.dogumTarihi || new Date(),
-        cinsiyet: data.cinsiyet || 'erkek',
-        telefon: data.telefon || '',
-        email: data.email,
-        adres: data.adres || {
-            il: '',
-            ilce: '',
-            mahalle: '',
-            acikAdres: ''
-        },
-        uyeTuru: data.uyeTuru || 'aktif',
-        uyeNo: `UY-${Math.random().toString().slice(2, 8)}`,
-        kayitTarihi: new Date(),
-        aidatDurumu: 'guncel',
-        aidat: {
-            tutar: 100,
-            sonOdemeTarihi: new Date()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
+  const newMember: Uye = {
+    id: crypto.randomUUID(),
+    tcKimlikNo: data.tcKimlikNo || '',
+    ad: data.ad || '',
+    soyad: data.soyad || '',
+    dogumTarihi: data.dogumTarihi || new Date(),
+    cinsiyet: data.cinsiyet || 'erkek',
+    telefon: data.telefon || '',
+    email: data.email,
+    adres: data.adres || {
+      il: '',
+      ilce: '',
+      mahalle: '',
+      acikAdres: '',
+    },
+    uyeTuru: data.uyeTuru || 'aktif',
+    uyeNo: `UY-${Math.random().toString().slice(2, 8)}`,
+    kayitTarihi: new Date(),
+    aidatDurumu: 'guncel',
+    aidat: {
+      tutar: 100,
+      sonOdemeTarihi: new Date(),
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 
-    getMembers().unshift(newMember)
-    return newMember
+  getMembers().unshift(newMember)
+  return newMember
+}
+
+export async function fetchDependentPersons(
+  _parentId: string
+): Promise<IhtiyacSahibi[]> {
+  await delay(100)
+  // TODO: Filter by parentId when DB relationship is established
+  return getBeneficiaries().filter((b) => b.tur === 'bakmakla-yukumlu')
 }

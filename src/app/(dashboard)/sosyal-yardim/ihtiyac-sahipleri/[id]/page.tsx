@@ -62,6 +62,9 @@ import {
 } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
 
+import { DocumentList } from '@/components/features/documents/document-list'
+import { FileUpload } from '@/components/shared/file-upload'
+import { Progress } from '@/components/ui/progress'
 import {
   COUNTRIES,
   DOSYA_BAGLANTISI_LABELS,
@@ -82,8 +85,10 @@ import {
   fetchBeneficiaryById,
   fetchDependentPersons,
   updateBeneficiary,
+  uploadDocument,
 } from '@/lib/supabase-service'
 import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validators'
+import type { DocumentType } from '@/types'
 
 // Bağlantılı Kayıt Butonu
 function LinkedRecordButton({
@@ -169,6 +174,11 @@ export default function BeneficiaryDetailPage({
   const [activeSheet, setActiveSheet] = useState<string | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Document upload state
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType>('diger')
 
   const { data: beneficiary, isLoading } = useQuery({
     queryKey: ['beneficiary', id],
@@ -297,6 +307,28 @@ export default function BeneficiaryDetailPage({
 
   const onSubmit = (data: BeneficiaryFormData) => {
     updateMutation.mutate(data)
+  }
+
+  // Document upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: (file: File) =>
+      uploadDocument(file, id, selectedDocType, setUploadProgress),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', id] })
+      toast.success('Belge başarıyla yüklendi')
+      setIsUploading(false)
+      setUploadProgress(0)
+    },
+    onError: () => {
+      toast.error('Belge yüklenirken hata oluştu')
+      setIsUploading(false)
+      setUploadProgress(0)
+    },
+  })
+
+  const handleFileSelect = (file: File) => {
+    setIsUploading(true)
+    uploadMutation.mutate(file)
   }
 
   // Fotoğraf işleme fonksiyonları
@@ -1587,27 +1619,49 @@ export default function BeneficiaryDetailPage({
         open={activeSheet === 'dokumanlar'}
         onOpenChange={(open) => !open && setActiveSheet(null)}
         title="Dokümanlar"
-        description={`${data.ad} ${data.soyad} - Doküman Listesi`}
+        description={`${data.ad} ${data.soyad} - Doküman Yönetimi`}
       >
         <div className="space-y-4">
-          <Button className="w-full">
-            <FileText className="mr-2 h-4 w-4" />
-            Yeni Doküman Yükle
-          </Button>
-          {data.baglantiliKayitlar?.dokumanlar &&
-          data.baglantiliKayitlar.dokumanlar > 0 ? (
-            <div className="grid gap-2">
-              <p className="text-muted-foreground text-sm">
-                Toplam {data.baglantiliKayitlar.dokumanlar} doküman
-                bulunmaktadır.
+          {/* Document Type Selector */}
+          <div className="space-y-2">
+            <Label>Belge Türü</Label>
+            <Select
+              value={selectedDocType}
+              onValueChange={(v) => setSelectedDocType(v as DocumentType)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kimlik">Kimlik Belgesi</SelectItem>
+                <SelectItem value="ikamet">İkamet Belgesi</SelectItem>
+                <SelectItem value="saglik">Sağlık Raporu</SelectItem>
+                <SelectItem value="gelir">Gelir Belgesi</SelectItem>
+                <SelectItem value="diger">Diğer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* File Upload */}
+          <FileUpload
+            onFileSelect={handleFileSelect}
+            accept=".pdf,.jpg,.jpeg,.png"
+            maxSize={5}
+            disabled={isUploading}
+          />
+
+          {/* Upload Progress */}
+          {isUploading && (
+            <div className="space-y-2">
+              <Progress value={uploadProgress} max={100} />
+              <p className="text-muted-foreground text-center text-sm">
+                Yükleniyor... {uploadProgress}%
               </p>
             </div>
-          ) : (
-            <div className="text-muted-foreground py-8 text-center">
-              <FileText className="mx-auto mb-3 h-12 w-12 opacity-30" />
-              <p>Henüz doküman eklenmemiş</p>
-            </div>
           )}
+
+          {/* Document List */}
+          <DocumentList beneficiaryId={id} />
         </div>
       </LinkedRecordSheet>
 

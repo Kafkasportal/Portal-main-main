@@ -1,7 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -36,13 +35,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useCreateBeneficiary } from '@/hooks/use-api'
 import {
   COUNTRIES,
   DOSYA_BAGLANTISI_LABELS,
   FON_BOLGESI_LABELS,
   IHTIYAC_SAHIBI_KATEGORI_LABELS,
 } from '@/lib/constants'
-import { createBeneficiary } from '@/lib/mock-service'
 
 // Form validasyon şeması
 const newBeneficiarySchema = z.object({
@@ -84,7 +83,6 @@ export function NewBeneficiaryDialog({
   onOpenChange,
 }: NewBeneficiaryDialogProps) {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const [mernisKontrol, setMernisKontrol] = useState(false)
 
   const form = useForm<NewBeneficiaryFormData>({
@@ -104,37 +102,41 @@ export function NewBeneficiaryDialog({
     },
   })
 
-  const mutation = useMutation({
-    mutationFn: createBeneficiary,
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
+  const { mutate: createBeneficiary, isPending } = useCreateBeneficiary({
+    onSuccess: (newItem) => {
       toast.success('Kayıt başarıyla oluşturuldu')
       form.reset()
       onOpenChange(false)
       // Navigate after dialog closes
       setTimeout(() => {
-        router.push(`/sosyal-yardim/ihtiyac-sahipleri/${data.id}`)
+        router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newItem.id}`)
       }, 100)
-    },
-    onError: () => {
-      toast.error('Kayıt oluşturulurken bir hata oluştu')
     },
   })
 
   const onSubmit = (data: NewBeneficiaryFormData) => {
-    mutation.mutate({
-      kategori: data.kategori,
+    // Construct notes from additional form fields
+    const notlar = [
+      data.fonBolgesi && `Fon Bölgesi: ${FON_BOLGESI_LABELS[data.fonBolgesi]}`,
+      data.dosyaBaglantisi &&
+        `Dosya Bağlantısı: ${DOSYA_BAGLANTISI_LABELS[data.dosyaBaglantisi]}`,
+      data.dosyaBaglantisiDetay && `Detay: ${data.dosyaBaglantisiDetay}`,
+      mernisKontrol && 'Mernis kontrolü yapıldı',
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    createBeneficiary({
       ad: data.ad,
       soyad: data.soyad,
-      uyruk: data.uyruk,
-      dogumTarihi: data.dogumTarihi ? new Date(data.dogumTarihi) : undefined,
-      tcKimlikNo: data.uyruk === 'Türkiye' ? data.kimlikNo : undefined,
-      yabanciKimlikNo: data.uyruk !== 'Türkiye' ? data.kimlikNo : undefined,
-      fonBolgesi: data.fonBolgesi,
-      dosyaBaglantisi: data.dosyaBaglantisi,
-      dosyaBaglantisiDetay: data.dosyaBaglantisiDetay,
-      dosyaNo: data.dosyaNo,
-      mernisDogrulama: data.mernisKontrol,
+      tc_kimlik_no: data.kimlikNo || data.dosyaNo, // Use dosyaNo as fallback ID
+      telefon: '0000000000', // Placeholder, required in DB - will be updated later
+      cinsiyet: 'erkek', // Default, required in DB
+      kategori: data.kategori,
+      dogum_tarihi: data.dogumTarihi || null,
+      durum: 'aktif',
+      ihtiyac_durumu: 'orta',
+      notlar: notlar || null,
     })
   }
 
@@ -413,11 +415,10 @@ export function NewBeneficiaryDialog({
                 Kapat
               </Button>
               <Button
-                type="submit"
-                disabled={!isFormValid}
-                loading={mutation.isPending}
+                onClick={form.handleSubmit(onSubmit)}
+                disabled={!isFormValid || isPending}
               >
-                {mutation.isPending ? 'Kaydediliyor...' : 'Kaydet'}
+                {isPending ? 'Kaydediliyor...' : 'Kaydet'}
               </Button>
             </DialogFooter>
           </form>

@@ -224,7 +224,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div
-              className="flex h-[300px] min-h-[300px] w-full items-center justify-center"
+              className="flex h-75 min-h-75 w-full items-center justify-center"
               style={{
                 minWidth: 0,
                 minHeight: 300,
@@ -291,7 +291,7 @@ export default function DashboardPage() {
       <Card className="hover-glow border-border/50 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-blue-600">
               <Users className="h-4 w-4 text-white" />
             </div>
             İhtiyaç Sahipleri Özeti
@@ -379,7 +379,7 @@ export default function DashboardPage() {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9 ring-2 ring-orange-500/20">
-                        <AvatarFallback className="bg-gradient-to-br from-orange-500/20 to-red-500/20 text-sm font-semibold text-orange-600">
+                        <AvatarFallback className="bg-linear-to-br from-orange-500/20 to-red-500/20 text-sm font-semibold text-orange-600">
                           {getInitials(
                             `${application.basvuranKisi.ad} ${application.basvuranKisi.soyad}`
                           )}
@@ -430,7 +430,7 @@ export default function DashboardPage() {
         <Card className="hover-glow border-border/50 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-teal-500">
                 <UserPlus className="h-4 w-4 text-white" />
               </div>
               Son Kayıt Olan Üyeler
@@ -457,7 +457,7 @@ export default function DashboardPage() {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9 ring-2 ring-emerald-500/20">
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-sm font-semibold text-emerald-600">
+                        <AvatarFallback className="bg-linear-to-br from-emerald-500/20 to-teal-500/20 text-sm font-semibold text-emerald-600">
                           {getInitials(`${member.ad} ${member.soyad}`)}
                         </AvatarFallback>
                       </Avatar>
@@ -515,13 +515,13 @@ function DashboardSkeleton() {
         ))}
       </div>
 
-      <Skeleton className="h-[380px]" />
+      <Skeleton className="h-95" />
 
-      <Skeleton className="h-[180px]" />
+      <Skeleton className="h-45" />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Skeleton className="h-[350px]" />
-        <Skeleton className="h-[350px]" />
+        <Skeleton className="h-87.5" />
+        <Skeleton className="h-87.5" />
       </div>
     </div>
   )

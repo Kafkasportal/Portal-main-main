@@ -34,6 +34,7 @@ model Kullanici {
   basvuruIslemleri  SosyalYardimBasvuru[]
   kumbaralar        Kumbara[]
   dosyaYuklemeleri  Dosya[]
+  kumbaraToplamalar KumbaraToplamaKaydi[]
 
   @@map("kullanicilar")
 }
@@ -317,7 +318,7 @@ model IhtiyacSahibi {
 
   @@index([ad, soyad])
   @@index([tc_no])
-  @@index([telefon: cep_telefonu])
+  @@index([cep_telefonu])
   @@index([uyruk])
   @@index([sehir])
   @@map("ihtiyac_sahipleri")

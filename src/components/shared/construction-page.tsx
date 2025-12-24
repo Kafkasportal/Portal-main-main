@@ -1,8 +1,8 @@
 'use client'
 
-import { Construction } from 'lucide-react'
 import { PageHeader } from '@/components/shared/page-header'
 import { Button } from '@/components/ui/button'
+import { Construction } from 'lucide-react'
 
 interface ConstructionPageProps {
     title: string
@@ -25,7 +25,7 @@ export function ConstructionPage({ title, description }: ConstructionPageProps) 
                 <p className="text-muted-foreground max-w-md mb-6">
                     Bu sayfa henüz geliştirme aşamasındadır. Yakında kullanıma açılacaktır.
                 </p>
-                <Button variant="outline" onClick={() => window.history.back()}>
+                <Button variant="outline" onClick={() => { window.history.back(); }}>
                     Geri Dön
                 </Button>
             </div>

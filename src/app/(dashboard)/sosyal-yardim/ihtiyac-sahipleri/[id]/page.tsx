@@ -1,43 +1,41 @@
 'use client'
 
-import { useState, use, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
-import { 
-    ArrowLeft, 
-    Save, 
-    X, 
-    Printer, 
-    History, 
-    Link2,
-    Camera,
-    Trash2,
-    Info,
-    User,
-    CreditCard,
-    Plane,
-    Heart,
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+    AlertCircle,
+    ArrowLeft,
     Briefcase,
-    Users,
-    FileText,
-    Image,
+    Camera,
+    CreditCard,
     DollarSign,
+    FileText,
+    Heart,
+    History,
+    Image,
+    Info,
+    Link2,
     MessageSquare,
+    Plane,
+    Printer,
+    Save,
     Shield,
-    AlertCircle
+    Trash2,
+    User,
+    Users,
+    X
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { use, useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Separator } from '@/components/ui/separator'
 import {
     Select,
     SelectContent,
@@ -45,7 +43,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import {
     Sheet,
     SheetContent,
@@ -53,6 +51,7 @@ import {
     SheetHeader,
     SheetTitle
 } from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
     Table,
     TableBody,
@@ -61,25 +60,26 @@ import {
     TableHeader,
     TableRow
 } from '@/components/ui/table'
+import { Textarea } from '@/components/ui/textarea'
 
-import { fetchBeneficiaryById, updateBeneficiary, fetchDependentPersons } from '@/lib/supabase-service'
-import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validators'
 import {
-    IHTIYAC_SAHIBI_KATEGORI_LABELS,
-    FON_BOLGESI_LABELS,
+    COUNTRIES,
     DOSYA_BAGLANTISI_LABELS,
-    KIMLIK_BELGESI_TURU_LABELS,
-    PASAPORT_TURU_LABELS,
-    VIZE_GIRIS_TURU_LABELS,
-    MEDENI_HAL_LABELS,
     EGITIM_DURUMU_LABELS,
+    FON_BOLGESI_LABELS,
     IHTIYAC_DURUMU_LABELS,
+    IHTIYAC_SAHIBI_KATEGORI_LABELS,
+    ISTANBUL_REGIONS,
+    KIMLIK_BELGESI_TURU_LABELS,
+    MEDENI_HAL_LABELS,
+    PASAPORT_TURU_LABELS,
     RIZA_BEYANI_LABELS,
     TELEFON_OPERATOR_KODLARI,
     TURKISH_CITIES,
-    ISTANBUL_REGIONS,
-    COUNTRIES
+    VIZE_GIRIS_TURU_LABELS
 } from '@/lib/constants'
+import { fetchBeneficiaryById, fetchDependentPersons, updateBeneficiary } from '@/lib/supabase-service'
+import { beneficiarySchema, type BeneficiaryFormData } from '@/lib/validators'
 
 // Bağlantılı Kayıt Butonu
 function LinkedRecordButton({
@@ -272,8 +272,8 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mutationFn: (data: any) => updateBeneficiary(id, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['beneficiary', id] })
-            queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
+            void queryClient.invalidateQueries({ queryKey: ['beneficiary', id] })
+            void queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
             toast.success('Kayıt başarıyla güncellendi')
             reset(undefined, { keepValues: true })
         },
@@ -340,7 +340,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                 <AlertCircle className="h-16 w-16 text-muted-foreground" />
                 <h2 className="text-xl font-semibold">Kayıt Bulunamadı</h2>
                 <p className="text-muted-foreground">İstenen ihtiyaç sahibi kaydı bulunamadı.</p>
-                <Button onClick={() => router.back()}>
+                <Button onClick={() => { router.back(); }}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Geri Dön
                 </Button>
@@ -363,7 +363,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                     </Button>
                     <Button 
                         variant="destructive"
-                        onClick={() => router.push('/sosyal-yardim/ihtiyac-sahipleri')}
+                        onClick={() => { router.push('/sosyal-yardim/ihtiyac-sahipleri'); }}
                     >
                         <X className="mr-2 h-4 w-4" />
                         Kapat
@@ -381,7 +381,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                         İşlem Geçmişi
                     </Button>
                     <div className="w-px h-8 bg-border" />
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} title="Geri">
+                    <Button variant="ghost" size="icon" onClick={() => { router.back(); }} title="Geri">
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </div>
@@ -464,84 +464,84 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     icon={CreditCard}
                                     label="Banka Hesapları"
                                     count={data.baglantiliKayitlar?.bankaHesaplari}
-                                    onClick={() => setActiveSheet('bankaHesaplari')}
+                                    onClick={() => { setActiveSheet('bankaHesaplari'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={FileText}
                                     label="Dokümanlar"
                                     count={data.baglantiliKayitlar?.dokumanlar}
-                                    onClick={() => setActiveSheet('dokumanlar')}
+                                    onClick={() => { setActiveSheet('dokumanlar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={Image}
                                     label="Fotoğraflar"
                                     count={data.baglantiliKayitlar?.fotograflar}
-                                    onClick={() => setActiveSheet('fotograflar')}
+                                    onClick={() => { setActiveSheet('fotograflar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={Users}
                                     label="Baktığı Yetimler"
                                     count={data.baglantiliKayitlar?.baktigiYetimler}
-                                    onClick={() => setActiveSheet('baktigiYetimler')}
+                                    onClick={() => { setActiveSheet('baktigiYetimler'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={Users}
                                     label="Baktığı Kişiler"
                                     count={data.baglantiliKayitlar?.baktigiKisiler}
-                                    onClick={() => setActiveSheet('baktigiKisiler')}
+                                    onClick={() => { setActiveSheet('baktigiKisiler'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={Heart}
                                     label="Sponsorlar"
                                     count={data.baglantiliKayitlar?.sponsorlar}
-                                    onClick={() => setActiveSheet('sponsorlar')}
+                                    onClick={() => { setActiveSheet('sponsorlar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={User}
                                     label="Referanslar"
                                     count={data.baglantiliKayitlar?.referanslar}
-                                    onClick={() => setActiveSheet('referanslar')}
+                                    onClick={() => { setActiveSheet('referanslar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={MessageSquare}
                                     label="Görüşme Kayıtları"
                                     count={data.baglantiliKayitlar?.gorusmeKayitlari}
-                                    onClick={() => setActiveSheet('gorusmeKayitlari')}
+                                    onClick={() => { setActiveSheet('gorusmeKayitlari'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={History}
                                     label="Görüşme Seans"
                                     count={data.baglantiliKayitlar?.gorusmeSeansTakibi}
-                                    onClick={() => setActiveSheet('gorusmeSeans')}
+                                    onClick={() => { setActiveSheet('gorusmeSeans'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={DollarSign}
                                     label="Yardım Talepleri"
                                     count={data.baglantiliKayitlar?.yardimTalepleri}
-                                    onClick={() => setActiveSheet('yardimTalepleri')}
+                                    onClick={() => { setActiveSheet('yardimTalepleri'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={DollarSign}
                                     label="Yapılan Yardımlar"
                                     count={data.baglantiliKayitlar?.yapilanYardimlar}
-                                    onClick={() => setActiveSheet('yapilanYardimlar')}
+                                    onClick={() => { setActiveSheet('yapilanYardimlar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={Shield}
                                     label="Rıza Beyanları"
                                     count={data.baglantiliKayitlar?.rizaBeyannamesi}
-                                    onClick={() => setActiveSheet('rizaBeyannamesi')}
+                                    onClick={() => { setActiveSheet('rizaBeyannamesi'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={CreditCard}
                                     label="Sosyal Kartlar"
                                     count={data.baglantiliKayitlar?.sosyalKartlar}
-                                    onClick={() => setActiveSheet('sosyalKartlar')}
+                                    onClick={() => { setActiveSheet('sosyalKartlar'); }}
                                 />
                                 <LinkedRecordButton
                                     icon={FileText}
                                     label="Kart Özeti"
-                                    onClick={() => setActiveSheet('kartOzeti')}
+                                    onClick={() => { setActiveSheet('kartOzeti'); }}
                                 />
                             </div>
                         </CardContent>
@@ -637,7 +637,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                         <Label>Dosya Numarası</Label>
                                         <div className="flex gap-2">
                                             <Input value={data.dosyaNo.split('-')[0] || ''} readOnly className="w-20 bg-muted" />
-                                            <Input defaultValue={data.dosyaNo.split('-').slice(1).join('-')} onChange={() => setHasChanges(true)} />
+                                            <Input defaultValue={data.dosyaNo.split('-').slice(1).join('-')} onChange={() => { setHasChanges(true); }} />
                                         </div>
                                     </div>
                                 </div>
@@ -698,7 +698,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Ailedeki Kişi Sayısı</Label>
-                                        <Select defaultValue={String(data.aileHaneBilgileri?.ailedekiKisiSayisi || '1')} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={String(data.aileHaneBilgileri?.ailedekiKisiSayisi || '1')} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
@@ -796,7 +796,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                             <Checkbox 
                                                 id="delete" 
                                                 checked={deleteChecked}
-                                                onCheckedChange={(checked) => setDeleteChecked(checked as boolean)}
+                                                onCheckedChange={(checked) => { setDeleteChecked(checked as boolean); }}
                                             />
                                             <Label htmlFor="delete" className="text-sm cursor-pointer text-destructive">
                                                 Kaydı Sil
@@ -826,7 +826,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Kimlik Belgesi Türü</Label>
-                                        <Select defaultValue={data.kimlikBilgileri?.belgeTuru} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.kimlikBilgileri?.belgeTuru} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -842,7 +842,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                         <Input 
                                             type="date" 
                                             defaultValue={data.kimlikBilgileri?.belgeGecerlilikTarihi?.toISOString().split('T')[0]} 
-                                            onChange={() => setHasChanges(true)}
+                                            onChange={() => { setHasChanges(true); }}
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -851,7 +851,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Önceki Uyruğu (Varsa)</Label>
-                                        <Select defaultValue={data.kimlikBilgileri?.oncekiUyruk} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.kimlikBilgileri?.oncekiUyruk} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Yok" />
                                             </SelectTrigger>
@@ -877,7 +877,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Pasaport Türü</Label>
-                                        <Select defaultValue={data.pasaportVizeBilgileri?.pasaportTuru} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.pasaportVizeBilgileri?.pasaportTuru} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -891,7 +891,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     <div className="space-y-2">
                                         <Label>Pasaport Numarası</Label>
                                         <div className="flex gap-2">
-                                            <Input defaultValue={data.pasaportVizeBilgileri?.pasaportNumarasi} onChange={() => setHasChanges(true)} />
+                                            <Input defaultValue={data.pasaportVizeBilgileri?.pasaportNumarasi} onChange={() => { setHasChanges(true); }} />
                                             <Button variant="outline" size="icon" className="text-amber-500">
                                                 <AlertCircle className="h-4 w-4" />
                                             </Button>
@@ -907,7 +907,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Vize / Giriş Türü</Label>
-                                        <Select defaultValue={data.pasaportVizeBilgileri?.vizeGirisTuru} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.pasaportVizeBilgileri?.vizeGirisTuru} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -1051,7 +1051,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label>Medeni Hal</Label>
-                                        <Select defaultValue={data.aileHaneBilgileri?.medeniHal} onValueChange={() => setHasChanges(true)}>
+                                        <Select defaultValue={data.aileHaneBilgileri?.medeniHal} onValueChange={() => { setHasChanges(true); }}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seçiniz" />
                                             </SelectTrigger>
@@ -1326,7 +1326,7 @@ export default function BeneficiaryDetailPage({ params }: { params: Promise<{ id
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 ml-4">
-                                                <Button variant="outline" size="sm" onClick={() => router.push(`/sosyal-yardim/ihtiyac-sahipleri/${person.id}`)}>
+                                                <Button variant="outline" size="sm" onClick={() => { router.push(`/sosyal-yardim/ihtiyac-sahipleri/${person.id}`); }}>
                                                     <User className="h-4 w-4 mr-1" />
                                                     Görüntüle
                                                 </Button>

@@ -1,10 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-import { PageHeader } from '@/components/shared/page-header'
 import { MemberForm } from '@/components/features/members/member-form'
+import { PageHeader } from '@/components/shared/page-header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -21,7 +21,7 @@ export default function NewMemberPage() {
                 title="Yeni Üye Kaydı"
                 description="Derneğe yeni üye kaydı oluşturun"
                 action={
-                    <Button variant="outline" onClick={() => router.back()}>
+                    <Button variant="outline" onClick={() => { router.back(); }}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Geri
                     </Button>

@@ -1,25 +1,24 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
-import { ChevronDown, ChevronRight, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { NAV_ITEMS } from '@/lib/constants'
-import { useSidebarStore } from '@/stores/sidebar-store'
-import { useIsMobile } from '@/hooks/use-media-query'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger
 } from '@/components/ui/tooltip'
+import { useIsMobile } from '@/hooks/use-media-query'
+import { NAV_ITEMS } from '@/lib/constants'
 import { CURRENT_USER } from '@/lib/mock-data'
-import { getInitials } from '@/lib/utils'
+import { cn, getInitials } from '@/lib/utils'
+import { useSidebarStore } from '@/stores/sidebar-store'
 import type { NavItem } from '@/types'
+import { ChevronDown, ChevronRight, X } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 
 // Nav Item Component with Tooltip support
 function NavItemComponent({ item, depth = 0 }: { item: NavItem; depth?: number }) {
@@ -71,7 +70,7 @@ function NavItemComponent({ item, depth = 0 }: { item: NavItem; depth?: number }
 
                 {isOpen && !isCollapsed && (
                     <div className="mt-1 ml-4 pl-4 border-l-2 border-sidebar-primary/30 space-y-1 animate-in slide-in-from-top-2 duration-200">
-                        {item.children!.map((child) => (
+                        {item.children?.map((child) => (
                             <NavItemComponent key={child.label} item={child} depth={depth + 1} />
                         ))}
                     </div>

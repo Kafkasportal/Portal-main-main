@@ -1,8 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
@@ -110,7 +110,7 @@ async function importDataWithRelationships() {
     if (!addressGroups.has(address)) {
       addressGroups.set(address, []);
     }
-    addressGroups.get(address)!.push(b);
+    addressGroups.get(address)?.push(b);
   }
 
   // Her adres grubu için hane reisi belirle

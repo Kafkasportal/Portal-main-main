@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Plus, Download } from 'lucide-react'
 import ExcelJS from 'exceljs'
+import { Download, Plus } from 'lucide-react'
+import { useState } from 'react'
 
-import { PageHeader } from '@/components/shared/page-header'
+import { donationColumns } from '@/components/features/donations/columns'
+import { DonationForm } from '@/components/features/donations/donation-form'
 import { DataTable } from '@/components/shared/data-table'
+import { PageHeader } from '@/components/shared/page-header'
 import { QueryError } from '@/components/shared/query-error'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,12 +17,10 @@ import {
     SheetHeader,
     SheetTitle
 } from '@/components/ui/sheet'
-import { donationColumns } from '@/components/features/donations/columns'
-import { DonationForm } from '@/components/features/donations/donation-form'
-import { fetchDonations } from '@/lib/supabase-service'
-import type { Bagis } from '@/types'
 import { DONATION_PURPOSE_LABELS } from '@/lib/constants'
+import { fetchDonations } from '@/lib/supabase-service'
 import { formatDate } from '@/lib/utils'
+import type { Bagis } from '@/types'
 
 export default function DonationsListPage() {
     const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -109,7 +109,7 @@ export default function DonationsListPage() {
                             <Download className="mr-2 h-4 w-4" />
                             Excel İndir
                         </Button>
-                        <Button onClick={() => setIsSheetOpen(true)}>
+                        <Button onClick={() => { setIsSheetOpen(true); }}>
                             <Plus className="mr-2 h-4 w-4" />
                             Yeni Bağış
                         </Button>
@@ -152,7 +152,7 @@ export default function DonationsListPage() {
                     <SheetHeader>
                         <SheetTitle>Yeni Bağış Ekle</SheetTitle>
                     </SheetHeader>
-                    <DonationForm onSuccess={() => setIsSheetOpen(false)} />
+                    <DonationForm onSuccess={() => { setIsSheetOpen(false); }} />
                 </SheetContent>
             </Sheet>
         </div>

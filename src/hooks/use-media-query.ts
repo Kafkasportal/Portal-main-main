@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const breakpoints = {
     sm: 640,
@@ -24,10 +24,10 @@ export function useMediaQuery(query: string): boolean {
     useEffect(() => {
         const media = window.matchMedia(query)
 
-        const listener = () => setMatches(media.matches)
+        const listener = () => { setMatches(media.matches); }
         media.addEventListener('change', listener)
 
-        return () => media.removeEventListener('change', listener)
+        return () => { media.removeEventListener('change', listener); }
     }, [query])
 
     return matches

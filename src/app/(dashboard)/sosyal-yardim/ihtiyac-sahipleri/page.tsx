@@ -1,41 +1,27 @@
 'use client'
 
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
 import {
-    Plus,
-    Download,
-    Search,
-    Filter,
-    Settings,
     ChevronLeft,
     ChevronRight,
-    Eye,
-    MoreHorizontal,
+    Download,
     Edit,
-    Trash2,
-    HandHeart
+    Eye,
+    Filter,
+    HandHeart,
+    MoreHorizontal,
+    Plus,
+    Search,
+    Settings,
+    Trash2
 } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { NewBeneficiaryDialog } from '@/components/features/social-aid/new-beneficiary-dialog'
+import { QueryError } from '@/components/shared/query-error'
 import { Badge } from '@/components/ui/badge'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,6 +29,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
 import {
     Sheet,
     SheetContent,
@@ -52,16 +46,22 @@ import {
     SheetTrigger
 } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
-import { QueryError } from '@/components/shared/query-error'
-import { NewBeneficiaryDialog } from '@/components/features/social-aid/new-beneficiary-dialog'
-import { fetchBeneficiaries } from '@/lib/supabase-service'
 import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from '@/components/ui/table'
+import {
+    IHTIYAC_DURUMU_LABELS,
     IHTIYAC_SAHIBI_KATEGORI_LABELS,
-    IHTIYAC_SAHIBI_TURU_LABELS,
-    IHTIYAC_DURUMU_LABELS
+    IHTIYAC_SAHIBI_TURU_LABELS
 } from '@/lib/constants'
-import type { IhtiyacSahibi, IhtiyacSahibiKategori } from '@/types'
+import { fetchBeneficiaries } from '@/lib/supabase-service'
 import { formatDate } from '@/lib/utils'
+import type { IhtiyacSahibi, IhtiyacSahibiKategori } from '@/types'
 
 // Kategori badge renkleri - Modern SaaS palette
 const kategoriColors: Record<IhtiyacSahibiKategori, string> = {
@@ -152,7 +152,7 @@ export default function BeneficiariesPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            onClick={() => { setPage(p => Math.max(1, p - 1)); }}
                             disabled={page === 1}
                         >
                             <ChevronLeft className="h-4 w-4" />
@@ -164,7 +164,7 @@ export default function BeneficiariesPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }}
                             disabled={page === totalPages}
                         >
                             <ChevronRight className="h-4 w-4" />
@@ -185,7 +185,7 @@ export default function BeneficiariesPage() {
                         placeholder="ID"
                         className="w-24 h-9"
                         value={searchId}
-                        onChange={(e) => setSearchId(e.target.value)}
+                        onChange={(e) => { setSearchId(e.target.value); }}
                     />
                 </div>
 
@@ -195,7 +195,7 @@ export default function BeneficiariesPage() {
                         placeholder="Ad Soyad veya Kurum"
                         className="w-56 h-9"
                         value={searchName}
-                        onChange={(e) => setSearchName(e.target.value)}
+                        onChange={(e) => { setSearchName(e.target.value); }}
                     />
                 </div>
 
@@ -205,7 +205,7 @@ export default function BeneficiariesPage() {
                         placeholder="TC / Yabancı Kimlik"
                         className="w-40 h-9"
                         value={searchKimlik}
-                        onChange={(e) => setSearchKimlik(e.target.value)}
+                        onChange={(e) => { setSearchKimlik(e.target.value); }}
                     />
                 </div>
 
@@ -215,7 +215,7 @@ export default function BeneficiariesPage() {
                         placeholder="DSY-XXXXXX"
                         className="w-36 h-9"
                         value={searchDosyaNo}
-                        onChange={(e) => setSearchDosyaNo(e.target.value)}
+                        onChange={(e) => { setSearchDosyaNo(e.target.value); }}
                     />
                 </div>
 
@@ -340,7 +340,7 @@ export default function BeneficiariesPage() {
                     </Sheet>
                     <Button
                         className="bg-primary hover:bg-primary/90 h-9"
-                        onClick={() => setIsDialogOpen(true)}
+                        onClick={() => { setIsDialogOpen(true); }}
                     >
                         <Plus className="mr-2 h-4 w-4" />
                         Ekle

@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
+import { useEffect, useRef } from 'react'
 
 export function ProgressBar() {
     const pathname = usePathname()
@@ -28,7 +28,7 @@ export function ProgressBar() {
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
             const a = (e.target as HTMLElement).closest('a')
-            if (a?.href?.startsWith(location.origin)) {
+            if (a?.href.startsWith(location.origin)) {
                 const url = new URL(a.href)
                 if (url.pathname !== pathname && barRef.current && containerRef.current) {
                     containerRef.current.style.opacity = '1'

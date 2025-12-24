@@ -1,38 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
 import {
-    Users,
-    AlertCircle,
-    Wallet,
-    ArrowRight,
-    FileText,
-    UserPlus,
-    UserCheck,
-    UserX,
-    Clock
-} from 'lucide-react'
-import {
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
+    Cell,
     Pie,
-    Cell
+    PieChart,
+    ResponsiveContainer,
+    Tooltip
 } from '@/components/shared/lazy-chart'
+import { useQuery } from '@tanstack/react-query'
+import {
+    AlertCircle,
+    ArrowRight,
+    Clock,
+    FileText,
+    UserCheck,
+    UserPlus,
+    Users,
+    UserX,
+    Wallet
+} from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 import { PageHeader } from '@/components/shared/page-header'
-import { StatCard } from '@/components/shared/stat-card'
 import { QueryError } from '@/components/shared/query-error'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
+import { StatCard } from '@/components/shared/stat-card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { fetchDashboardStats, fetchBeneficiaries, fetchApplications, fetchMembers } from '@/lib/supabase-service'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { BASVURU_DURUMU_LABELS, STATUS_VARIANTS } from '@/lib/constants'
+import { fetchApplications, fetchBeneficiaries, fetchDashboardStats, fetchMembers } from '@/lib/supabase-service'
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils'
-import { STATUS_VARIANTS, BASVURU_DURUMU_LABELS } from '@/lib/constants'
 import type { SosyalYardimBasvuru } from '@/types'
 
 export default function DashboardPage() {
@@ -51,10 +51,10 @@ export default function DashboardPage() {
             const mappedData: SosyalYardimBasvuru[] = (result.data || []).map((app: Record<string, unknown>) => ({
                 id: app.id as string,
                 basvuranKisi: {
-                    ad: (app.beneficiaries as Record<string, unknown>)?.ad as string || '',
-                    soyad: (app.beneficiaries as Record<string, unknown>)?.soyad as string || '',
+                    ad: (app.beneficiaries as Record<string, unknown>).ad as string || '',
+                    soyad: (app.beneficiaries as Record<string, unknown>).soyad as string || '',
                     tcKimlikNo: '',
-                    telefon: (app.beneficiaries as Record<string, unknown>)?.telefon as string || '',
+                    telefon: (app.beneficiaries as Record<string, unknown>).telefon as string || '',
                     adres: ''
                 },
                 yardimTuru: app.yardim_turu as string,

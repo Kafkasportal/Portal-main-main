@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Camera, QrCode, X, SwitchCamera } from 'lucide-react'
+import { Camera, QrCode, SwitchCamera, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,
@@ -10,7 +11,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 interface QRScannerDialogProps {
@@ -41,7 +41,7 @@ export function QRScannerDialog({
     // Kamerayı durdur
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop())
+            streamRef.current.getTracks().forEach(track => { track.stop(); })
             streamRef.current = null
         }
         if (readerRef.current && typeof readerRef.current === 'object' && 'reset' in readerRef.current) {
@@ -94,7 +94,7 @@ export function QRScannerDialog({
                     }
                 }
 
-                decode()
+                void decode()
             }
         } catch {
             // Camera error - silent in production
@@ -225,7 +225,7 @@ export function QRScannerDialog({
                                 <Input
                                     placeholder="Kumbara kodunu yazın (örn: KMB-2024-001)"
                                     value={manualCode}
-                                    onChange={(e) => setManualCode(e.target.value)}
+                                    onChange={(e) => { setManualCode(e.target.value); }}
                                     onKeyDown={(e) => e.key === 'Enter' && handleManualSubmit()}
                                 />
                             </div>

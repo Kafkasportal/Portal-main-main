@@ -1,15 +1,19 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { 
-    MapPin, 
-    Navigation, 
-    Route, 
-    ExternalLink, 
+import {
+    ArrowRight,
+    ExternalLink,
     Map,
-    ArrowRight
+    MapPin,
+    Navigation,
+    Route
 } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
     Dialog,
     DialogContent,
@@ -18,14 +22,10 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Spinner } from '@/components/ui/spinner'
 import { formatCurrency } from '@/lib/utils'
-import type { Kumbara, GpsKoordinat } from '@/types'
+import type { GpsKoordinat, Kumbara } from '@/types'
 
 interface RotaOlusturDialogProps {
     open: boolean
@@ -179,7 +179,7 @@ export function RotaOlusturDialog({
         
         const waypoints = optimizedRoute
             .filter(k => k.koordinat)
-            .map(k => `${k.koordinat!.lat},${k.koordinat!.lng}`)
+            .map(k => `${k.koordinat?.lat},${k.koordinat!.lng}`)
         
         if (waypoints.length === 0) return
         
@@ -236,13 +236,13 @@ export function RotaOlusturDialog({
                                         className={`cursor-pointer transition-colors ${
                                             selectedIds.has(kumbara.id) ? 'border-primary bg-primary/5' : ''
                                         }`}
-                                        onClick={() => toggleKumbara(kumbara.id)}
+                                        onClick={() => { toggleKumbara(kumbara.id); }}
                                     >
                                         <CardContent className="p-3">
                                             <div className="flex items-start gap-3">
                                                 <Checkbox 
                                                     checked={selectedIds.has(kumbara.id)}
-                                                    onCheckedChange={() => toggleKumbara(kumbara.id)}
+                                                    onCheckedChange={() => { toggleKumbara(kumbara.id); }}
                                                 />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium text-sm truncate">
@@ -376,7 +376,7 @@ export function RotaOlusturDialog({
                 </div>
 
                 <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button variant="outline" onClick={() => { onOpenChange(false); }}>
                         Kapat
                     </Button>
                     <Button 

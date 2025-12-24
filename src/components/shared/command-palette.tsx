@@ -1,16 +1,5 @@
 'use client'
 
-import { useCallback, useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
-import {
-    CreditCard,
-    Settings,
-    User,
-    FileText,
-    Search,
-    Clock,
-    ArrowRight
-} from 'lucide-react'
 import {
     CommandDialog,
     CommandEmpty,
@@ -23,6 +12,17 @@ import {
 } from '@/components/ui/command'
 import { NAV_ITEMS } from '@/lib/constants'
 import type { NavItem } from '@/types'
+import {
+    ArrowRight,
+    Clock,
+    CreditCard,
+    FileText,
+    Search,
+    Settings,
+    User
+} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Flatten nav items for search
 function flattenNavItems(items: NavItem[], parentLabel?: string): (NavItem & { parentLabel?: string })[] {
@@ -114,7 +114,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
         }
 
         document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
+        return () => { document.removeEventListener('keydown', down); }
     }, [isControlled, open, setOpen])
 
     // Navigate to page
@@ -147,7 +147,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
                                 <CommandItem
                                     key={page.href}
                                     value={`recent-${page.href}`}
-                                    onSelect={() => runCommand({ ...page, icon: Icon })}
+                                    onSelect={() => { runCommand({ ...page, icon: Icon }); }}
                                     className="flex items-center gap-3"
                                 >
                                     <Clock className="h-4 w-4 text-muted-foreground" />
@@ -210,7 +210,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
                             <CommandItem
                                 key={page.href}
                                 value={`${page.label} ${page.parentLabel || ''}`}
-                                onSelect={() => runCommand(page)}
+                                onSelect={() => { runCommand(page); }}
                                 className="flex items-center gap-2"
                             >
                                 <Icon className="h-4 w-4 text-muted-foreground" />

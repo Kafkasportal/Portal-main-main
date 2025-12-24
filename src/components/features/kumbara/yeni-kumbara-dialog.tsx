@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { QrCode, Camera, Navigation, Printer, RefreshCw } from 'lucide-react'
-import { toast } from 'sonner'
+import { Camera, Navigation, Printer, QrCode, RefreshCw } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import QRCode from 'react-qr-code'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,
@@ -17,7 +18,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
 import {
     Form,
     FormControl,
@@ -28,8 +28,6 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import {
     Select,
     SelectContent,
@@ -37,9 +35,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { QRScannerDialog } from './qr-scanner-dialog'
+import { Spinner } from '@/components/ui/spinner'
+import { Textarea } from '@/components/ui/textarea'
 import { createKumbara } from '@/lib/mock-service'
 import type { GpsKoordinat } from '@/types'
+import { QRScannerDialog } from './qr-scanner-dialog'
 
 const kumbaraFormSchema = z.object({
     qrKod: z.string().min(3, 'QR kod en az 3 karakter olmalıdır'),
@@ -124,7 +124,7 @@ export function YeniKumbaraDialog({
     const { mutate, isPending } = useMutation({
         mutationFn: createKumbara,
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
+            void queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
             toast.success('Kumbara başarıyla eklendi')
             
             // Print preview için verileri sakla
@@ -344,7 +344,7 @@ export function YeniKumbaraDialog({
                             <DialogFooter className="gap-2 sm:gap-0">
                                 <Button
                                     variant="outline"
-                                    onClick={() => handleDialogClose(false)}
+                                    onClick={() => { handleDialogClose(false); }}
                                 >
                                     Kapat
                                 </Button>
@@ -396,7 +396,7 @@ export function YeniKumbaraDialog({
                                         <Button 
                                             variant="outline" 
                                             className="flex-1 gap-2"
-                                            onClick={() => setQrScannerOpen(true)}
+                                            onClick={() => { setQrScannerOpen(true); }}
                                         >
                                             <Camera className="h-4 w-4" />
                                             Mevcut QR Tara
@@ -404,7 +404,7 @@ export function YeniKumbaraDialog({
                                         <Button 
                                             variant="ghost" 
                                             className="flex-1"
-                                            onClick={() => setCurrentStep('form')}
+                                            onClick={() => { setCurrentStep('form'); }}
                                         >
                                             Manuel Kod Gir
                                         </Button>

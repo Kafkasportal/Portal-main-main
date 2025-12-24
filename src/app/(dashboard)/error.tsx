@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AlertTriangle, ArrowLeft, Home, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function DashboardError({
     error,
@@ -41,7 +41,7 @@ export default function DashboardError({
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <Button variant="outline" size="sm" onClick={() => router.back()}>
+                    <Button variant="outline" size="sm" onClick={() => { router.back(); }}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Geri Dön
                     </Button>

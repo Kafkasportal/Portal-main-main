@@ -1,13 +1,11 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
     Form,
     FormControl,
@@ -17,6 +15,7 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
     Select,
     SelectContent,
@@ -24,9 +23,10 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
-import { memberSchema, type MemberFormData } from '@/lib/validators'
+import { Textarea } from '@/components/ui/textarea'
+import { MEMBER_TYPE_LABELS, TURKISH_CITIES } from '@/lib/constants'
 import { createMember } from '@/lib/mock-service'
-import { TURKISH_CITIES, MEMBER_TYPE_LABELS } from '@/lib/constants'
+import { memberSchema, type MemberFormData } from '@/lib/validators'
 
 interface MemberFormProps {
     onSuccess?: () => void
@@ -61,7 +61,7 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
     const { mutate, isPending } = useMutation({
         mutationFn: createMember,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['members'] })
+            void queryClient.invalidateQueries({ queryKey: ['members'] })
             toast.success('Üye başarıyla kaydedildi')
             onSuccess?.()
         },

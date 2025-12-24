@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect, lazy, Suspense } from 'react'
-import { Search, Bell, Settings, LogOut, User, Menu } from 'lucide-react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -11,13 +10,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useIsMobile } from '@/hooks/use-media-query'
 import { CURRENT_USER } from '@/lib/mock-data'
 import { getInitials } from '@/lib/utils'
 import { useSidebarStore } from '@/stores/sidebar-store'
 import { useUserStore } from '@/stores/user-store'
+import { Bell, LogOut, Menu, Search, Settings, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useIsMobile } from '@/hooks/use-media-query'
+import { lazy, Suspense, useEffect, useState } from 'react'
 
 // Lazy load Command Palette - only needed when user opens it
 const CommandPalette = lazy(() => 
@@ -41,7 +41,7 @@ export function Header() {
         }
 
         document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
+        return () => { document.removeEventListener('keydown', down); }
     }, [])
 
     const handleLogout = () => {
@@ -79,7 +79,7 @@ export function Header() {
                 <Button
                     variant="outline"
                     className="hidden sm:flex items-center gap-2 w-64 justify-start text-muted-foreground bg-background border-border hover:bg-accent/50 hover:text-foreground transition-all"
-                    onClick={() => setCommandOpen(true)}
+                    onClick={() => { setCommandOpen(true); }}
                 >
                     <Search className="h-4 w-4" />
                     <span className="flex-1 text-left">Ara...</span>

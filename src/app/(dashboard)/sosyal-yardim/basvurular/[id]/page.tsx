@@ -1,21 +1,21 @@
 'use client'
 
-import { use } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, CheckCircle, XCircle, Clock, FileText, User } from 'lucide-react'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { fetchApplicationById, updateApplicationStatus } from '@/lib/supabase-service'
 import {
     AID_TYPE_LABELS,
     BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
+import { fetchApplicationById, updateApplicationStatus } from '@/lib/supabase-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { BasvuruDurumu } from '@/types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ArrowLeft, CheckCircle, Clock, FileText, User, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { use } from 'react'
+import { toast } from 'sonner'
 
 const durumColors: Record<BasvuruDurumu, string> = {
     'beklemede': 'bg-amber-500/15 text-amber-600 border-amber-500/25',
@@ -40,8 +40,8 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
         mutationFn: ({ durum }: { durum: BasvuruDurumu; notu?: string }) =>
             updateApplicationStatus(id, durum as 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['application', id] })
-            queryClient.invalidateQueries({ queryKey: ['applications'] })
+            void queryClient.invalidateQueries({ queryKey: ['application', id] })
+            void queryClient.invalidateQueries({ queryKey: ['applications'] })
             toast.success('Başvuru durumu başarıyla güncellendi')
         },
         onError: () => {
@@ -79,7 +79,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                 <FileText className="h-12 w-12 text-muted-foreground" />
                 <h2 className="text-2xl font-semibold">Başvuru bulunamadı</h2>
                 <p className="text-muted-foreground">Aradığınız başvuru mevcut değil veya silinmiş olabilir.</p>
-                <Button onClick={() => router.push('/sosyal-yardim/basvurular')}>
+                <Button onClick={() => { router.push('/sosyal-yardim/basvurular'); }}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Başvurular Listesine Dön
                 </Button>
@@ -95,7 +95,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => router.push('/sosyal-yardim/basvurular')}
+                        onClick={() => { router.push('/sosyal-yardim/basvurular'); }}
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </Button>

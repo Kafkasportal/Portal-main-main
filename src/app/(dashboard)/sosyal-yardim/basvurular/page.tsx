@@ -1,28 +1,29 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import {
-    Plus,
-    Download,
-    Search,
-    Filter,
-    Settings,
+    AlertCircle,
+    CheckCircle,
     ChevronLeft,
     ChevronRight,
-    Eye,
-    CheckCircle,
-    XCircle,
     Clock,
+    Download,
+    Eye,
     FileText,
-    AlertCircle
+    Filter,
+    Plus,
+    Search,
+    Settings,
+    XCircle
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useMemo, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { QueryError } from '@/components/shared/query-error'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
     Select,
     SelectContent,
@@ -30,6 +31,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
     Table,
     TableBody,
@@ -38,15 +40,13 @@ import {
     TableHeader,
     TableRow
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
-import { QueryError } from '@/components/shared/query-error'
-import { fetchApplications } from '@/lib/supabase-service'
 import {
     AID_TYPE_LABELS,
     BASVURU_DURUMU_LABELS
 } from '@/lib/constants'
-import type { BasvuruDurumu, YardimTuru, SosyalYardimBasvuru } from '@/types'
+import { fetchApplications } from '@/lib/supabase-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import type { BasvuruDurumu, SosyalYardimBasvuru, YardimTuru } from '@/types'
 
 // Durum badge renkleri - Modern SaaS palette
 const durumColors: Record<BasvuruDurumu, string> = {
@@ -92,10 +92,10 @@ export default function ApplicationsPage() {
             const mappedData: SosyalYardimBasvuru[] = (result.data || []).map((app: Record<string, unknown>) => ({
                 id: app.id as string,
                 basvuranKisi: {
-                    ad: (app.beneficiaries as Record<string, unknown>)?.ad as string || '',
-                    soyad: (app.beneficiaries as Record<string, unknown>)?.soyad as string || '',
-                    tcKimlikNo: (app.beneficiaries as Record<string, unknown>)?.tc_kimlik_no as string || '',
-                    telefon: (app.beneficiaries as Record<string, unknown>)?.telefon as string || '',
+                    ad: (app.beneficiaries as Record<string, unknown>).ad as string || '',
+                    soyad: (app.beneficiaries as Record<string, unknown>).soyad as string || '',
+                    tcKimlikNo: (app.beneficiaries as Record<string, unknown>).tc_kimlik_no as string || '',
+                    telefon: (app.beneficiaries as Record<string, unknown>).telefon as string || '',
                     adres: ''
                 },
                 yardimTuru: app.yardim_turu as YardimTuru,
@@ -177,7 +177,7 @@ export default function ApplicationsPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            onClick={() => { setPage(p => Math.max(1, p - 1)); }}
                             disabled={page === 1}
                         >
                             <ChevronLeft className="h-4 w-4" />
@@ -189,7 +189,7 @@ export default function ApplicationsPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }}
                             disabled={page === totalPages}
                         >
                             <ChevronRight className="h-4 w-4" />
@@ -269,7 +269,7 @@ export default function ApplicationsPage() {
                         placeholder="ID"
                         className="w-32 h-9"
                         value={searchId}
-                        onChange={(e) => setSearchId(e.target.value)}
+                        onChange={(e) => { setSearchId(e.target.value); }}
                     />
                 </div>
 
@@ -279,7 +279,7 @@ export default function ApplicationsPage() {
                         placeholder="Ad Soyad"
                         className="w-56 h-9"
                         value={searchName}
-                        onChange={(e) => setSearchName(e.target.value)}
+                        onChange={(e) => { setSearchName(e.target.value); }}
                     />
                 </div>
 
@@ -289,7 +289,7 @@ export default function ApplicationsPage() {
                         placeholder="TC Kimlik"
                         className="w-40 h-9"
                         value={searchTc}
-                        onChange={(e) => setSearchTc(e.target.value)}
+                        onChange={(e) => { setSearchTc(e.target.value); }}
                     />
                 </div>
 
@@ -395,7 +395,7 @@ export default function ApplicationsPage() {
                                     <TableRow
                                         key={application.id}
                                         className="cursor-pointer hover:bg-muted/50"
-                                        onClick={() => router.push(`/sosyal-yardim/basvurular/${application.id}`)}
+                                        onClick={() => { router.push(`/sosyal-yardim/basvurular/${application.id}`); }}
                                     >
                                         <TableCell>
                                             <Button

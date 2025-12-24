@@ -1,33 +1,24 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
-    DialogFooter
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select'
 import {
     Form,
     FormControl,
@@ -36,13 +27,22 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
-import { createBeneficiary } from '@/lib/mock-service'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
-    IHTIYAC_SAHIBI_KATEGORI_LABELS,
-    FON_BOLGESI_LABELS,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
+import {
+    COUNTRIES,
     DOSYA_BAGLANTISI_LABELS,
-    COUNTRIES
+    FON_BOLGESI_LABELS,
+    IHTIYAC_SAHIBI_KATEGORI_LABELS
 } from '@/lib/constants'
+import { createBeneficiary } from '@/lib/mock-service'
 
 // Form validasyon şeması
 const newBeneficiarySchema = z.object({
@@ -95,7 +95,7 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
     const mutation = useMutation({
         mutationFn: createBeneficiary,
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
+            void queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
             toast.success('Kayıt başarıyla oluşturuldu')
             form.reset()
             onOpenChange(false)
@@ -143,7 +143,7 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => onOpenChange(false)}
+                        onClick={() => { onOpenChange(false); }}
                     >
                         <X className="h-4 w-4" />
                     </Button>
@@ -271,7 +271,7 @@ export function NewBeneficiaryDialog({ open, onOpenChange }: NewBeneficiaryDialo
                                 <Checkbox
                                     id="mernis"
                                     checked={mernisKontrol}
-                                    onCheckedChange={(checked) => setMernisKontrol(checked as boolean)}
+                                    onCheckedChange={(checked) => { setMernisKontrol(checked as boolean); }}
                                 />
                                 <Label htmlFor="mernis" className="text-sm cursor-pointer">
                                     Mernis Kontrolü Yap

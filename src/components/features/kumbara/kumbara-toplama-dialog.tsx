@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { PiggyBank, QrCode, Camera, Banknote, MapPin, User, Calendar } from 'lucide-react'
+import { Banknote, Calendar, Camera, MapPin, PiggyBank, QrCode, User } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
     Dialog,
     DialogContent,
@@ -16,7 +19,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
 import {
     Form,
     FormControl,
@@ -27,14 +29,12 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { QRScannerDialog } from './qr-scanner-dialog'
 import { collectKumbara, fetchKumbaraByCode } from '@/lib/mock-service'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { Kumbara } from '@/types'
+import { QRScannerDialog } from './qr-scanner-dialog'
 
 // Form validation schema
 const toplamaFormSchema = z.object({
@@ -100,7 +100,7 @@ export function KumbaraToplamaDialog({
     const { mutate, isPending } = useMutation({
         mutationFn: collectKumbara,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
+            void queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
             toast.success('Toplama başarıyla kaydedildi', {
                 description: `${formatCurrency(form.getValues('tutar'))} toplandı`
             })
@@ -181,7 +181,7 @@ export function KumbaraToplamaDialog({
                                 <p className="text-center text-muted-foreground">
                                     Toplamak istediğiniz kumbaranın QR kodunu tarayın
                                 </p>
-                                <Button onClick={() => setQrScannerOpen(true)} className="gap-2">
+                                <Button onClick={() => { setQrScannerOpen(true); }} className="gap-2">
                                     <Camera className="h-4 w-4" />
                                     Kumbarayı Tara
                                 </Button>

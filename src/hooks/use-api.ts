@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type UseMutationOptions } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import * as mockService from '@/lib/mock-service'
 import * as apiService from '@/lib/api-service'
-import type { PaginatedResponse, Bagis, Uye, IhtiyacSahibi, SosyalYardimBasvuru, Kumbara } from '@/types'
+import * as mockService from '@/lib/mock-service'
+import type { Bagis, IhtiyacSahibi, Kumbara, PaginatedResponse, SosyalYardimBasvuru, Uye } from '@/types'
+import { useMutation, useQuery, useQueryClient, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 // API Toggle: .env'deki NEXT_PUBLIC_USE_MOCK_API değerine göre servis seçimi
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false'
@@ -90,8 +90,8 @@ export function useCreateDonation(options?: UseMutationOptions<Awaited<ReturnTyp
         mutationFn: service.createDonation,
         onSuccess: () => {
             // Cache'i invalidate et
-            queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
             toast.success('Bağış kaydı başarıyla oluşturuldu')
         },
         onError: (error) => {
@@ -130,7 +130,7 @@ export function useCreateMember(options?: UseMutationOptions<Awaited<ReturnType<
     return useMutation({
         mutationFn: service.createMember,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.members.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.members.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
             toast.success('Üye kaydı başarıyla oluşturuldu')
         },
@@ -170,7 +170,7 @@ export function useCreateBeneficiary(options?: UseMutationOptions<Awaited<Return
     return useMutation({
         mutationFn: service.createBeneficiary,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
             toast.success('İhtiyaç sahibi kaydı başarıyla oluşturuldu')
         },
@@ -189,8 +189,8 @@ export function useUpdateBeneficiary(options?: UseMutationOptions<Awaited<Return
     return useMutation({
         mutationFn: ({ id, data }) => service.updateBeneficiary(id, data),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.detail(variables.id) })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.beneficiaries.detail(variables.id) })
             toast.success('İhtiyaç sahibi bilgileri güncellendi')
         },
         onError: (error) => {
@@ -229,8 +229,8 @@ export function useUpdateApplicationStatus(options?: UseMutationOptions<Awaited<
     return useMutation({
         mutationFn: (args) => service.updateApplicationStatus(...args),
         onSuccess: (_data, [id]) => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.detail(id) })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.socialAid.applications.detail(id) })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
             toast.success('Başvuru durumu güncellendi')
         },
@@ -270,7 +270,7 @@ export function useCreateKumbara(options?: UseMutationOptions<Awaited<ReturnType
     return useMutation({
         mutationFn: service.createKumbara,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
+            void queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
             toast.success('Kumbara başarıyla oluşturuldu')
         },
         onError: (error) => {

@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
     Form,
@@ -18,6 +17,7 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { loginSchema, type LoginFormData } from '@/lib/validators'
 import { useUserStore } from '@/stores/user-store'
 
@@ -164,7 +164,7 @@ export default function LoginPage() {
                                                 variant="ghost"
                                                 size="icon"
                                                 className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                                                onClick={() => setShowPassword(!showPassword)}
+                                                onClick={() => { setShowPassword(!showPassword); }}
                                             >
                                                 {showPassword ? (
                                                     <EyeOff className="h-4 w-4 text-muted-foreground" />

@@ -1,28 +1,28 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-    PiggyBank,
+    Banknote,
+    History,
     MapPin,
+    PiggyBank,
     Plus,
     QrCode,
-    Banknote,
-    Route,
-    History
+    Route
 } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { QueryError } from '@/components/shared/query-error'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-import { YeniKumbaraDialog } from '@/components/features/kumbara/yeni-kumbara-dialog'
 import { KumbaraToplamaDialog } from '@/components/features/kumbara/kumbara-toplama-dialog'
 import { RotaOlusturDialog } from '@/components/features/kumbara/rota-olustur-dialog'
+import { YeniKumbaraDialog } from '@/components/features/kumbara/yeni-kumbara-dialog'
 
 import { fetchKumbaras } from '@/lib/mock-service'
 import { formatCurrency } from '@/lib/utils'
@@ -90,7 +90,7 @@ export default function KumbaraPage() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setRotaOpen(true)}
+                            onClick={() => { setRotaOpen(true); }}
                             className="gap-1.5"
                         >
                             <Route className="h-4 w-4" />
@@ -112,7 +112,7 @@ export default function KumbaraPage() {
                         </Button>
 
                         {/* Yeni Kumbara Ekle */}
-                        <Button size="sm" onClick={() => setYeniKumbaraOpen(true)} className="gap-1.5">
+                        <Button size="sm" onClick={() => { setYeniKumbaraOpen(true); }} className="gap-1.5">
                             <Plus className="h-4 w-4" />
                             Ekle
                         </Button>
@@ -253,7 +253,7 @@ function KumbaraGrid({
                 <Card
                     key={kumbara.id}
                     className="hover-glow cursor-pointer transition-all hover:border-primary"
-                    onClick={() => onKumbaraClick(kumbara)}
+                    onClick={() => { onKumbaraClick(kumbara); }}
                 >
                     <CardContent className="p-3 space-y-1.5">
                         <div className="flex items-start justify-between gap-1">

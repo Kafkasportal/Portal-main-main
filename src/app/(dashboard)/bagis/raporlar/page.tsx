@@ -1,28 +1,27 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Download, FileText, TrendingUp, Calendar, Filter } from 'lucide-react'
 import {
-    AreaChart,
     Area,
-    BarChart,
+    AreaChart,
     Bar,
-    XAxis,
-    YAxis,
+    BarChart,
     CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
+    Cell,
     Pie,
-    Cell
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from '@/components/shared/lazy-chart'
+import { useQuery } from '@tanstack/react-query'
+import { Calendar, Download, FileText, Filter, TrendingUp } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { QueryError } from '@/components/shared/query-error'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
     Select,
     SelectContent,
@@ -30,9 +29,10 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
-import { fetchDonations, fetchDashboardStats } from '@/lib/mock-service'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import { DONATION_PURPOSE_LABELS, STATUS_LABELS } from '@/lib/constants'
+import { fetchDashboardStats, fetchDonations } from '@/lib/mock-service'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import type { DonationPurpose, PaymentStatus } from '@/types'
 
 export default function ReportsPage() {
@@ -45,10 +45,10 @@ export default function ReportsPage() {
         const timer = setTimeout(() => {
             setIsMounted(true)
         }, 300)
-        window.addEventListener('resize', () => setIsMounted(true))
+        window.addEventListener('resize', () => { setIsMounted(true); })
         return () => {
             clearTimeout(timer)
-            window.removeEventListener('resize', () => setIsMounted(true))
+            window.removeEventListener('resize', () => { setIsMounted(true); })
         }
     }, [])
 

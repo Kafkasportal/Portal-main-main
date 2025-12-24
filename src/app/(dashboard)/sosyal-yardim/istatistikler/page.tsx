@@ -1,32 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from '@/components/shared/lazy-chart'
 import { useQuery } from '@tanstack/react-query'
 import {
-    TrendingUp,
-    Users,
+    AlertCircle,
     Heart,
-    AlertCircle
+    TrendingUp,
+    Users
 } from 'lucide-react'
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell
-} from '@/components/shared/lazy-chart'
+import { useEffect, useState } from 'react'
 
 import { PageHeader } from '@/components/shared/page-header'
 import { StatCard } from '@/components/shared/stat-card'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { fetchDashboardStats, fetchBeneficiaries, fetchApplications } from '@/lib/supabase-service'
+import { fetchApplications, fetchBeneficiaries, fetchDashboardStats } from '@/lib/supabase-service'
 // formatCurrency removed - not used after removing monthly chart
 import { AID_TYPE_LABELS } from '@/lib/constants'
 
@@ -81,7 +81,7 @@ export default function StatisticsPage() {
                     <h3 className="text-lg font-semibold">Veriler yüklenemedi</h3>
                     <p className="text-muted-foreground">Lütfen sayfayı yenileyip tekrar deneyin.</p>
                 </div>
-                <Button onClick={() => window.location.reload()}>
+                <Button onClick={() => { window.location.reload(); }}>
                     Yeniden Dene
                 </Button>
             </div>

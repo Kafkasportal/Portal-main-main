@@ -1,15 +1,15 @@
 'use client'
 
-import { useState } from 'react'
 import { PageHeader } from '@/components/shared/page-header'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Save, Bell, Shield, User, Globe, Database } from 'lucide-react'
+import { Bell, Database, Globe, Save, Shield, User } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 export default function SettingsPage() {
@@ -116,7 +116,7 @@ export default function SettingsPage() {
                                 <Switch
                                     checked={notifications.email}
                                     onCheckedChange={(checked) =>
-                                        setNotifications({ ...notifications, email: checked })
+                                        { setNotifications({ ...notifications, email: checked }); }
                                     }
                                 />
                             </div>
@@ -131,7 +131,7 @@ export default function SettingsPage() {
                                 <Switch
                                     checked={notifications.push}
                                     onCheckedChange={(checked) =>
-                                        setNotifications({ ...notifications, push: checked })
+                                        { setNotifications({ ...notifications, push: checked }); }
                                     }
                                 />
                             </div>
@@ -146,7 +146,7 @@ export default function SettingsPage() {
                                 <Switch
                                     checked={notifications.sms}
                                     onCheckedChange={(checked) =>
-                                        setNotifications({ ...notifications, sms: checked })
+                                        { setNotifications({ ...notifications, sms: checked }); }
                                     }
                                 />
                             </div>

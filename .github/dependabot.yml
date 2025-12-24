@@ -1,0 +1,62 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Istanbul"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Kafkasportal/maintainers"
+    assignees:
+      - "Kafkasportal/maintainers"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    groups:
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+      nextjs:
+        patterns:
+          - "next"
+          - "eslint-config-next"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      testing:
+        patterns:
+          - "@playwright/*"
+          - "@testing-library/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Istanbul"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Kafkasportal/maintainers"
+    assignees:
+      - "Kafkasportal/maintainers"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "automated"

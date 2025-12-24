@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions, type UseMu
 import { toast } from 'sonner'
 import * as mockService from '@/lib/mock-service'
 import * as apiService from '@/lib/api-service'
-import type { PaginatedResponse } from '@/types'
+import type { PaginatedResponse, Bagis, Uye, IhtiyacSahibi, SosyalYardimBasvuru, Kumbara } from '@/types'
 
 // API Toggle: .env'deki NEXT_PUBLIC_USE_MOCK_API değerine göre servis seçimi
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false'
@@ -64,7 +64,7 @@ export function useDashboardStats(options?: Omit<UseQueryOptions<Awaited<ReturnT
 // Donations Hooks
 export function useDonations(
     params?: Parameters<typeof service.fetchDonations>[0],
-    options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginatedResponse<Bagis>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.donations.list(params),
@@ -105,7 +105,7 @@ export function useCreateDonation(options?: UseMutationOptions<Awaited<ReturnTyp
 // Members Hooks
 export function useMembers(
     params?: Parameters<typeof service.fetchMembers>[0],
-    options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginatedResponse<Uye>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.members.list(params),
@@ -145,7 +145,7 @@ export function useCreateMember(options?: UseMutationOptions<Awaited<ReturnType<
 // Beneficiaries Hooks
 export function useBeneficiaries(
     params?: Parameters<typeof service.fetchBeneficiaries>[0],
-    options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginatedResponse<IhtiyacSahibi>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.socialAid.beneficiaries.list(params),
@@ -204,7 +204,7 @@ export function useUpdateBeneficiary(options?: UseMutationOptions<Awaited<Return
 // Applications Hooks
 export function useApplications(
     params?: Parameters<typeof service.fetchApplications>[0],
-    options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginatedResponse<SosyalYardimBasvuru>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.socialAid.applications.list(params),
@@ -245,7 +245,7 @@ export function useUpdateApplicationStatus(options?: UseMutationOptions<Awaited<
 // Kumbaras Hooks
 export function useKumbaras(
     params?: Parameters<typeof service.fetchKumbaras>[0],
-    options?: Omit<UseQueryOptions<PaginatedResponse<any>>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<PaginatedResponse<Kumbara>>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.kumbaras.list(params),

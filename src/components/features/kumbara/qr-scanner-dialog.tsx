@@ -35,7 +35,7 @@ export function QRScannerDialog({
     const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
     
     const videoRef = useRef<HTMLVideoElement>(null)
-    const readerRef = useRef<any>(null)
+    const readerRef = useRef<unknown>(null)
     const streamRef = useRef<MediaStream | null>(null)
 
     // Kamerayı durdur
@@ -44,8 +44,8 @@ export function QRScannerDialog({
             streamRef.current.getTracks().forEach(track => track.stop())
             streamRef.current = null
         }
-        if (readerRef.current) {
-            readerRef.current.reset()
+        if (readerRef.current && typeof readerRef.current === 'object' && 'reset' in readerRef.current) {
+            (readerRef.current as { reset: () => void }).reset()
         }
         setIsScanning(false)
     }, [])
@@ -76,7 +76,7 @@ export function QRScannerDialog({
                     if (!videoRef.current || !readerRef.current || !isScanning) return
 
                     try {
-                        const result = await readerRef.current.decodeFromVideoElement(videoRef.current)
+                        const result = await (readerRef.current as { decodeFromVideoElement: (video: HTMLVideoElement) => Promise<{ getText: () => string }> }).decodeFromVideoElement(videoRef.current)
                         if (result) {
                             const qrCode = result.getText()
                             stopCamera()
@@ -109,7 +109,6 @@ export function QRScannerDialog({
     useEffect(() => {
         // Sadece open false'a değiştiğinde çalış
         if (prevOpenRef.current && !open) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- Cleanup when dialog closes is intentional
             stopCamera()
             setManualCode('')
             setError(null)

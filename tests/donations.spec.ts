@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures/test-fixtures';
-import { ROUTES, generateTestDonation } from './fixtures/test-fixtures';
+import { ROUTES } from './fixtures/test-fixtures';
 
 test.describe('Bağış Modülü Testleri', () => {
   test.describe('Bağış Listesi Sayfası', () => {

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST_USER, ROUTES, login } from './fixtures/test-fixtures';
+import { ROUTES, login } from './fixtures/test-fixtures';
 
 // Farklı viewport boyutları
 const viewports = {
@@ -29,16 +29,12 @@ test.describe('Responsive Tasarım Testleri', () => {
     test('dashboard mobile görünümü doğru olmalı', async ({ page }) => {
       await login(page);
       await page.goto(ROUTES.dashboard);
-      
-      // Sidebar kapalı olmalı (mobile'da)
-      const sidebar = page.locator('aside, [class*="sidebar"]').first();
-      const sidebarBox = await sidebar.boundingBox();
-      
+
       // Hamburger menü görünür olmalı
       const hamburgerMenu = page.getByRole('button', { name: /menü|menu/i })
         .or(page.locator('[class*="hamburger"]'))
         .or(page.locator('button svg'));
-      
+
       if (await hamburgerMenu.first().isVisible()) {
         await expect(hamburgerMenu.first()).toBeVisible();
       }

@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+import { chromium } from 'playwright';
 
 const pages = [
     { name: '01-giris', url: '/giris', needsAuth: false },

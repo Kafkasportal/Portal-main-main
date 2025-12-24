@@ -56,28 +56,35 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPaletteProps = {}) {
     const [internalOpen, setInternalOpen] = useState(false)
-    const [recentPages, setRecentPages] = useState<RecentPage[]>([])
     const router = useRouter()
 
     // Use controlled or uncontrolled mode
     const isControlled = controlledOpen !== undefined
     const open = isControlled ? controlledOpen : internalOpen
-    const setOpen = isControlled ? (onOpenChange || (() => {})) : setInternalOpen
+    const setOpen = useCallback(
+        (value: boolean | ((prev: boolean) => boolean)) => {
+            if (isControlled) {
+                onOpenChange?.(typeof value === 'function' ? value(controlledOpen!) : value)
+            } else {
+                setInternalOpen(typeof value === 'function' ? value(internalOpen) : value)
+            }
+        },
+        [isControlled, onOpenChange, controlledOpen, internalOpen]
+    )
 
     // Flatten all nav items
     const allPages = useMemo(() => flattenNavItems(NAV_ITEMS), [])
 
     // Load recent pages from localStorage
-    useEffect(() => {
-        const stored = localStorage.getItem(RECENT_PAGES_KEY)
-        if (stored) {
-            try {
-                setRecentPages(JSON.parse(stored))
-            } catch {
-                setRecentPages([])
-            }
+    const [recentPages, setRecentPages] = useState<RecentPage[]>(() => {
+        if (typeof window === 'undefined') return []
+        try {
+            const stored = localStorage.getItem(RECENT_PAGES_KEY)
+            return stored ? JSON.parse(stored) : []
+        } catch {
+            return []
         }
-    }, [])
+    })
 
     // Save recent page
     const saveRecentPage = useCallback((page: NavItem & { parentLabel?: string }) => {
@@ -117,7 +124,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
             saveRecentPage(page)
             router.push(page.href)
         }
-    }, [router, saveRecentPage])
+    }, [router, saveRecentPage, setOpen])
 
     return (
         <CommandDialog open={open} onOpenChange={setOpen}>

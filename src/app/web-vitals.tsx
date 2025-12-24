@@ -27,8 +27,8 @@ export function WebVitals() {
         // Production'da analytics'e gönder
         if (process.env.NODE_ENV === 'production') {
             // Google Analytics örneği
-            if (typeof window !== 'undefined' && (window as any).gtag) {
-                (window as any).gtag('event', metric.name, {
+            if (typeof window !== 'undefined' && (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag) {
+                (window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', metric.name, {
                     value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
                     event_category: 'Web Vitals',
                     event_label: metric.id,

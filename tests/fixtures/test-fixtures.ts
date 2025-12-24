@@ -45,11 +45,12 @@ export const test = base.extend<TestFixtures>({
     await page.getByRole('textbox', { name: 'E-posta' }).fill(TEST_USER.email);
     await page.getByRole('textbox', { name: '••••••••' }).fill(TEST_USER.password);
     await page.getByRole('button', { name: 'Giriş Yap' }).click();
-    
+
     // Dashboard'a yönlendirilmeyi bekle
     await page.waitForURL('**/genel');
     await expect(page.getByRole('heading', { name: 'Genel Bakış' })).toBeVisible();
-    
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(page);
   },
 });

@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures/test-fixtures';
-import { ROUTES } from './fixtures/test-fixtures';
 
 test.describe('Dashboard Testleri', () => {
   test.describe('Dashboard Görünümü', () => {

@@ -103,7 +103,7 @@ async function importDataWithRelationships() {
 
   // ADRES BAZLI GRUPLAMA
   // Aynı adreste yaşayan kişileri grupla
-  const addressGroups = new Map<string, any[]>();
+  const addressGroups = new Map<string, Record<string, unknown>[]>();
 
   for (const b of allBeneficiaries) {
     const address = (b.adres as string) || 'Bilinmeyen Adres';
@@ -114,7 +114,7 @@ async function importDataWithRelationships() {
   }
 
   // Her adres grubu için hane reisi belirle
-  for (const [_address, group] of addressGroups) {
+  for (const [, group] of addressGroups) {
     // Grup içindeki "İhtiyaç Sahibi Kişi"leri bul
     const householdHeads = group.filter(b => {
       const rawIhtiyac = (b._temp_raw_ihtiyac as string) || '';

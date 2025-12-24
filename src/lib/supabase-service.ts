@@ -1,6 +1,6 @@
 import { getSupabaseClient } from './supabase/client'
 import type { Database } from '@/types/supabase'
-import type { IhtiyacSahibi, PaginatedResponse } from '@/types'
+import type { IhtiyacSahibi, PaginatedResponse, IhtiyacSahibiTuru, IhtiyacSahibiKategori, Cinsiyet, IhtiyacDurumu, MedeniHal, EgitimDurumu } from '@/types'
 
 type Tables = Database['public']['Tables']
 
@@ -18,10 +18,10 @@ function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
     soyad: db.soyad || '',
     tcKimlikNo: db.tc_kimlik_no || '',
     yabanciKimlikNo: '',
-    tur: (db.relationship_type === 'İhtiyaç Sahibi Kişi' ? 'ihtiyac-sahibi-kisi' : 'bakmakla-yukumlu') as any,
-    kategori: (db.kategori || 'ihtiyac-sahibi-aile') as any,
+    tur: (db.relationship_type === 'İhtiyaç Sahibi Kişi' ? 'ihtiyac-sahibi-kisi' : 'bakmakla-yukumlu') as IhtiyacSahibiTuru,
+    kategori: (db.kategori || 'ihtiyac-sahibi-aile') as IhtiyacSahibiKategori,
     dogumTarihi: db.dogum_tarihi ? new Date(db.dogum_tarihi) : new Date(),
-    cinsiyet: (db.cinsiyet || 'belirtilmemis') as any,
+    cinsiyet: (db.cinsiyet || 'belirtilmemis') as Cinsiyet,
     uyruk: 'Türkiye',
     cepTelefonu: db.telefon || '',
     cepTelefonuOperator: '',
@@ -33,14 +33,14 @@ function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
     adres: db.adres || '',
     dosyaNo: db.tc_kimlik_no || '',
     kayitTarihi: new Date(db.created_at),
-    durum: (db.durum || 'aktif') as any,
-    ihtiyacDurumu: (db.ihtiyac_durumu || 'orta') as any,
+    durum: (db.durum || 'aktif') as IhtiyacDurumu,
+    ihtiyacDurumu: (db.ihtiyac_durumu || 'orta') as string,
     basvuruSayisi: 0,
     yardimSayisi: 0,
     rizaBeyaniDurumu: 'alindi',
     toplamYardimTutari: 0,
     aileHaneBilgileri: {
-      medeniHal: (db.medeni_hal || 'belirtilmemis') as any,
+      medeniHal: (db.medeni_hal || 'belirtilmemis') as MedeniHal,
       ailedekiKisiSayisi: db.hane_buyuklugu || 1,
       cocukSayisi: 0,
       yetimSayisi: 0,
@@ -50,7 +50,7 @@ function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
     ekonomikSosyalDurum: {
       meslek: db.meslek || '',
       aylikGelir: Number(db.aylik_gelir) || 0,
-      egitimDurumu: (db.egitim_durumu || 'belirtilmemis') as any
+      egitimDurumu: (db.egitim_durumu || 'belirtilmemis') as EgitimDurumu
     },
     createdAt: new Date(db.created_at),
     updatedAt: new Date(db.updated_at)

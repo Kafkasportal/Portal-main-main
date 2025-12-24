@@ -32,44 +32,42 @@ function NavItemComponent({ item, depth = 0 }: { item: NavItem; depth?: number }
 
     const Icon = item.icon
 
-    // Collapsed modda tooltip wrapper
-    const TooltipWrapper = ({ children }: { children: React.ReactNode }) => {
-        if (!isCollapsed) return <>{children}</>
-        return (
-            <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>{children}</TooltipTrigger>
-                <TooltipContent side="right" className="font-medium">
-                    {item.label}
-                </TooltipContent>
-            </Tooltip>
-        )
-    }
-
     if (hasChildren) {
+        const buttonElement = (
+            <button
+                onClick={() => toggleMenu(item.label)}
+                className={cn(
+                    'flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
+                    'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent',
+                    'transition-colors duration-150',
+                    isOpen && 'bg-sidebar-accent text-sidebar-foreground'
+                )}
+            >
+                {Icon && <Icon className="h-5 w-5 shrink-0" />}
+                {!isCollapsed && (
+                    <>
+                        <span className="flex-1 text-left">{item.label}</span>
+                        <ChevronDown className={cn(
+                            'h-4 w-4 shrink-0 transition-transform duration-200',
+                            !isOpen && '-rotate-90'
+                        )} />
+                    </>
+                )}
+            </button>
+        )
+
         return (
             <div className="w-full">
-                <TooltipWrapper>
-                    <button
-                        onClick={() => toggleMenu(item.label)}
-                        className={cn(
-                            'flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
-                            'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent',
-                            'transition-colors duration-150',
-                            isOpen && 'bg-sidebar-accent text-sidebar-foreground'
-                        )}
-                    >
-                        {Icon && <Icon className="h-5 w-5 shrink-0" />}
-                        {!isCollapsed && (
-                            <>
-                                <span className="flex-1 text-left">{item.label}</span>
-                                <ChevronDown className={cn(
-                                    'h-4 w-4 shrink-0 transition-transform duration-200',
-                                    !isOpen && '-rotate-90'
-                                )} />
-                            </>
-                        )}
-                    </button>
-                </TooltipWrapper>
+                {isCollapsed ? (
+                    <Tooltip delayDuration={0}>
+                        <TooltipTrigger asChild>{buttonElement}</TooltipTrigger>
+                        <TooltipContent side="right" className="font-medium">
+                            {item.label}
+                        </TooltipContent>
+                    </Tooltip>
+                ) : (
+                    buttonElement
+                )}
 
                 {isOpen && !isCollapsed && (
                     <div className="mt-1 ml-4 pl-4 border-l-2 border-sidebar-primary/30 space-y-1 animate-in slide-in-from-top-2 duration-200">
@@ -82,27 +80,36 @@ function NavItemComponent({ item, depth = 0 }: { item: NavItem; depth?: number }
         )
     }
 
-    return (
-        <TooltipWrapper>
-            <Link
-                href={item.href || '#'}
-                prefetch={true}
-                className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
-                    'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent',
-                    'active:bg-sidebar-accent/80 transition-colors duration-150',
-                    isActive && 'bg-sidebar-accent text-sidebar-primary border-l-2 border-sidebar-primary'
-                )}
-            >
-                {Icon && <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary')} />}
-                {!isCollapsed && <span>{item.label}</span>}
-                {item.badge && !isCollapsed && (
-                    <span className="ml-auto bg-sidebar-primary/20 text-sidebar-primary text-xs px-2 py-0.5 rounded-full font-semibold">
-                        {item.badge}
-                    </span>
-                )}
-            </Link>
-        </TooltipWrapper>
+    const linkElement = (
+        <Link
+            href={item.href || '#'}
+            prefetch={true}
+            className={cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
+                'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent',
+                'active:bg-sidebar-accent/80 transition-colors duration-150',
+                isActive && 'bg-sidebar-accent text-sidebar-primary border-l-2 border-sidebar-primary'
+            )}
+        >
+            {Icon && <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary')} />}
+            {!isCollapsed && <span>{item.label}</span>}
+            {item.badge && !isCollapsed && (
+                <span className="ml-auto bg-sidebar-primary/20 text-sidebar-primary text-xs px-2 py-0.5 rounded-full font-semibold">
+                    {item.badge}
+                </span>
+            )}
+        </Link>
+    )
+
+    return isCollapsed ? (
+        <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>{linkElement}</TooltipTrigger>
+            <TooltipContent side="right" className="font-medium">
+                {item.label}
+            </TooltipContent>
+        </Tooltip>
+    ) : (
+        linkElement
     )
 }
 

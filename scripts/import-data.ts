@@ -24,7 +24,7 @@ async function importData() {
   const dataRegex = /<Data[^>]*>([\s\S]*?)<\/Data>/;
 
   let match;
-  const beneficiariesMap = new Map<string, any>();
+  const beneficiariesMap = new Map<string, Record<string, unknown>>();
   let rowCount = 0;
 
   while ((match = rowRegex.exec(xmlContent)) !== null) {

@@ -1,16 +1,6 @@
 import type { NextConfig } from "next";
-import path from "path";
-import bundleAnalyzer from '@next/bundle-analyzer';
-
-// Bundle analyzer - kullanmak için: ANALYZE=true npm run build
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-});
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
 
   // Performance optimizations
   experimental: {
@@ -75,4 +65,4 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default nextConfig;

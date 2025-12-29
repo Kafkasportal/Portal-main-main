@@ -7,8 +7,6 @@
     "strict": true,
     "skipDefaultLibCheck": true,
     "noEmit": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -39,7 +37,6 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts",
-    "src/components/features/donations/columns.tsx"
+    "scripts"
   ]
 }

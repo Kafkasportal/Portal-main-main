@@ -49,17 +49,8 @@ export function WebVitals() {
         )
       }
 
-      // Alternatif: Custom analytics endpoint
-      // fetch('/api/analytics', {
-      //     method: 'POST',
-      //     body: JSON.stringify({
-      //         metric: metric.name,
-      //         value: metric.value,
-      //         id: metric.id,
-      //         rating: metric.rating,
-      //     }),
-      //     headers: { 'Content-Type': 'application/json' },
-      // }).catch(console.error)
+      // TODO: Integrate with custom analytics endpoint if needed
+      // Example: POST to /api/analytics with metric data
     }
   })
 

@@ -34,6 +34,7 @@ interface DataTableToolbarProps<TData> {
       icon?: React.ComponentType<{ className?: string }>
     }[]
   }[]
+  exportButton?: React.ReactNode
 }
 
 export function DataTableToolbar<TData>({
@@ -41,6 +42,7 @@ export function DataTableToolbar<TData>({
   searchPlaceholder = 'Ara...',
   searchColumn,
   filters,
+  exportButton,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -108,6 +110,9 @@ export function DataTableToolbar<TData>({
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
+
+        {/* Export button */}
+        {exportButton}
 
         {/* Column visibility */}
         <DropdownMenu>

@@ -28,6 +28,8 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination } from './pagination'
 import { DataTableToolbar } from './toolbar'
+import { DataTableExportButton } from './export-button'
+import { BulkActionsToolbar, type BulkAction } from './bulk-actions-toolbar'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -43,6 +45,15 @@ interface DataTableProps<TData, TValue> {
   }[]
   onRowClick?: (row: TData) => void
   onExport?: (filteredData: TData[]) => void
+  exportFilename?: string
+  enableExport?: boolean
+  enableBulkActions?: boolean
+  getRowId?: (row: TData) => string
+  onBulkDelete?: (ids: string[]) => Promise<void>
+  onStatusUpdate?: (ids: string[], status: string) => Promise<void>
+  onBulkAction?: (action: string, ids: string[]) => Promise<void>
+  bulkStatusOptions?: { label: string; value: string }[]
+  bulkActions?: BulkAction[]
   columnFilters?: ColumnFiltersState
   onColumnFiltersChange?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
 }
@@ -63,6 +74,15 @@ function DataTableComponent<TData, TValue>({
   isLoading = false,
   filters,
   onRowClick,
+  exportFilename = 'export',
+  enableExport = true,
+  enableBulkActions = true,
+  getRowId,
+  onBulkDelete,
+  onStatusUpdate,
+  onBulkAction,
+  bulkStatusOptions = [],
+  bulkActions = [],
   columnFilters: propColumnFilters,
   onColumnFiltersChange: propOnColumnFiltersChange,
 }: DataTableProps<TData, TValue>) {
@@ -100,6 +120,22 @@ function DataTableComponent<TData, TValue>({
     manualFiltering: !!propOnColumnFiltersChange,
   })
 
+  // Get filtered data for export
+  const filteredData = (table.getFilteredRowModel().rows.map((row) => row.original) ||
+    data) as TData[]
+
+  // Get selected row IDs for bulk operations
+  const selectedIds = table
+    .getSelectedRowModel()
+    .rows.map((row) => {
+      const rowData = row.original
+      if (getRowId) {
+        return getRowId(rowData)
+      }
+      // Fallback to 'id' field if getRowId not provided
+      return String((rowData as Record<string, any>).id || row.id)
+    })
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -124,11 +160,33 @@ function DataTableComponent<TData, TValue>({
 
   return (
     <div className="space-y-4">
+      {/* Bulk Actions Toolbar */}
+      {enableBulkActions && selectedIds.length > 0 && (
+        <BulkActionsToolbar
+          selectedCount={selectedIds.length}
+          selectedIds={selectedIds}
+          onBulkDelete={onBulkDelete}
+          onStatusUpdate={onStatusUpdate}
+          onBulkAction={onBulkAction}
+          statusOptions={bulkStatusOptions}
+          customActions={bulkActions}
+        />
+      )}
+
+      {/* Search and Filter Toolbar */}
       <DataTableToolbar
         table={table}
         searchPlaceholder={searchPlaceholder}
         searchColumn={searchColumn}
         filters={filters}
+        exportButton={
+          enableExport ? (
+            <DataTableExportButton
+              data={filteredData}
+              filename={exportFilename}
+            />
+          ) : undefined
+        }
       />
 
       <div className="rounded-md border">

@@ -17,6 +17,8 @@ import {
   Clock,
   CreditCard,
   FileText,
+  LayoutGrid,
+  Plus,
   Search,
   Settings,
   User,
@@ -115,14 +117,49 @@ export function CommandPalette({
     []
   )
 
-  // Keyboard shortcut - only when uncontrolled
+  // Keyboard shortcuts
   useEffect(() => {
-    if (isControlled) return
-
     const down = (e: KeyboardEvent) => {
+      // Command Palette toggle: Cmd/Ctrl + K
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen(!open)
+        if (!isControlled) setOpen((prev) => !prev)
+      }
+
+      // New Donation: Cmd/Ctrl + Shift + D
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'D') {
+        e.preventDefault()
+        router.push('/bagis/yeni')
+      }
+
+      // New Member: Cmd/Ctrl + Shift + M
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'M') {
+        e.preventDefault()
+        router.push('/uyeler/yeni')
+      }
+
+      // Dashboard: Cmd/Ctrl + Shift + H
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'H') {
+        e.preventDefault()
+        router.push('/genel')
+      }
+
+      // Members: Cmd/Ctrl + Shift + U
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'U') {
+        e.preventDefault()
+        router.push('/uyeler/liste')
+      }
+
+      // Donations: Cmd/Ctrl + Shift + B
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'B') {
+        e.preventDefault()
+        router.push('/bagis/liste')
+      }
+
+      // Social Aid: Cmd/Ctrl + Shift + A
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key === 'A') {
+        e.preventDefault()
+        router.push('/sosyal-yardim/basvurular')
       }
     }
 
@@ -130,7 +167,7 @@ export function CommandPalette({
     return () => {
       document.removeEventListener('keydown', down)
     }
-  }, [isControlled, open, setOpen])
+  }, [isControlled, open, setOpen, router])
 
   // Navigate to page
   const runCommand = useCallback(
@@ -193,12 +230,42 @@ export function CommandPalette({
           <CommandItem
             onSelect={() => {
               setOpen(false)
+              router.push('/genel')
+            }}
+          >
+            <LayoutGrid className="mr-2 h-4 w-4" />
+            <span>Ana Panele Git</span>
+            <CommandShortcut>⌘⇧H</CommandShortcut>
+          </CommandItem>
+          <CommandItem
+            onSelect={() => {
+              setOpen(false)
               router.push('/uyeler/yeni')
             }}
           >
-            <User className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" />
             <span>Yeni Üye Ekle</span>
-            <CommandShortcut>⌘N</CommandShortcut>
+            <CommandShortcut>⌘⇧M</CommandShortcut>
+          </CommandItem>
+          <CommandItem
+            onSelect={() => {
+              setOpen(false)
+              router.push('/bagis/yeni')
+            }}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>Yeni Bağış Kaydet</span>
+            <CommandShortcut>⌘⇧D</CommandShortcut>
+          </CommandItem>
+          <CommandItem
+            onSelect={() => {
+              setOpen(false)
+              router.push('/uyeler/liste')
+            }}
+          >
+            <User className="mr-2 h-4 w-4" />
+            <span>Üyeler Listesi</span>
+            <CommandShortcut>⌘⇧U</CommandShortcut>
           </CommandItem>
           <CommandItem
             onSelect={() => {
@@ -207,7 +274,8 @@ export function CommandPalette({
             }}
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            <span>Bağış Kaydet</span>
+            <span>Bağışlar Listesi</span>
+            <CommandShortcut>⌘⇧B</CommandShortcut>
           </CommandItem>
           <CommandItem
             onSelect={() => {
@@ -216,7 +284,8 @@ export function CommandPalette({
             }}
           >
             <FileText className="mr-2 h-4 w-4" />
-            <span>Başvuruları Görüntüle</span>
+            <span>Sosyal Yardım Başvuruları</span>
+            <CommandShortcut>⌘⇧A</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 

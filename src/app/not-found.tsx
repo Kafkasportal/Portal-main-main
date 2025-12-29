@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Home } from 'lucide-react'
+import { ArrowLeft, Home, Search } from 'lucide-react'
 import Link from 'next/link'
 
 export default function NotFound() {
@@ -11,7 +11,7 @@ export default function NotFound() {
           <h1 className="text-muted/30 text-9xl leading-none font-bold">404</h1>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full">
-              <span className="text-5xl">🔍</span>
+              <Search className="text-primary h-12 w-12" />
             </div>
           </div>
         </div>

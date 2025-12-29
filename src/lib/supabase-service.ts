@@ -1,3 +1,42 @@
+/**
+ * Supabase Service
+ * Central service for all Supabase operations
+ *
+ * NOTE: This file is being refactored into modular services.
+ * New services are in src/lib/services/
+ * Backward compatibility is maintained via re-exports below.
+ */
+
+// ==================================================
+// RE-EXPORTS: Modular Services (Backward Compatibility)
+// ==================================================
+export {
+  // Members Service
+  fetchMembers,
+  fetchMember,
+  createMember,
+  updateMember,
+  deleteMember,
+  // Donations Service
+  fetchDonations,
+  fetchDonation,
+  createDonation,
+  // Kumbaras Service
+  fetchKumbaras,
+  fetchKumbaraByCode,
+  createKumbara,
+  collectKumbara,
+  // Beneficiaries Service
+  fetchBeneficiaries,
+  fetchBeneficiaryById,
+  createBeneficiary,
+  updateBeneficiary,
+  fetchDependentPersons,
+} from './services'
+
+// ==================================================
+// LEGACY IMPORTS (Remaining non-refactored services)
+// ==================================================
 import type {
   AidatDurumu,
   Bagis,
@@ -1381,57 +1420,9 @@ export async function deleteInKindAid(id: number): Promise<void> {
 // DASHBOARD STATS
 // ============================================
 export async function fetchDashboardStats() {
-  // TODO: Apply migrations to Supabase to enable RPC
-  // For now, use fallback method until get_dashboard_stats RPC is created
-  // const { data, error } = await supabase.rpc('get_dashboard_stats')
-
-  // if (error) {
-  //   console.error('Dashboard stats RPC error:', error)
-  //   // Fallback to old method if RPC fails
-  //   return fetchDashboardStatsFallback()
-  // }
-
-  // if (!data) {
-  //   return fetchDashboardStatsFallback()
-  // }
-
-  // Fallback to standard query method until RPC is available in Supabase
+  // TODO: Apply migrations to Supabase to enable RPC for better performance
+  // When RPC is available, call: supabase.rpc('get_dashboard_stats')
   return fetchDashboardStatsFallback()
-
-  // Map RPC response to expected format (when RPC is available)
-  /*
-  return {
-    activeMembers: data.activeMembers || 0,
-    membersGrowth: data.membersGrowth || 0,
-    totalBeneficiaries:
-      (data.beneficiaryCounts?.aktif || 0) +
-      (data.beneficiaryCounts?.pasif || 0) +
-      (data.beneficiaryCounts?.tamamlandi || 0),
-    totalDonations: 0, // Not in RPC, calculate separately if needed
-    activeKumbaras: 0, // Not in RPC, calculate separately if needed
-    pendingApplications: data.pendingApplications || 0,
-    monthlyAid: Number(data.monthlyAid) || 0,
-    aidGrowth: data.aidGrowth || 0,
-    monthlyDonationTotal: Number(data.monthlyDonations) || 0,
-    donationGrowth: data.donationGrowth || 0,
-    donationsTrend: 0, // Calculate from real data if needed
-    monthlyDonations: [], // Calculate from real data if needed
-    recentDonations: [], // Not in RPC, fetch separately if needed
-    aidDistribution: (data.aidDistribution || []).map((item: { name: string; value: number; color?: string; count?: number }) => ({
-      name: item.name,
-      value: Number(item.value) || 0,
-      color: item.color || '#6b7280',
-      count: item.count || 0,
-    })),
-    recentApplications: data.recentApplications || [],
-    recentMembers: data.recentMembers || [],
-    beneficiaryCounts: data.beneficiaryCounts || {
-      aktif: 0,
-      pasif: 0,
-      tamamlandi: 0,
-    },
-  }
-  */
 }
 
 // Fallback method if RPC is not available

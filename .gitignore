@@ -70,7 +70,9 @@ node_modules/
 .vscode/mcp.json
 .cursor/mcp.json
 .cursor/
-.claude/
+# .claude/ directory - keep skills but ignore settings
+.claude/*
+!.claude/skills/
 .claude_settings.json
 
 # Temporary files and directories

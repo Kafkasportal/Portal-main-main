@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { errorLogger } from '@/lib/error-logger'
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react'
 import React, { Component, ReactNode } from 'react'
 
@@ -52,7 +53,12 @@ export class ErrorBoundary extends Component<
       console.error('Error Boundary caught an error:', error, errorInfo)
     }
 
-    // TODO: Log to error tracking service (Sentry, LogRocket, etc.)
+    // Log to error tracking service
+    errorLogger.logError(error, {
+      componentStack: errorInfo.componentStack,
+      source: 'ErrorBoundary',
+    })
+
     this.setState({
       error,
       errorInfo,

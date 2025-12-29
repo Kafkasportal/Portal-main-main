@@ -51,6 +51,45 @@ export {
   createInKindAid,
   updateInKindAid,
   deleteInKindAid,
+  // Storage Service
+  uploadDocument,
+  fetchDocuments,
+  getDocumentUrl,
+  deleteDocument,
+  downloadDocument,
+  // Dashboard Service
+  fetchDashboardStats,
+  // Financial Service
+  fetchFinancialSummary,
+  fetchIncomeExpenseReport,
+  fetchIncomeByCategory,
+  fetchExpenseByCategory,
+  // Users Service
+  fetchUsers,
+  fetchUser,
+  fetchCurrentUser,
+  createUser,
+  updateUser,
+  updateUserProfile,
+  updatePassword,
+  deleteUser,
+  updateNotificationPreferences,
+  fetchNotificationPreferences,
+  // Hospital Service
+  fetchHospitals,
+  createHospital,
+  updateHospital,
+  fetchReferrals,
+  fetchReferral,
+  createReferral,
+  updateReferral,
+  fetchAppointments,
+  createAppointment,
+  fetchTreatmentCosts,
+  createTreatmentCost,
+  fetchTreatmentOutcomes,
+  createTreatmentOutcome,
+  updateTreatmentOutcome,
 } from './services'
 
 // ==================================================

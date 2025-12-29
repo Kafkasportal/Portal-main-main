@@ -255,10 +255,107 @@ export function mapInKindAid(
   }
 }
 
-// TODO: Add remaining mappers as needed:
-// - mapHospital
-// - mapReferral
-// - mapAppointment
-// - mapTreatmentCost
-// - mapTreatmentOutcome
-// - mapUser
+/**
+ * Database hospital row → Hospital type
+ */
+export function mapHospital(db: Tables['hospitals']['Row']): import('@/types').Hospital {
+  return {
+    id: db.id,
+    name: db.name,
+    address: db.address || undefined,
+    phone: db.phone || undefined,
+    email: db.email || undefined,
+    specialties: db.specialties || [],
+    isActive: db.is_active,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database referral row → Referral type
+ */
+export function mapReferral(
+  db: Tables['referrals']['Row'] & {
+    beneficiaries?: { ad: string; soyad: string } | null
+    hospitals?: { name: string } | null
+  }
+): import('@/types').Referral {
+  return {
+    id: db.id,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? { ad: db.beneficiaries.ad, soyad: db.beneficiaries.soyad }
+      : undefined,
+    hospitalId: db.hospital_id,
+    hospital: db.hospitals ? { name: db.hospitals.name } : undefined,
+    reason: db.reason,
+    referralDate: new Date(db.referral_date),
+    status: db.status as import('@/types').ReferralStatus,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database appointment row → HospitalAppointment type
+ */
+export function mapAppointment(
+  db: Tables['hospital_appointments']['Row']
+): import('@/types').HospitalAppointment {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    appointmentDate: new Date(db.appointment_date),
+    location: db.location || undefined,
+    status: db.status as import('@/types').AppointmentStatus,
+    reminderSent: db.reminder_sent,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database treatment cost row → TreatmentCost type
+ */
+export function mapTreatmentCost(
+  db: Tables['treatment_costs']['Row']
+): import('@/types').TreatmentCost {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    description: db.description,
+    amount: Number(db.amount),
+    currency: db.currency as import('@/types').Currency,
+    paymentStatus: db.payment_status as import('@/types').TreatmentCostStatus,
+    paymentDate: db.payment_date ? new Date(db.payment_date) : undefined,
+    paymentMethod:
+      (db.payment_method as import('@/types').PaymentMethod) || undefined,
+    incurredDate: new Date(db.incurred_date),
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database treatment outcome row → TreatmentOutcome type
+ */
+export function mapTreatmentOutcome(
+  db: Tables['treatment_outcomes']['Row']
+): import('@/types').TreatmentOutcome {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    appointmentId: db.appointment_id || undefined,
+    diagnosis: db.diagnosis || undefined,
+    treatmentReceived: db.treatment_received || undefined,
+    outcomeNotes: db.outcome_notes || undefined,
+    followUpNeeded: db.follow_up_needed,
+    followUpDate: db.follow_up_date ? new Date(db.follow_up_date) : undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}

@@ -15,6 +15,11 @@ export {
   mapApplication,
   mapPayment,
   mapInKindAid,
+  mapHospital,
+  mapReferral,
+  mapAppointment,
+  mapTreatmentCost,
+  mapTreatmentOutcome,
 } from './mappers'
 
 // Domain services
@@ -25,3 +30,8 @@ export * from './beneficiaries.service'
 export * from './applications.service'
 export * from './payments.service'
 export * from './in-kind-aids.service'
+export * from './storage.service'
+export * from './dashboard.service'
+export * from './financial.service'
+export * from './users.service'
+export * from './hospital.service'

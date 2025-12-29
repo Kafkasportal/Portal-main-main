@@ -1,3 +1,42 @@
+/**
+ * Supabase Service
+ * Central service for all Supabase operations
+ *
+ * NOTE: This file is being refactored into modular services.
+ * New services are in src/lib/services/
+ * Backward compatibility is maintained via re-exports below.
+ */
+
+// ==================================================
+// RE-EXPORTS: Modular Services (Backward Compatibility)
+// ==================================================
+export {
+  // Members Service
+  fetchMembers,
+  fetchMember,
+  createMember,
+  updateMember,
+  deleteMember,
+  // Donations Service
+  fetchDonations,
+  fetchDonation,
+  createDonation,
+  // Kumbaras Service
+  fetchKumbaras,
+  fetchKumbaraByCode,
+  createKumbara,
+  collectKumbara,
+  // Beneficiaries Service
+  fetchBeneficiaries,
+  fetchBeneficiaryById,
+  createBeneficiary,
+  updateBeneficiary,
+  fetchDependentPersons,
+} from './services'
+
+// ==================================================
+// LEGACY IMPORTS (Remaining non-refactored services)
+// ==================================================
 import type {
   AidatDurumu,
   Bagis,

@@ -1,0 +1,21 @@
+# Build and output
+.next/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env*
+
+# Public assets
+public/
+
+# Git
+.git/
+
+# Other
+package-lock.json
+*.md

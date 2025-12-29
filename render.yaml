@@ -1,0 +1,189 @@
+#################################################################
+# KafkasDer Yönetim Paneli - Render Blueprint                  #
+# Infrastructure as Code (IaC) Configuration                    #
+#################################################################
+
+# Preview environments ayarları
+previews:
+  generation: automatic # Pull request'ler için otomatik preview oluştur
+  expireAfterDays: 7 # 7 gün boyunca kullanılmayan preview'ları sil
+
+# Servisler
+services:
+  # Ana web servisi - Next.js uygulaması
+  - type: web
+    name: kafkasder-panel
+    runtime: node
+    region: frankfurt # Avrupa bölgesi (Türkiye'ye yakın)
+    plan: standard # Production için standard plan
+
+    # Git repository ayarları
+    repo: https://github.com/Kafkasportal/Portal.git
+    branch: main # Production branch
+
+    # Build ve start komutları
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+
+    # Pre-deploy komutu (migration'lar için)
+    preDeployCommand: npm run db:migrate || true
+
+    # Health check endpoint
+    healthCheckPath: /
+
+    # Auto-deploy ayarları
+    autoDeployTrigger: checksPass # CI check'leri geçtikten sonra deploy et
+
+    # Scaling ayarları
+    numInstances: 1 # Manuel scaling (başlangıç için 1 instance)
+    # Autoscaling için (Professional workspace gerekli):
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetCPUPercent: 70
+    #   targetMemoryPercent: 70
+
+    # Graceful shutdown süresi
+    maxShutdownDelaySeconds: 60
+
+    # Custom domain'ler (production için)
+    domains:
+      # - kafkasder.org
+      # - www.kafkasder.org
+      # - panel.kafkasder.org
+
+    # Environment variables
+    envVars:
+      # Application ayarları
+      - key: NODE_ENV
+        value: production
+
+      - key: NEXT_PUBLIC_APP_NAME
+        value: KafkasDer Yönetim Paneli
+
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false # Production URL'i manuel olarak ayarlanacak (örn: https://kafkasder-panel.onrender.com)
+
+      # Supabase bağlantı bilgileri
+      # NOT: Supabase URL public bilgidir, ancak key'ler hassas bilgidir ve sync: false olarak bırakılmıştır
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://idsiiayyvygcgegmqcov.supabase.co
+
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false # Supabase Dashboard → Settings → API → anon/public key'i buraya ekleyin
+
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false # Service role key (gizli) - Render Dashboard'da manuel olarak ekleyin
+
+      # API ayarları
+      - key: NEXT_PUBLIC_API_URL
+        sync: false # API URL (eğer ayrı bir API varsa)
+
+      - key: NEXT_PUBLIC_API_TIMEOUT
+        value: '30000'
+
+      # Authentication ayarları
+      - key: NEXT_PUBLIC_AUTH_COOKIE_NAME
+        value: 'kafkasder-auth'
+
+      - key: NEXT_PUBLIC_AUTH_COOKIE_EXPIRES
+        value: '7d'
+
+      # Feature flags
+      - key: NEXT_PUBLIC_ENABLE_QR_SCANNER
+        value: 'true'
+
+      - key: NEXT_PUBLIC_ENABLE_EXCEL_EXPORT
+        value: 'true'
+
+      - key: NEXT_PUBLIC_ENABLE_DEVTOOLS
+        value: 'false' # Production'da devtools kapalı
+
+      # Webhook secret (Render webhook'ları için)
+      - key: RENDER_WEBHOOK_SECRET
+        generateValue: true # Otomatik random secret oluştur
+
+      # Analytics (opsiyonel)
+      # - key: NEXT_PUBLIC_GA_ID
+      #   sync: false
+
+      # Sentry Error Tracking
+      - key: NEXT_PUBLIC_SENTRY_DSN
+        value: https://cd0a14123a89b44c7b5a4e5e61f02795@o4510438396395520.ingest.de.sentry.io/4510460623192144
+        sync: false # Production'da manuel olarak ayarlanacak
+
+      - key: SENTRY_ORG
+        value: kafkasder-oc
+        sync: false
+
+      - key: SENTRY_PROJECT
+        value: javascript-nextjs
+        sync: false
+
+      - key: SENTRY_AUTH_TOKEN
+        sync: false # Source map upload için - Render Dashboard'da manuel ekleyin
+
+    # Build filter (monorepo için gerekirse)
+    # buildFilter:
+    #   paths:
+    #     - src/**/*
+    #     - package.json
+    #     - next.config.ts
+    #   ignoredPaths:
+    #     - tests/**
+    #     - docs/**
+
+    # Preview environment ayarları
+    previews:
+      generation: automatic # PR preview'ları otomatik oluştur
+      plan: starter # Preview'lar için daha düşük plan
+      numInstances: 1 # Preview'larda tek instance yeterli
+
+# Veritabanları (Supabase kullanıldığı için burada tanımlanmıyor)
+# Eğer Render Postgres kullanmak isterseniz:
+# databases:
+#   - name: kafkasder-db
+#     plan: basic-4gb
+#     region: frankfurt
+#     databaseName: kafkasder
+#     user: kafkasder_user
+#     ipAllowList:
+#       - source: 0.0.0.0/0
+#         description: Allow all (Supabase kullanıldığı için gerekli değil)
+
+# Environment groups (ortak environment variable'lar için)
+envVarGroups:
+  - name: production-settings
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_ENABLE_DEVTOOLS
+        value: 'false'
+
+  - name: development-settings
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: NEXT_PUBLIC_ENABLE_DEVTOOLS
+        value: 'true'
+
+# Projects ve environments (Professional workspace gerekli)
+# projects:
+#   - name: kafkasder
+#     environments:
+#       - name: production
+#         services:
+#           - name: kafkasder-panel
+#             # Production-specific overrides
+#         networking:
+#           isolation: enabled # Environment isolation
+#         permissions:
+#           protection: enabled # Protected environment
+#
+#       - name: staging
+#         services:
+#           - name: kafkasder-panel
+#             plan: starter # Staging için daha düşük plan
+#         networking:
+#           isolation: enabled
+

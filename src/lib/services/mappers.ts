@@ -24,6 +24,8 @@ import type {
   UyeTuru,
   YardimTuru,
   EgitimDurumu,
+  Payment,
+  InKindAid,
 } from '@/types'
 import type { Database } from '@/types/supabase'
 
@@ -196,9 +198,64 @@ export function mapApplication(
   }
 }
 
+/**
+ * Database payment row → Payment type
+ */
+export function mapPayment(
+  db: Tables['payments']['Row'] & {
+    beneficiaries?: { ad: string; soyad: string } | null
+  }
+): Payment {
+  return {
+    id: db.id,
+    applicationId: db.application_id || undefined,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? {
+          ad: db.beneficiaries.ad,
+          soyad: db.beneficiaries.soyad,
+        }
+      : undefined,
+    tutar: db.tutar,
+    odemeTarihi: new Date(db.odeme_tarihi),
+    odemeYontemi: db.odeme_yontemi as Payment['odemeYontemi'],
+    durum: db.durum as Payment['durum'],
+    notlar: db.notlar || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.created_at),
+  }
+}
+
+/**
+ * Database in-kind aid row → InKindAid type
+ */
+export function mapInKindAid(
+  db: Tables['in_kind_aids']['Row'] & {
+    beneficiaries?: { ad: string; soyad: string } | null
+  }
+): InKindAid {
+  return {
+    id: db.id,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? {
+          ad: db.beneficiaries.ad,
+          soyad: db.beneficiaries.soyad,
+        }
+      : undefined,
+    yardimTuru: db.yardim_turu,
+    miktar: db.miktar || undefined,
+    birim: db.birim || undefined,
+    aciklama: db.aciklama || '',
+    dagitimTarihi: new Date(db.dagitim_tarihi),
+    teslimAlan: db.teslim_alan || undefined,
+    notlar: db.notlar || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
 // TODO: Add remaining mappers as needed:
-// - mapPayment
-// - mapInKindAid
 // - mapHospital
 // - mapReferral
 // - mapAppointment

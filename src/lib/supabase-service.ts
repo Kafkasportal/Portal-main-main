@@ -32,6 +32,25 @@ export {
   createBeneficiary,
   updateBeneficiary,
   fetchDependentPersons,
+  // Applications Service
+  fetchApplications,
+  fetchApplicationById,
+  updateApplicationStatus,
+  // Payments Service
+  fetchPayments,
+  fetchPaymentById,
+  fetchPaymentsByDateRange,
+  fetchDailyCashSummary,
+  fetchMonthlyCashSummary,
+  createPayment,
+  updatePayment,
+  deletePayment,
+  // In-Kind Aids Service
+  fetchInKindAids,
+  fetchInKindAidById,
+  createInKindAid,
+  updateInKindAid,
+  deleteInKindAid,
 } from './services'
 
 // ==================================================

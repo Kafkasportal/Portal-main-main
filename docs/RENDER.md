@@ -49,13 +49,167 @@ Bu doküman, KafkasDer Yönetim Paneli'ni Render.com'a deploy etme, MCP entegras
 
 Render, `sync: false` olan environment variable'lar için sizden değer isteyecek:
 
+---
+
+## 🔧 Render MCP Server Entegrasyonu
+
+**Render MCP Server**, AI geliştirme araçları (Cursor, Claude Code, GitHub Copilot) ile Render altyapınızı doğal dil komutlarıyla yönetmenizi sağlar.
+
+### Özellikler
+
+- ✅ **Servis Yönetimi**: Web servisleri, static siteler oluşturma
+- ✅ **Veritabanı Yönetimi**: PostgreSQL veritabanları oluşturma ve sorgulama
+- ✅ **Log Analizi**: Servis loglarını filtreleme ve analiz etme
+- ✅ **Metrik İzleme**: CPU, memory, response time metriklerini görüntüleme
+- ✅ **Deploy Takibi**: Deploy geçmişini ve detaylarını görüntüleme
+
+### MCP Server Kurulumu
+
+#### 1. Render API Key Oluşturma
+
+1. [Render Dashboard](https://dashboard.render.com) → **Account Settings** → **API Keys**
+2. **Create API Key** butonuna tıklayın
+3. API key'i güvenli bir yerde saklayın
+
+⚠️ **Güvenlik Uyarısı**: Render API key'leri geniş yetkilere sahiptir. Tüm workspace'lere ve servislere erişim sağlar.
+
+#### 2. IDE Konfigürasyonu
+
+##### Cursor Kurulumu
+
+`~/.cursor/mcp.json` dosyasına ekleyin:
+
+```json
+{
+  "mcpServers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+##### VS Code (GitHub Copilot) Kurulumu
+
+VS Code settings.json'a ekleyin:
+
+```json
+{
+  "chat.mcp.servers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+##### Claude Desktop Kurulumu
+
+`~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) veya `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "render": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.render.com/mcp",
+        "--header",
+        "Authorization: Bearer ${RENDER_API_KEY}"
+      ],
+      "env": {
+        "RENDER_API_KEY": "<YOUR_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+#### 3. Workspace Ayarlama
+
+MCP server'ı kullanmaya başlamak için workspace'inizi belirtin:
+
+```
+Set my Render workspace to Kafkasportal
+```
+
+### Örnek Kullanım Komutları
+
+#### Servis Yönetimi
+
+```
+# Servisleri listele
+List my Render services
+
+# Yeni web servisi oluştur
+Create a new web service named kafkasder-api using https://github.com/Kafkasportal/Portal
+
+# Servis detaylarını görüntüle
+Show details for kafkasder-panel service
+```
+
+#### Veritabanı İşlemleri
+
+```
+# Veritabanlarını listele
+List my Render databases
+
+# Yeni PostgreSQL veritabanı oluştur
+Create a new database named kafkasder-prod with 10 GB storage
+
+# SQL sorgusu çalıştır
+Query my database: SELECT COUNT(*) FROM members WHERE active = true
+```
+
+#### Log ve Metrik Analizi
+
+```
+# Son hataları görüntüle
+Show recent error logs for kafkasder-panel service
+
+# CPU kullanımını kontrol et
+What was the CPU usage for my service yesterday?
+
+# Trafik analizi
+Show me the busiest traffic day this month
+```
+
+#### Deploy Takibi
+
+```
+# Deploy geçmişini görüntüle
+Show deploy history for kafkasder-panel
+
+# Son deploy'un detayları
+What happened in the latest deploy?
+```
+
+### MCP Server Sınırlamaları
+
+- ❌ **Servis Silme**: Mevcut servisleri silemez
+- ❌ **Free Instance**: Free tier instance'lar oluşturamaz
+- ❌ **Tüm Servis Tipleri**: Sadece web service ve static site desteklenir
+- ❌ **Deploy Tetikleme**: Manuel deploy tetikleyemez
+- ❌ **Scaling Kontrolü**: Otomatik scaling ayarlarını değiştiremez
+
+⚠️ **Güvenlik**: MCP server hassas bilgileri (connection string vb.) AI uygulamasının context'ine maruz bırakmamaya çalışır, ancak Render bunu garanti etmez.
+
 **Zorunlu Değişkenler:**
+
 - `NEXT_PUBLIC_APP_URL` - Production URL (örn: `https://panel.kafkasder.org`)
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
 - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (gizli)
 
 **Opsiyonel Değişkenler:**
+
 - `NEXT_PUBLIC_API_URL` - Eğer ayrı bir API varsa
 - `NEXT_PUBLIC_GA_ID` - Google Analytics ID
 - `NEXT_PUBLIC_SENTRY_DSN` - Sentry error tracking
@@ -64,6 +218,7 @@ Render, `sync: false` olan environment variable'lar için sizden değer isteyece
 ### Adım 4: Deploy
 
 Render otomatik olarak:
+
 1. Repository'yi clone eder
 2. `npm ci && npm run build` komutunu çalıştırır
 3. `npm run db:migrate` komutunu çalıştırır (pre-deploy)
@@ -82,10 +237,12 @@ Eğer Blueprint kullanmak istemiyorsanız:
 3. Ayarları yapılandırın:
 
 **Build Settings:**
+
 - **Build Command:** `npm ci && npm run build`
 - **Start Command:** `npm start`
 
 **Advanced Settings:**
+
 - **Pre-deploy Command:** `npm run db:migrate || true`
 - **Health Check Path:** `/`
 - **Auto-deploy:** `Yes` (veya `Only on merge to main`)
@@ -153,6 +310,7 @@ RENDER_WEBHOOK_SECRET=<auto-generated>
 Render size DNS kayıtları verecek. Domain sağlayıcınızda şu kayıtları ekleyin:
 
 **CNAME Kaydı:**
+
 ```
 Type: CNAME
 Name: panel (veya www)
@@ -161,6 +319,7 @@ TTL: 3600
 ```
 
 **A Kaydı (Root domain için):**
+
 ```
 Type: A
 Name: @
@@ -197,6 +356,7 @@ Render.com'un resmi MCP (Model Context Protocol) server'ını Cursor'da kullanar
    - API key'i eklemeniz gerekiyor
 
 2. **API Key'i Ekle:**
+
    ```json
    {
      "mcpServers": {
@@ -251,6 +411,7 @@ GET  /api/webhooks/render (health check)
 ```
 
 **Production URL Örneği:**
+
 ```
 https://your-domain.com/api/webhooks/render
 ```
@@ -292,6 +453,7 @@ RENDER_WEBHOOK_SECRET=your-secret-here
 Webhook şu event tiplerini destekler:
 
 **Deployment Events:**
+
 - `deploy.activated` - Deployment aktif edildi
 - `deploy.live` - Deployment canlıya alındı
 - `deploy.failed` - Deployment başarısız oldu
@@ -299,6 +461,7 @@ Webhook şu event tiplerini destekler:
 - `deploy.canceled` - Deployment iptal edildi
 
 **Build Events:**
+
 - `build.started` - Build başladı
 - `build.ended` - Build tamamlandı
 
@@ -311,6 +474,7 @@ curl https://your-domain.com/api/webhooks/render
 ```
 
 Yanıt:
+
 ```json
 {
   "message": "Render webhook endpoint is active",
@@ -341,6 +505,7 @@ Render.com dashboard'dan "Test Webhook" butonuna tıklayarak test edebilirsiniz.
 ### Webhook Monitoring
 
 Deployment event'lerini izlemek için webhook endpoint'ini kullanın:
+
 - `/api/webhooks/render` endpoint'i deployment event'lerini dinler
 - Slack/Discord bildirimleri ekleyebilirsiniz
 
@@ -432,6 +597,7 @@ previews:
 ### Manuel Scaling
 
 `render.yaml` dosyasında:
+
 ```yaml
 numInstances: 2 # 2 instance çalıştır
 ```
@@ -496,4 +662,3 @@ Deployment öncesi kontrol listesi:
 ---
 
 **Son Güncelleme:** 26 Aralık 2025
-

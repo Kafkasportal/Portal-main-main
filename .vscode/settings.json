@@ -6,6 +6,14 @@
     "cursor-workspace": true
   },
   "chat.mcp.access": "all",
+  "chat.mcp.servers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${RENDER_API_KEY}"
+      }
+    }
+  },
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }

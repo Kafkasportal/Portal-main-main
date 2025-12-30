@@ -1,0 +1,146 @@
+# Render MCP Server Configuration Template
+#
+# This file contains template configurations for integrating Render MCP Server
+# with various AI development tools. Choose the configuration that matches your IDE.
+#
+# SECURITY: Never commit actual API keys to version control!
+# Use environment variables or secure credential storage instead.
+
+# =============================================================================
+# 1. CURSOR CONFIGURATION
+# =============================================================================
+# File: ~/.cursor/mcp.json or .cursor/mcp.json (in project root)
+
+{
+  "mcpServers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${RENDER_API_KEY}"
+      }
+    }
+  }
+}
+
+# =============================================================================
+# 2. VS CODE (GITHUB COPILOT) CONFIGURATION
+# =============================================================================
+# Add to VS Code settings.json:
+
+{
+  "chat.mcp.servers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${RENDER_API_KEY}"
+      }
+    }
+  }
+}
+
+# =============================================================================
+# 3. CLAUDE DESKTOP CONFIGURATION
+# =============================================================================
+# File: 
+# - macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+# - Windows: %APPDATA%\Claude\claude_desktop_config.json
+
+{
+  "mcpServers": {
+    "render": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.render.com/mcp",
+        "--header",
+        "Authorization: Bearer ${RENDER_API_KEY}"
+      ],
+      "env": {
+        "RENDER_API_KEY": "${RENDER_API_KEY}"
+      }
+    }
+  }
+}
+
+# =============================================================================
+# 4. WINDSURF CONFIGURATION
+# =============================================================================
+# File: ~/.codeium/windsurf/mcp_config.json
+
+{
+  "mcpServers": {
+    "render": {
+      "url": "https://mcp.render.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${RENDER_API_KEY}"
+      }
+    }
+  }
+}
+
+# =============================================================================
+# 5. DOCKER CONFIGURATION (Local)
+# =============================================================================
+# For running MCP server locally via Docker:
+
+{
+  "mcpServers": {
+    "render": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "RENDER_API_KEY",
+        "-v",
+        "render-mcp-server-config:/config",
+        "ghcr.io/render-oss/render-mcp-server"
+      ],
+      "env": {
+        "RENDER_API_KEY": "${RENDER_API_KEY}"
+      }
+    }
+  }
+}
+
+# =============================================================================
+# ENVIRONMENT VARIABLES SETUP
+# =============================================================================
+
+# Create .env.local file with:
+RENDER_API_KEY=rnd_xxxxxxxxxxxxxxxxxxxx
+
+# Or set system environment variable:
+# Windows: setx RENDER_API_KEY "rnd_xxxxxxxxxxxxxxxxxxxx"
+# macOS/Linux: export RENDER_API_KEY="rnd_xxxxxxxxxxxxxxxxxxxx"
+
+# =============================================================================
+# WORKSPACE SETUP COMMANDS
+# =============================================================================
+
+# After configuring your IDE, set your workspace:
+# "Set my Render workspace to Kafkasportal"
+
+# =============================================================================
+# EXAMPLE USAGE PROMPTS
+# =============================================================================
+
+# Service Management:
+# - "List my Render services"
+# - "Create a new web service named my-app using https://github.com/user/repo"
+# - "Show details for kafkasder-panel service"
+
+# Database Operations:
+# - "List my Render databases"
+# - "Create a new database named my-db with 5 GB storage"
+# - "Query my database: SELECT COUNT(*) FROM users"
+
+# Monitoring & Logs:
+# - "Show recent error logs for my service"
+# - "What was the CPU usage yesterday?"
+# - "Show me the busiest traffic day this month"
+
+# Deploy Tracking:
+# - "Show deploy history for my service"
+# - "What happened in the latest deploy?"

@@ -196,12 +196,187 @@ export function mapApplication(
   }
 }
 
-// TODO: Add remaining mappers as needed:
-// - mapPayment
-// - mapInKindAid
-// - mapHospital
-// - mapReferral
-// - mapAppointment
-// - mapTreatmentCost
-// - mapTreatmentOutcome
-// - mapUser
+/**
+ * Database payment row → Payment type
+ */
+export function mapPayment(
+  db: Tables['payments']['Row'] & {
+    beneficiaries?: { ad: string; soyad: string } | null
+  }
+): import('@/types').Payment {
+  return {
+    id: db.id,
+    applicationId: db.application_id || undefined,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? {
+          ad: db.beneficiaries.ad,
+          soyad: db.beneficiaries.soyad,
+        }
+      : undefined,
+    tutar: db.tutar,
+    odemeTarihi: new Date(db.odeme_tarihi),
+    odemeYontemi: db.odeme_yontemi as import('@/types').PaymentMethodVezne,
+    durum: db.durum as import('@/types').PaymentStatusVezne,
+    notlar: db.notlar || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.created_at),
+  }
+}
+
+/**
+ * Database in_kind_aids row → InKindAid type
+ */
+export function mapInKindAid(
+  db: {
+    id: number
+    beneficiary_id: number
+    yardim_turu: string
+    miktar: number
+    birim: string
+    dagitim_tarihi: string
+    notlar: string | null
+    created_at: string
+    updated_at: string
+    beneficiaries?: { ad: string; soyad: string } | null
+  }
+): import('@/types').InKindAid {
+  return {
+    id: db.id,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? {
+          ad: db.beneficiaries.ad,
+          soyad: db.beneficiaries.soyad,
+        }
+      : undefined,
+    yardimTuru: db.yardim_turu as import('@/types').InKindAidType,
+    miktar: db.miktar,
+    birim: db.birim as import('@/types').InKindAidUnit,
+    dagitimTarihi: new Date(db.dagitim_tarihi),
+    notlar: db.notlar || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database hospital row → Hospital type
+ */
+export function mapHospital(db: Tables['hospitals']['Row']): import('@/types').Hospital {
+  return {
+    id: db.id,
+    name: db.name,
+    address: db.address || undefined,
+    phone: db.phone || undefined,
+    email: db.email || undefined,
+    specialties: db.specialties || [],
+    isActive: db.is_active,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database referral row → Referral type
+ */
+export function mapReferral(
+  db: Tables['referrals']['Row'] & {
+    beneficiaries?: { ad: string; soyad: string } | null
+    hospitals?: { name: string } | null
+  }
+): import('@/types').Referral {
+  return {
+    id: db.id,
+    beneficiaryId: db.beneficiary_id,
+    beneficiary: db.beneficiaries
+      ? { ad: db.beneficiaries.ad, soyad: db.beneficiaries.soyad }
+      : undefined,
+    hospitalId: db.hospital_id,
+    hospital: db.hospitals ? { name: db.hospitals.name } : undefined,
+    reason: db.reason,
+    referralDate: new Date(db.referral_date),
+    status: db.status as import('@/types').ReferralStatus,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database hospital_appointment row → HospitalAppointment type
+ */
+export function mapAppointment(
+  db: Tables['hospital_appointments']['Row']
+): import('@/types').HospitalAppointment {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    appointmentDate: new Date(db.appointment_date),
+    location: db.location || undefined,
+    status: db.status as import('@/types').AppointmentStatus,
+    reminderSent: db.reminder_sent,
+    notes: db.notes || undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database treatment_cost row → TreatmentCost type
+ */
+export function mapTreatmentCost(
+  db: Tables['treatment_costs']['Row']
+): import('@/types').TreatmentCost {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    description: db.description,
+    amount: db.amount,
+    currency: db.currency as import('@/types').Currency,
+    paymentStatus: db.payment_status as import('@/types').TreatmentCostStatus,
+    paymentDate: db.payment_date ? new Date(db.payment_date) : undefined,
+    paymentMethod: db.payment_method as import('@/types').PaymentMethod | undefined,
+    incurredDate: new Date(db.incurred_date),
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database treatment_outcome row → TreatmentOutcome type
+ */
+export function mapTreatmentOutcome(
+  db: Tables['treatment_outcomes']['Row']
+): import('@/types').TreatmentOutcome {
+  return {
+    id: db.id,
+    referralId: db.referral_id,
+    appointmentId: db.appointment_id || undefined,
+    diagnosis: db.diagnosis || undefined,
+    treatmentReceived: db.treatment_received || undefined,
+    outcomeNotes: db.outcome_notes || undefined,
+    followUpNeeded: db.follow_up_needed,
+    followUpDate: db.follow_up_date ? new Date(db.follow_up_date) : undefined,
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}
+
+/**
+ * Database user row → User type
+ */
+export function mapUser(db: Tables['users']['Row']): import('@/types').User {
+  return {
+    id: db.id,
+    name: db.name,
+    email: db.email,
+    role: (db.role === 'moderator' ? 'gorevli' : db.role === 'user' ? 'uye' : db.role) as import('@/types').UserRole,
+    avatar: db.avatar_url || undefined,
+    isActive: true,
+    permissions: [],
+    createdAt: new Date(db.created_at),
+    updatedAt: new Date(db.updated_at),
+  }
+}

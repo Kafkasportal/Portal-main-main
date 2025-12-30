@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 /**
@@ -12,7 +12,7 @@ import { updateSession } from '@/lib/supabase/middleware'
  */
 export async function middleware(request: NextRequest) {
   // Update session (Supabase auth middleware)
-  let response = await updateSession(request)
+  const response = await updateSession(request)
 
   // Security Headers
   const securityHeaders = {

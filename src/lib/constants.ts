@@ -145,7 +145,8 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Settings,
     children: [
       { label: 'Genel Ayarlar', href: '/ayarlar/genel', icon: Settings },
-      { label: 'Kullanıcılar', href: '/ayarlar/kullanicilar', icon: Shield },
+      { label: 'Kullanıcılar', href: '/ayarlar/kullanicilar', icon: Users },
+      { label: 'Roller', href: '/ayarlar/roller', icon: Shield },
       { label: 'Yedekleme', href: '/ayarlar/yedekleme', icon: Database },
     ],
   },

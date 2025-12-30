@@ -55,7 +55,7 @@ export class ErrorBoundary extends Component<
 
     // Log to error tracking service
     errorLogger.logError(error, {
-      componentStack: errorInfo.componentStack,
+      componentStack: errorInfo.componentStack ?? undefined,
       source: 'ErrorBoundary',
     })
 

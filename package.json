@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:verify": "next build && node scripts/verify-build.js",
+    "debug:render": "node scripts/debug-render.js",
     "build:analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "preview": "next build && next start",
@@ -21,11 +23,6 @@
     "test:e2e:debug": "playwright test --debug",
     "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "npx supabase db push || echo 'Migration skipped: Supabase project not linked. Run migrations manually from Supabase Dashboard.'",
-    "mcp:check": "node scripts/mcp.js check",
-    "mcp:init:cursor": "node scripts/mcp.js init cursor",
-    "mcp:init:vscode": "node scripts/mcp.js init vscode",
-    "mcp:help": "node scripts/mcp.js help",
-    "mcp:test": "node scripts/test-mcp.js",
     "clean": "rm -rf .next out node_modules/.cache",
     "prepare": "node -e \"if (process.env.CI || process.env.RENDER) process.exit(0); else require('husky').install()\" || true",
     "sentry:release": "sentry-cli releases new $npm_package_version && sentry-cli releases set-commits $npm_package_version --auto && sentry-cli releases finalize $npm_package_version",
@@ -80,7 +77,6 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.1",
-    "@playwright/mcp": "^0.0.53",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",

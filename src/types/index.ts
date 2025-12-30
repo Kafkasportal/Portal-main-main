@@ -41,7 +41,18 @@ export interface FileUploadOptions {
   onProgress?: (progress: number) => void
 }
 
-// User Types
+// User Types - Re-export from RBAC
+export type { 
+  RoleName, 
+  PermissionName, 
+  PermissionModule,
+  Role,
+  Permission as RBACPermission,
+  StaffUser,
+  RoleWithPermissions,
+} from './rbac'
+
+// Legacy UserRole for backward compatibility
 export type UserRole = 'admin' | 'muhasebe' | 'gorevli' | 'uye'
 
 export type Permission =
@@ -63,9 +74,13 @@ export interface User extends Timestamps {
   email: string
   phone?: string
   role: UserRole
+  roleId?: string // RBAC role reference
+  title?: string // Unvan
+  department?: string // Birim
   avatar?: string
   isActive: boolean
   lastLogin?: Date
+  hireDate?: Date
   permissions: Permission[]
 }
 

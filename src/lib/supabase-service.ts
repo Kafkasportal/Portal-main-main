@@ -8,34 +8,8 @@
  */
 
 // ==================================================
-// RE-EXPORTS: Modular Services (Backward Compatibility)
-// ==================================================
-export {
-  // Members Service
-  fetchMembers,
-  fetchMember,
-  createMember,
-  updateMember,
-  deleteMember,
-  // Donations Service
-  fetchDonations,
-  fetchDonation,
-  createDonation,
-  // Kumbaras Service
-  fetchKumbaras,
-  fetchKumbaraByCode,
-  createKumbara,
-  collectKumbara,
-  // Beneficiaries Service
-  fetchBeneficiaries,
-  fetchBeneficiaryById,
-  createBeneficiary,
-  updateBeneficiary,
-  fetchDependentPersons,
-} from './services'
-
-// ==================================================
-// LEGACY IMPORTS (Remaining non-refactored services)
+// NOTE: Functions are defined in this file.
+// Modular services in src/lib/services/ import from here.
 // ==================================================
 import type {
   AidatDurumu,

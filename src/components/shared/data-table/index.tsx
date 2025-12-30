@@ -182,7 +182,7 @@ function DataTableComponent<TData, TValue>({
         exportButton={
           enableExport ? (
             <DataTableExportButton
-              data={filteredData}
+              data={filteredData as Record<string, unknown>[]}
               filename={exportFilename}
             />
           ) : undefined

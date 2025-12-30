@@ -64,7 +64,7 @@ function constantTimeCompare(a: string, b: string): boolean {
  * Checks if a request method is safe (doesn't require CSRF protection)
  */
 export function isSafeMethod(method: string): boolean {
-  return CSRF_CONFIG.SAFE_METHODS.includes(method.toUpperCase())
+  return (CSRF_CONFIG.SAFE_METHODS as readonly string[]).includes(method.toUpperCase())
 }
 
 /**

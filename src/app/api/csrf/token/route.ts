@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
  * GET handler - Generate new CSRF token
  * Returns token in response body and sets it as a cookie
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Generate new CSRF token
     const token = generateCSRFToken()

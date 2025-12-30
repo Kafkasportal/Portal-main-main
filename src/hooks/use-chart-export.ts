@@ -9,7 +9,7 @@ export function useChartExport(fileName: string) {
 
     try {
       const canvas = await html2canvas(chartRef.current, {
-        background: '#ffffff', // Ensure white background
+        backgroundColor: '#ffffff', // Ensure white background
       })
 
       const url = canvas.toDataURL('image/png')

@@ -99,7 +99,7 @@ function getCookie(name: string): string | null {
   const cookies = document.cookie.split(';')
 
   for (const cookie of cookies) {
-    let trimmed = cookie.trim()
+    const trimmed = cookie.trim()
     if (trimmed.startsWith(nameEQ)) {
       return decodeURIComponent(trimmed.substring(nameEQ.length))
     }

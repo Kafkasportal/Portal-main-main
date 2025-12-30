@@ -228,7 +228,9 @@ export function mapPayment(
 
 /**
  * Database in-kind aid row → InKindAid type
+ * DISABLED: in_kind_aids table not in database schema
  */
+/*
 export function mapInKindAid(
   db: Tables['in_kind_aids']['Row'] & {
     beneficiaries?: { ad: string; soyad: string } | null
@@ -246,14 +248,13 @@ export function mapInKindAid(
     yardimTuru: db.yardim_turu,
     miktar: db.miktar || undefined,
     birim: db.birim || undefined,
-    aciklama: db.aciklama || '',
     dagitimTarihi: new Date(db.dagitim_tarihi),
-    teslimAlan: db.teslim_alan || undefined,
     notlar: db.notlar || undefined,
     createdAt: new Date(db.created_at),
     updatedAt: new Date(db.updated_at),
   }
 }
+*/
 
 /**
  * Database hospital row → Hospital type

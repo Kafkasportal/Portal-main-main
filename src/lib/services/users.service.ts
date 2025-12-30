@@ -14,14 +14,26 @@ type Tables = Database['public']['Tables']
  * Map database user row to User type
  */
 function mapUser(db: Tables['users']['Row']): User {
+  // Map database role to UserRole
+  let role: User['role'] = 'gorevli'
+  if (db.role === 'admin') {
+    role = 'admin'
+  } else if (db.role === 'moderator') {
+    role = 'muhasebe'
+  } else if (db.role === 'user') {
+    role = 'gorevli'
+  }
+
   return {
     id: db.id,
+    name: db.name,
     email: db.email,
-    ad: db.ad || '',
-    soyad: db.soyad || '',
-    rol: (db.rol || 'user') as User['rol'],
-    telefon: db.telefon || undefined,
-    aktif: db.aktif ?? true,
+    phone: undefined, // Not in DB schema, can be added later
+    role,
+    avatar: db.avatar_url || undefined,
+    isActive: true, // Default to true, can be added to schema later
+    lastLogin: undefined, // Can be added to schema later
+    permissions: [], // Can be added to schema later
     createdAt: new Date(db.created_at),
     updatedAt: new Date(db.updated_at),
   }

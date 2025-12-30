@@ -137,11 +137,18 @@ export async function fetchDailyCashSummary(date: string): Promise<CashSummary> 
 
   if (error) throw error
 
-  const nakit = data?.filter((p) => p.odeme_yontemi === 'nakit').reduce((sum, p) => sum + p.tutar, 0) || 0
-  const havale = data?.filter((p) => p.odeme_yontemi === 'havale').reduce((sum, p) => sum + p.tutar, 0) || 0
-  const elden = data?.filter((p) => p.odeme_yontemi === 'elden').reduce((sum, p) => sum + p.tutar, 0) || 0
+  const nakit = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'nakit').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
+  const havale = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'havale').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
+  const elden = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'elden').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
 
-  return { nakit, havale, elden, toplam: nakit + havale + elden }
+  return {
+    toplamTutar: nakit + havale + elden,
+    nakitTutar: nakit,
+    havaleTutar: havale,
+    eldenTutar: elden,
+    odemeSayisi: data?.length || 0,
+    tarih: new Date(),
+  }
 }
 
 /**
@@ -161,11 +168,18 @@ export async function fetchMonthlyCashSummary(year: number, month: number): Prom
 
   if (error) throw error
 
-  const nakit = data?.filter((p) => p.odeme_yontemi === 'nakit').reduce((sum, p) => sum + p.tutar, 0) || 0
-  const havale = data?.filter((p) => p.odeme_yontemi === 'havale').reduce((sum, p) => sum + p.tutar, 0) || 0
-  const elden = data?.filter((p) => p.odeme_yontemi === 'elden').reduce((sum, p) => sum + p.tutar, 0) || 0
+  const nakit = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'nakit').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
+  const havale = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'havale').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
+  const elden = data?.filter((p: { odeme_yontemi: string }) => p.odeme_yontemi === 'elden').reduce((sum: number, p: { tutar: number }) => sum + p.tutar, 0) || 0
 
-  return { nakit, havale, elden, toplam: nakit + havale + elden }
+  return {
+    toplamTutar: nakit + havale + elden,
+    nakitTutar: nakit,
+    havaleTutar: havale,
+    eldenTutar: elden,
+    odemeSayisi: data?.length || 0,
+    tarih: new Date(),
+  }
 }
 
 /**

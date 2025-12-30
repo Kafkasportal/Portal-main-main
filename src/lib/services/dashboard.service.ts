@@ -62,17 +62,17 @@ async function fetchDashboardStatsFallback() {
   ])
 
   const totalDonations =
-    donations?.reduce((sum, d) => sum + (d.tutar || 0), 0) || 0
+    donations?.reduce((sum: number, d: { tutar: number | null }) => sum + (d.tutar || 0), 0) || 0
 
   // Bu ayki yardım toplamı
   const monthlyAid =
-    monthlyPayments?.reduce((sum, p) => sum + (p.onaylanan_tutar || 0), 0) || 0
+    monthlyPayments?.reduce((sum: number, p: { onaylanan_tutar: number | null }) => sum + (p.onaylanan_tutar || 0), 0) || 0
 
   // Yardım dağılımı (kategori bazlı)
   const aidDistribution = applications?.reduce(
-    (acc, app) => {
+    (acc: Array<{ name: string; value: number; count: number; color: string }>, app: { yardim_turu: string | null; onaylanan_tutar: number | null }) => {
       const type = app.yardim_turu || 'Diğer'
-      const existing = acc.find((item) => item.name === type)
+      const existing = acc.find((item: { name: string }) => item.name === type)
       if (existing) {
         existing.value += app.onaylanan_tutar || 0
         existing.count += 1

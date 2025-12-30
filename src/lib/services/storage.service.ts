@@ -102,7 +102,16 @@ export async function fetchDocuments(
 
   if (error) throw error
 
-  return (data || []).map((doc) => ({
+  return (data || []).map((doc: {
+    id: string
+    beneficiary_id: string
+    file_name: string
+    file_path: string
+    file_type: string
+    file_size: number
+    document_type: string
+    created_at: string
+  }) => ({
     id: doc.id,
     beneficiaryId: doc.beneficiary_id,
     fileName: doc.file_name,

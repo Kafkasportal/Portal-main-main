@@ -11,8 +11,6 @@ import { getClient } from './base.service'
  * TODO: Implement full financial summary with income/expense breakdown
  */
 export async function fetchFinancialSummary() {
-  const supabase = getClient()
-
   // Placeholder - will be implemented with actual financial calculations
   return {
     totalIncome: 0,
@@ -27,8 +25,8 @@ export async function fetchFinancialSummary() {
  * TODO: Implement daily income vs expense report
  */
 export async function fetchIncomeExpenseReport(
-  startDate: string,
-  endDate: string
+  _startDate: string,
+  _endDate: string
 ) {
   // TODO: Implement based on donations (income) and payments (expense)
   return {
@@ -52,7 +50,7 @@ export async function fetchIncomeByCategory() {
 
   // Group by purpose (amac)
   const grouped = (data || []).reduce(
-    (acc, d) => {
+    (acc: Record<string, number>, d: { amac: string | null; tutar: number }) => {
       const category = d.amac || 'Diğer'
       acc[category] = (acc[category] || 0) + d.tutar
       return acc
@@ -81,7 +79,7 @@ export async function fetchExpenseByCategory() {
 
   // Group by aid type
   const grouped = (data || []).reduce(
-    (acc, app) => {
+    (acc: Record<string, number>, app: { yardim_turu: string | null; onaylanan_tutar: number | null }) => {
       const category = app.yardim_turu || 'Diğer'
       acc[category] = (acc[category] || 0) + (app.onaylanan_tutar || 0)
       return acc

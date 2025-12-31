@@ -25,23 +25,9 @@ class ErrorLogger {
       }
     }
 
-    // In production, integrate with Sentry
+    // In production, log to console
     if (this.isProduction) {
-      // Sentry integration - automatically configured via sentry.client.config.ts
-      if (typeof window !== 'undefined' && 'Sentry' in window) {
-        const Sentry = (window as any).Sentry
-        if (Sentry && Sentry.captureException) {
-          Sentry.captureException(error, {
-            contexts: { react: context },
-            tags: {
-              source: 'error-logger',
-            },
-          })
-        }
-      } else {
-        // Fallback: log to console if Sentry not available
-        console.error('Production Error (Sentry not available):', error, context)
-      }
+      console.error('Production Error:', error, context)
     }
 
     // Store error in localStorage for debugging (optional)

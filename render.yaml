@@ -35,7 +35,7 @@ services:
     branch: main # Production branch
 
     # Build ve start komutları
-    buildCommand: node scripts/debug-render.js && npm ci && npm run build && node scripts/verify-build.js
+    buildCommand: npm ci && npm run build && node scripts/verify-build.js
     startCommand: npm start
 
     # Next.js standalone build - publish directory kullanma
@@ -124,22 +124,6 @@ services:
       # Analytics (opsiyonel)
       # - key: NEXT_PUBLIC_GA_ID
       #   sync: false
-
-      # Sentry Error Tracking
-      - key: NEXT_PUBLIC_SENTRY_DSN
-        value: https://cd0a14123a89b44c7b5a4e5e61f02795@o4510438396395520.ingest.de.sentry.io/4510460623192144
-        sync: false # Production'da manuel olarak ayarlanacak
-
-      - key: SENTRY_ORG
-        value: kafkasder-oc
-        sync: false
-
-      - key: SENTRY_PROJECT
-        value: javascript-nextjs
-        sync: false
-
-      - key: SENTRY_AUTH_TOKEN
-        sync: false # Source map upload için - Render Dashboard'da manuel ekleyin
 
       # MCP (Model Context Protocol) Configuration
       - key: RENDER_API_KEY

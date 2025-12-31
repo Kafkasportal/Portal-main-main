@@ -20,7 +20,12 @@ npm start
 
 **Detaylı dokümantasyon için:** [docs/root-docs/README.md](docs/root-docs/README.md)
 
-### Önemli Linkler
+### 🎯 Dernek Yöneticileri için
+
+- **[Production Deployment Kılavuzu](PRODUCTION_GUIDE.md)** - Canlıya alma rehberi ⭐
+- **[Kullanım Kılavuzu](KULLANIM_KILAVUZU.md)** - Kullanıcı rehberi ⭐
+
+### 🔧 Geliştiriciler için
 
 - **[Kurulum Rehberi](docs/root-docs/README.md#-kurulum)** - Adım adım kurulum
 - **[Deployment](docs/RENDER.md)** - Production deployment

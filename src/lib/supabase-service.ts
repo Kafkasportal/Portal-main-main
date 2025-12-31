@@ -1394,8 +1394,23 @@ export async function deleteInKindAid(id: number): Promise<void> {
 // DASHBOARD STATS
 // ============================================
 export async function fetchDashboardStats() {
-  // TODO: Apply migrations to Supabase to enable RPC for better performance
-  // When RPC is available, call: supabase.rpc('get_dashboard_stats')
+  const supabase = getSupabaseClient()
+
+  // Try using RPC first (performance optimized)
+  try {
+    const { data, error } = await supabase.rpc('get_dashboard_stats')
+
+    if (!error && data) {
+      return data
+    }
+
+    // If RPC fails, fallback to manual aggregation
+    console.warn('RPC get_dashboard_stats failed, using fallback method:', error)
+  } catch (err) {
+    console.warn('Error calling get_dashboard_stats RPC:', err)
+  }
+
+  // Fallback to manual aggregation
   return fetchDashboardStatsFallback()
 }
 

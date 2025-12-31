@@ -25,24 +25,23 @@ class ErrorLogger {
       }
     }
 
-    // In production, you can integrate with external error tracking services
+    // In production, integrate with Sentry
     if (this.isProduction) {
-      // TODO: Integrate with Sentry
-      // if (typeof window !== 'undefined' && window.Sentry) {
-      //   window.Sentry.captureException(error, {
-      //     contexts: { react: context }
-      //   })
-      // }
-
-      // TODO: Integrate with LogRocket
-      // if (typeof window !== 'undefined' && window.LogRocket) {
-      //   window.LogRocket.captureException(error, {
-      //     extra: context
-      //   })
-      // }
-
-      // For now, log to console even in production for debugging
-      console.error('Production Error:', error, context)
+      // Sentry integration - automatically configured via sentry.client.config.ts
+      if (typeof window !== 'undefined' && 'Sentry' in window) {
+        const Sentry = (window as any).Sentry
+        if (Sentry && Sentry.captureException) {
+          Sentry.captureException(error, {
+            contexts: { react: context },
+            tags: {
+              source: 'error-logger',
+            },
+          })
+        }
+      } else {
+        // Fallback: log to console if Sentry not available
+        console.error('Production Error (Sentry not available):', error, context)
+      }
     }
 
     // Store error in localStorage for debugging (optional)

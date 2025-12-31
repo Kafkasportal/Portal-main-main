@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "build:verify": "next build && node scripts/verify-build.js",
-    "debug:render": "node scripts/debug-render.js",
     "build:analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "preview": "next build && next start",
@@ -15,16 +14,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "npx supabase db push || echo 'Migration skipped: Supabase project not linked. Run migrations manually from Supabase Dashboard.'",
     "clean": "rm -rf .next out node_modules/.cache",
-    "prepare": "node -e \"if (process.env.CI || process.env.RENDER) process.exit(0); else require('husky').install()\" || true",
     "sentry:release": "sentry-cli releases new $npm_package_version && sentry-cli releases set-commits $npm_package_version --auto && sentry-cli releases finalize $npm_package_version",
     "sentry:deploy": "sentry-cli releases deploys $npm_package_version new -e production"
   },
@@ -77,12 +68,8 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.1",
-    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.18",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
     "@types/html2canvas": "^1.0.0",
-    "@types/jest": "^30.0.0",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -90,11 +77,6 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
     "eslint-config-prettier": "^10.1.8",
-    "fake-indexeddb": "^6.2.5",
-    "husky": "^9.1.7",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "supabase": "^2.70.5",
@@ -102,14 +84,5 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "5.9.3"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "npx prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "npx prettier --write"
-    ]
   }
 }

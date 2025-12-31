@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Download, Database, Upload, Trash2, Calendar } from 'lucide-react'
 import { PageHeader } from '@/components/shared/page-header'
 import { Button } from '@/components/ui/button'
@@ -34,6 +34,14 @@ import { Spinner } from '@/components/ui/spinner'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Backup, BackupType } from '@/types'
+import {
+  createFullBackup,
+  createDataOnlyBackup,
+  restoreFromBackup,
+  getBackupHistory,
+  deleteBackupFromHistory,
+  type BackupMetadata,
+} from '@/lib/services/backup.service'
 
 const BACKUP_TYPE_LABELS = {
   full: 'Tam Yedek',
@@ -54,19 +62,41 @@ const BACKUP_STATUS_VARIANTS = {
 } as const
 
 export default function BackupPage() {
-  const [backups, setBackups] = useState<Backup[]>([])
+  const [backups, setBackups] = useState<BackupMetadata[]>([])
   const [isCreating, setIsCreating] = useState(false)
-  const [deletingBackup, setDeletingBackup] = useState<Backup | null>(null)
+  const [isRestoring, setIsRestoring] = useState(false)
+  const [deletingBackup, setDeletingBackup] = useState<BackupMetadata | null>(null)
+
+  // Load backup history on mount
+  useEffect(() => {
+    const history = getBackupHistory()
+    setBackups(history)
+  }, [])
 
   const handleCreateBackup = async (type: BackupType) => {
     setIsCreating(true)
     try {
-      // TODO: Implement actual backup creation via Supabase Management API or backend endpoint
-      // This functionality requires backend implementation or Supabase Management API access
-      const backupTypeLabel = BACKUP_TYPE_LABELS[type]
-      toast.info('Yedekleme özelliği yakında eklenecek', {
-        description: `${backupTypeLabel} yedekleme için backend endpoint veya Supabase Management API entegrasyonu gereklidir.`,
-      })
+      let metadata: BackupMetadata
+
+      if (type === 'full') {
+        metadata = await createFullBackup()
+        toast.success('Tam yedekleme oluşturuldu', {
+          description: `${metadata.fileName} indirildi. Toplam ${Object.values(metadata.recordCounts).reduce((a, b) => a + b, 0)} kayıt yedeklendi.`,
+        })
+      } else if (type === 'data-only') {
+        metadata = await createDataOnlyBackup()
+        toast.success('Veri yedeği oluşturuldu', {
+          description: `${metadata.fileName} indirildi.`,
+        })
+      } else {
+        toast.info('Şema yedeği', {
+          description: 'Şema yedeği için migration dosyalarını kullanabilirsiniz.',
+        })
+        return
+      }
+
+      // Update backups list
+      setBackups((prev) => [metadata, ...prev])
     } catch (error) {
       toast.error('Yedekleme oluşturulurken hata oluştu')
       console.error('Backup creation error:', error)
@@ -75,23 +105,37 @@ export default function BackupPage() {
     }
   }
 
-  const handleDeleteBackup = (backup: Backup) => {
+  const handleDeleteBackup = (backup: BackupMetadata) => {
     setDeletingBackup(backup)
   }
 
   const confirmDelete = () => {
     if (deletingBackup) {
+      deleteBackupFromHistory(deletingBackup.id)
       setBackups(backups.filter((b) => b.id !== deletingBackup.id))
-      toast.success('Yedekleme silindi')
+      toast.success('Yedekleme geçmişten silindi')
       setDeletingBackup(null)
     }
   }
 
-  const handleDownload = (backup: Backup) => {
-    // TODO: Implement actual backup download from Supabase Storage
-    toast.info('Yedekleme indirme özelliği yakında eklenecek', {
-      description: `${backup.fileName} için Supabase Storage entegrasyonu gereklidir.`,
-    })
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsRestoring(true)
+    try {
+      await restoreFromBackup(file)
+      toast.success('Veritabanı başarıyla geri yüklendi', {
+        description: 'Sayfayı yenileyerek değişiklikleri görebilirsiniz.',
+      })
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Geri yükleme sırasında hata oluştu'
+      )
+    } finally {
+      setIsRestoring(false)
+      event.target.value = '' // Reset file input
+    }
   }
 
   const formatFileSize = (bytes: number) => {
@@ -235,15 +279,8 @@ export default function BackupPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDownload(backup)}
-                          disabled={backup.status !== 'completed'}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
                           onClick={() => handleDeleteBackup(backup)}
+                          title="Geçmişten sil"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -274,15 +311,38 @@ export default function BackupPage() {
               <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
               <div className="mt-4">
                 <p className="text-sm text-muted-foreground">
-                  Yedekleme dosyasını seçin veya sürükleyip bırakın
+                  Yedekleme dosyasını seçin (.json)
                 </p>
-                <Button variant="outline" className="mt-4" disabled>
-                  Dosya Seç
-                </Button>
+                <div className="mt-4">
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="backup-file-input"
+                    disabled={isRestoring}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      document.getElementById('backup-file-input')?.click()
+                    }
+                    disabled={isRestoring}
+                  >
+                    {isRestoring ? (
+                      <>
+                        <Spinner className="mr-2 h-4 w-4" />
+                        Geri Yükleniyor...
+                      </>
+                    ) : (
+                      'Dosya Seç'
+                    )}
+                  </Button>
+                </div>
               </div>
               <p className="text-muted-foreground mt-4 text-xs">
-                Not: Geri yükleme işlemi tüm mevcut verileri siler. Lütfen
-                dikkatli olun.
+                Uyarı: Geri yükleme mevcut verilerle çakışan kayıtları güncelleyecektir.
+                İşlem öncesi yedekleme almanız önerilir.
               </p>
             </div>
           </div>

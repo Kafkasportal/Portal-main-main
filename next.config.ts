@@ -72,9 +72,11 @@ const nextConfig: NextConfig = {
   // Output optimization
   output: 'standalone',
 
-  // Ignore TypeScript build errors for deployment
+  // TypeScript configuration
+  // Note: Set to false in production. Temporarily true during initial deployment.
+  // Run 'npm run type-check' locally before deploying to catch issues early.
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: process.env.SKIP_TYPE_CHECK === 'true',
   },
 }
 

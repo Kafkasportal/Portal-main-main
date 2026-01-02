@@ -67,7 +67,12 @@ export function truncate(text: string, maxLength: number): string {
  */
 export function formatPhoneNumber(phone: string): string {
   // Remove all non-digits
-  const digits = phone.replace(/\D/g, '')
+  let digits = phone.replace(/\D/g, '')
+
+  // Handle +90 case
+  if (digits.length === 12 && digits.startsWith('90')) {
+    digits = digits.slice(2)
+  }
 
   // Format as Turkish phone number
   if (digits.length === 10) {

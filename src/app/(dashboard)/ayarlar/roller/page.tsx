@@ -43,11 +43,11 @@ export default function RollerPage() {
 
   // Group permissions by module
   const groupedPermissions = allPermissions?.reduce((acc, perm) => {
-    const module = perm.module
-    if (!acc[module]) {
-      acc[module] = []
+    const moduleName = perm.module
+    if (!acc[moduleName]) {
+      acc[moduleName] = []
     }
-    acc[module].push(perm)
+    acc[moduleName].push(perm)
     return acc
   }, {} as Record<string, Permission[]>)
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Download, Database, Upload, Trash2, Calendar } from 'lucide-react'
+import { Database, Upload, Trash2, Calendar } from 'lucide-react'
 import { PageHeader } from '@/components/shared/page-header'
 import { Button } from '@/components/ui/button'
 import {
@@ -33,7 +33,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
-import type { Backup, BackupType } from '@/types'
+import type { BackupType } from '@/types'
 import {
   createFullBackup,
   createDataOnlyBackup,

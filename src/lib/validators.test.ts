@@ -149,8 +149,13 @@ describe('memberSchema', () => {
     cinsiyet: 'erkek' as const,
     telefon: '05551234567',
     email: 'mehmet@example.com',
-    adres: 'Ankara',
-    uye_turu: 'standart' as const,
+    adres: {
+      il: 'Ankara',
+      ilce: 'Çankaya',
+      mahalle: 'Kızılay',
+      acikAdres: 'Test Sk. No:1',
+    },
+    uyeTuru: 'aktif' as const,
   }
 
   it('validates complete member form', () => {

@@ -121,10 +121,10 @@ function DataTableComponent<TData, TValue>({
   })
 
   // Get filtered data for export (memoized for performance)
+  const filteredRows = table.getFilteredRowModel().rows
   const filteredData = useMemo(() => {
-    const filtered = table.getFilteredRowModel().rows
-    return (filtered.length > 0 ? filtered.map((row) => row.original) : data) as TData[]
-  }, [table.getFilteredRowModel().rows, data])
+    return (filteredRows.length > 0 ? filteredRows.map((row) => row.original) : data) as TData[]
+  }, [filteredRows, data])
 
   // Get selected row IDs for bulk operations
   const selectedIds = table
@@ -135,7 +135,7 @@ function DataTableComponent<TData, TValue>({
         return getRowId(rowData)
       }
       // Fallback to 'id' field if getRowId not provided
-      return String((rowData as Record<string, any>).id || row.id)
+      return String((rowData as Record<string, unknown>).id || row.id)
     })
 
   if (isLoading) {

@@ -10,7 +10,7 @@ export type ExportFormat = 'csv' | 'json'
  * @param data - Array of objects to export
  * @param filename - Output filename
  */
-export function exportToCSV<T extends Record<string, any>>(
+export function exportToCSV<T extends Record<string, unknown>>(
   data: T[],
   filename: string = 'export.csv'
 ): void {
@@ -61,7 +61,7 @@ export function exportToJSON<T>(
  * @param format - Export format ('csv' or 'json')
  * @param filename - Output filename (without extension)
  */
-export function exportData<T extends Record<string, any>>(
+export function exportData<T extends Record<string, unknown>>(
   data: T[],
   format: ExportFormat = 'csv',
   filename: string = 'export'
@@ -151,10 +151,10 @@ function downloadFile(
  * @param prefix - Current key prefix
  */
 export function flattenObject(
-  obj: Record<string, any>,
+  obj: Record<string, unknown>,
   prefix: string = ''
-): Record<string, any> {
-  const flattened: Record<string, any> = {}
+): Record<string, unknown> {
+  const flattened: Record<string, unknown> = {}
 
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -167,7 +167,7 @@ export function flattenObject(
         !Array.isArray(value) &&
         !(value instanceof Date)
       ) {
-        Object.assign(flattened, flattenObject(value, newKey))
+        Object.assign(flattened, flattenObject(value as Record<string, unknown>, newKey))
       } else {
         flattened[newKey] = value
       }
@@ -182,16 +182,16 @@ export function flattenObject(
  * @param data - Array of objects
  * @param columnsToExport - Column names to include (undefined = all)
  */
-export function filterColumnsForExport<T extends Record<string, any>>(
+export function filterColumnsForExport<T extends Record<string, unknown>>(
   data: T[],
   columnsToExport?: string[]
-): Record<string, any>[] {
+): Record<string, unknown>[] {
   if (!columnsToExport) {
     return data
   }
 
   return data.map((obj) => {
-    const filtered: Record<string, any> = {}
+    const filtered: Record<string, unknown> = {}
     columnsToExport.forEach((col) => {
       filtered[col] = obj[col]
     })

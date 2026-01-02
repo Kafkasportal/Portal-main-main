@@ -17,7 +17,10 @@
     "db:migrate": "npx supabase db push || echo 'Migration skipped: Supabase project not linked. Run migrations manually from Supabase Dashboard.'",
     "clean": "rm -rf .next out node_modules/.cache",
     "sentry:release": "sentry-cli releases new $npm_package_version && sentry-cli releases set-commits $npm_package_version --auto && sentry-cli releases finalize $npm_package_version",
-    "sentry:deploy": "sentry-cli releases deploys $npm_package_version new -e production"
+    "sentry:deploy": "sentry-cli releases deploys $npm_package_version new -e production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -69,20 +72,26 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.1",
     "@tailwindcss/postcss": "^4.1.18",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
     "@types/html2canvas": "^1.0.0",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
     "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "supabase": "^2.70.5",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.0.16"
   }
 }

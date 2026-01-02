@@ -29,5 +29,6 @@ declare namespace NodeJS {
 
     // Webhooks
     readonly RENDER_WEBHOOK_SECRET?: string
+    readonly GITHUB_WEBHOOK_SECRET?: string
   }
 }

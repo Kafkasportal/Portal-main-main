@@ -112,7 +112,7 @@ describe('truncate', () => {
 
   it('truncates long text with ellipsis', () => {
     expect(truncate('This is a very long text', 10)).toBe('This is...')
-    expect(truncate('Another long text here', 15)).toBe('Another lon...')
+    expect(truncate('Another long text here', 15)).toBe('Another long...')
   })
 
   it('handles exact length correctly', () => {
@@ -150,7 +150,7 @@ describe('getInitials', () => {
 
   it('converts to uppercase', () => {
     expect(getInitials('ahmet yılmaz')).toBe('AY')
-    expect(getInitials('john doe')).toBe('JO')
+    expect(getInitials('john doe')).toBe('JD')
   })
 
   it('takes only first two initials', () => {

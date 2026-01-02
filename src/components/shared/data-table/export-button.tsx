@@ -13,7 +13,7 @@ import { exportToCSV, exportToJSON } from '@/lib/export'
 import { Download } from 'lucide-react'
 import { toast } from 'sonner'
 
-interface DataTableExportButtonProps<TData extends Record<string, any>> {
+interface DataTableExportButtonProps<TData extends Record<string, unknown>> {
   data: TData[]
   filename?: string
   disabled?: boolean
@@ -23,7 +23,7 @@ interface DataTableExportButtonProps<TData extends Record<string, any>> {
  * Export Button Component
  * Allows users to export table data in CSV or JSON format
  */
-export function DataTableExportButton<TData extends Record<string, any>>({
+export function DataTableExportButton<TData extends Record<string, unknown>>({
   data,
   filename = 'export',
   disabled = false,

@@ -15,11 +15,16 @@ export interface BackupData {
     donations?: Database['public']['Tables']['donations']['Row'][]
     social_aid_applications?: Database['public']['Tables']['social_aid_applications']['Row'][]
     payments?: Database['public']['Tables']['payments']['Row'][]
-    in_kind_aids?: Database['public']['Tables']['in_kind_aids']['Row'][]
-    kumbaras?: Database['public']['Tables']['kumbaras']['Row'][]
-    documents?: Database['public']['Tables']['documents']['Row'][]
-    hospitals?: Database['public']['Tables']['hospitals']['Row'][]
-    referrals?: Database['public']['Tables']['referrals']['Row'][]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    in_kind_aids?: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    kumbaras?: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    documents?: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hospitals?: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    referrals?: any[]
   }
 }
 
@@ -60,11 +65,17 @@ export async function createFullBackup(): Promise<BackupMetadata> {
       supabase.from('donations').select('*'),
       supabase.from('social_aid_applications').select('*'),
       supabase.from('payments').select('*'),
-      supabase.from('in_kind_aids').select('*'),
-      supabase.from('kumbaras').select('*'),
-      supabase.from('documents').select('*'),
-      supabase.from('hospitals').select('*'),
-      supabase.from('referrals').select('*'),
+      // Use any cast if these tables are not in the generated types yet
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('in_kind_aids') as any).select('*'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('kumbaras') as any).select('*'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('documents') as any).select('*'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('hospitals') as any).select('*'),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('referrals') as any).select('*'),
     ])
 
     const backupData: BackupData = {
@@ -76,11 +87,16 @@ export async function createFullBackup(): Promise<BackupMetadata> {
         donations: donations || [],
         social_aid_applications: applications || [],
         payments: payments || [],
-        in_kind_aids: inKindAids || [],
-        kumbaras: kumbaras || [],
-        documents: documents || [],
-        hospitals: hospitals || [],
-        referrals: referrals || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        in_kind_aids: (inKindAids as any[]) || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        kumbaras: (kumbaras as any[]) || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        documents: (documents as any[]) || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        hospitals: (hospitals as any[]) || [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        referrals: (referrals as any[]) || [],
       },
     }
 

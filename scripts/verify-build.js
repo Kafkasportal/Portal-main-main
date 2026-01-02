@@ -6,6 +6,7 @@
  * and the correct output directories exist
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 

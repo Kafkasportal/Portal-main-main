@@ -1,5 +1,5 @@
-import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyGitHubSignature } from '@/lib/github-webhook-utils'
 
 /**
  * GitHub Pull Request Webhook Handler
@@ -13,9 +13,6 @@ import { NextRequest, NextResponse } from 'next/server'
  * - Secret: GITHUB_WEBHOOK_SECRET from environment variables
  * - Events: Select "Pull requests"
  */
-
-// Webhook secret from environment variable
-const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET
 
 // GitHub PR event action types
 type GitHubPRAction =
@@ -84,43 +81,6 @@ interface GitHubPullRequestEvent {
   sender: {
     login: string
     id: number
-  }
-}
-
-/**
- * Verify GitHub webhook signature
- * Uses HMAC SHA-256 to validate the payload
- */
-function verifyGitHubSignature(
-  payload: string,
-  signature: string | null
-): boolean {
-  if (!WEBHOOK_SECRET) {
-    // In development, accept all requests if no secret is configured
-    if (process.env.NODE_ENV === 'development') {
-      return true
-    }
-    return false
-  }
-
-  if (!signature) {
-    return false
-  }
-
-  // GitHub signature format: sha256=<hash>
-  const expectedSignature = `sha256=${crypto
-    .createHmac('sha256', WEBHOOK_SECRET)
-    .update(payload)
-    .digest('hex')}`
-
-  // Use timing-safe comparison to prevent timing attacks
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
-  } catch {
-    return false
   }
 }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectPriorityFromLabels } from '../issues/route'
+import { detectPriorityFromLabels } from '@/lib/github-webhook-utils'
 
 /**
  * Tests for GitHub Issues Webhook - Priority Detection

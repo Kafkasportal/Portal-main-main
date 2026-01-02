@@ -1,5 +1,11 @@
-import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  verifyGitHubSignature,
+  detectPriorityFromLabels,
+  getPriorityEmoji,
+  type GitHubLabel,
+  type IssuePriority,
+} from '@/lib/github-webhook-utils'
 
 /**
  * GitHub Issues Webhook Handler
@@ -13,12 +19,6 @@ import { NextRequest, NextResponse } from 'next/server'
  * - Secret: GITHUB_WEBHOOK_SECRET from environment variables
  * - Events: Select "Issues"
  */
-
-// Webhook secret from environment variable
-const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET
-
-// Priority levels for issue tracking
-export type IssuePriority = 'critical' | 'high' | 'medium' | 'low'
 
 // GitHub Issue event action types
 type GitHubIssueAction =
@@ -49,14 +49,6 @@ export interface GitHubIssueWebhookPayload {
   action: 'opened' | 'closed'
   labels?: string
   priority: IssuePriority
-}
-
-// GitHub label structure
-interface GitHubLabel {
-  id: number
-  name: string
-  color: string
-  description?: string
 }
 
 // Full GitHub webhook payload structure
@@ -90,76 +82,6 @@ interface GitHubIssueEvent {
     login: string
     id: number
   }
-}
-
-/**
- * Verify GitHub webhook signature
- * Uses HMAC SHA-256 to validate the payload
- */
-function verifyGitHubSignature(
-  payload: string,
-  signature: string | null
-): boolean {
-  if (!WEBHOOK_SECRET) {
-    // In development, accept all requests if no secret is configured
-    if (process.env.NODE_ENV === 'development') {
-      return true
-    }
-    return false
-  }
-
-  if (!signature) {
-    return false
-  }
-
-  // GitHub signature format: sha256=<hash>
-  const expectedSignature = `sha256=${crypto
-    .createHmac('sha256', WEBHOOK_SECRET)
-    .update(payload)
-    .digest('hex')}`
-
-  // Use timing-safe comparison to prevent timing attacks
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
-  } catch {
-    return false
-  }
-}
-
-/**
- * Smart Priority Detection from GitHub Labels
- *
- * Priority is automatically determined from GitHub labels:
- * - Critical: Labels containing "critical" or "urgent"
- * - High: Labels containing "high" or "bug"
- * - Medium: Default for all other issues
- * - Low: Labels containing "low" or "minor"
- */
-export function detectPriorityFromLabels(labels: GitHubLabel[]): IssuePriority {
-  const labelNames = labels.map((l) => l.name.toLowerCase())
-
-  // Check for critical priority
-  if (
-    labelNames.some((name) => name.includes('critical') || name.includes('urgent'))
-  ) {
-    return 'critical'
-  }
-
-  // Check for high priority
-  if (labelNames.some((name) => name.includes('high') || name.includes('bug'))) {
-    return 'high'
-  }
-
-  // Check for low priority
-  if (labelNames.some((name) => name.includes('low') || name.includes('minor'))) {
-    return 'low'
-  }
-
-  // Default to medium priority
-  return 'medium'
 }
 
 /**
@@ -273,22 +195,6 @@ async function handleIssueClosed(payload: GitHubIssueWebhookPayload) {
   // Future: Update task status in Activity Tracker
   // Future: Send notification
   // Future: Update dashboard
-}
-
-/**
- * Get emoji for priority level
- */
-function getPriorityEmoji(priority: IssuePriority): string {
-  switch (priority) {
-    case 'critical':
-      return '🚨'
-    case 'high':
-      return '🔴'
-    case 'medium':
-      return '🟡'
-    case 'low':
-      return '🟢'
-  }
 }
 
 /**

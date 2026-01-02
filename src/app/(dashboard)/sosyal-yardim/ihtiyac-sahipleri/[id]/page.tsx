@@ -241,8 +241,7 @@ export default function BeneficiaryDetailPage({
     notlar: beneficiary?.notlar,
   } satisfies Partial<BeneficiaryFormData>
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const form = useForm<any>({
+  const form = useForm<BeneficiaryFormData>({
     resolver: zodResolver(beneficiarySchema),
     defaultValues,
   })

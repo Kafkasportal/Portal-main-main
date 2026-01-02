@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import {
   Cell,
   Pie,
@@ -27,7 +28,7 @@ const COLORS = [
   '#84cc16',
 ]
 
-export function FinancialDistributionChart({
+export const FinancialDistributionChart = memo(function FinancialDistributionChart({
   data,
   isLoading,
   title,
@@ -92,5 +93,5 @@ export function FinancialDistributionChart({
       </div>
     </div>
   )
-}
+})
 

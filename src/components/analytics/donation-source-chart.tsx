@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Download } from 'lucide-react'
 import {
@@ -18,7 +19,7 @@ import { useChartExport } from '@/hooks/use-chart-export'
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
 
-export function DonationSourceChart() {
+export const DonationSourceChart = memo(function DonationSourceChart() {
   const { chartRef, exportChart } = useChartExport('kaynak-dagilimi')
   const { data: distribution, isLoading } = useQuery({
     queryKey: ['donation-source-distribution'],
@@ -109,4 +110,4 @@ export function DonationSourceChart() {
       </CardContent>
     </Card>
   )
-}
+})

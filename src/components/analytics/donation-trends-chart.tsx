@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Download } from 'lucide-react'
 import {
@@ -26,7 +26,7 @@ import { formatCurrency } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useChartExport } from '@/hooks/use-chart-export'
 
-export function DonationTrendsChart() {
+export const DonationTrendsChart = memo(function DonationTrendsChart() {
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly')
   const { chartRef, exportChart } = useChartExport('bagis-trendleri')
 
@@ -151,4 +151,4 @@ export function DonationTrendsChart() {
       </CardContent>
     </Card>
   )
-}
+})

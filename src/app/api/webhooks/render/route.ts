@@ -103,12 +103,14 @@ function verifyWebhook(payload: string, signature: string | null): boolean {
 async function handleWebhookEvent(payload: RenderWebhookPayload) {
   const { event, service, deploy, build } = payload
 
-  // Log event (production'da bir logging servisine gönderilebilir)
-  console.log(`[Render Webhook] Event: ${event}`, {
-    service: service.name,
-    deploy: deploy?.id,
-    build: build?.id,
-  })
+  // Log event (development only)
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Render Webhook] Event: ${event}`, {
+      service: service.name,
+      deploy: deploy?.id,
+      build: build?.id,
+    })
+  }
 
   // Event tipine göre işlem yap
   switch (event) {
@@ -131,8 +133,10 @@ async function handleWebhookEvent(payload: RenderWebhookPayload) {
       break
 
     default:
-      // Diğer event'ler için varsayılan işlem
-      console.log(`[Render Webhook] Unhandled event: ${event}`)
+      // Diğer event'ler için varsayılan işlem (development only)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Render Webhook] Unhandled event: ${event}`)
+      }
   }
 }
 
@@ -149,10 +153,12 @@ async function handleDeploymentSuccess(
   // - Health check
   // - Analytics event gönderme
 
-  console.log(`✅ Deployment successful: ${service.name}`, {
-    deployId: deploy?.id,
-    commit: deploy?.commit.id,
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`✅ Deployment successful: ${service.name}`, {
+      deployId: deploy?.id,
+      commit: deploy?.commit.id,
+    })
+  }
 
   // Burada gerçek işlemler yapılabilir
   // Örn: Supabase'de deployment log kaydetme
@@ -165,6 +171,7 @@ async function handleDeploymentFailure(
   service: RenderWebhookPayload['service'],
   deploy?: RenderWebhookPayload['deploy']
 ) {
+  // Always log deployment failures (critical errors)
   console.error(`❌ Deployment failed: ${service.name}`, {
     deployId: deploy?.id,
     commit: deploy?.commit.id,
@@ -181,10 +188,12 @@ async function handleBuildEnd(
   service: RenderWebhookPayload['service'],
   build?: RenderWebhookPayload['build']
 ) {
-  console.log(`🔨 Build ended: ${service.name}`, {
-    buildId: build?.id,
-    status: build?.status,
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🔨 Build ended: ${service.name}`, {
+      buildId: build?.id,
+      status: build?.status,
+    })
+  }
 }
 
 /**

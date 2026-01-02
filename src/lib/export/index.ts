@@ -97,7 +97,7 @@ function escapeCsvValue(value: string): string {
 /**
  * Formats values for CSV export
  */
-function formatValueForCSV(value: any): string {
+function formatValueForCSV(value: unknown): string {
   if (value === null || value === undefined) {
     return ''
   }

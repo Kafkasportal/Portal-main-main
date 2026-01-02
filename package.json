@@ -94,6 +94,7 @@
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^27.4.0",
     "min-indent": "^1.0.1",
+    "pg": "^8.16.3",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "supabase": "^2.70.5",

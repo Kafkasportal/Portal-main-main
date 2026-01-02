@@ -6,6 +6,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import { useCreateBeneficiary } from '@/hooks/use-api'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -38,6 +40,7 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const createBeneficiary = useCreateBeneficiary()
 
   const form = useForm<BasicBeneficiaryFormData>({
     resolver: zodResolver(basicBeneficiarySchema),
@@ -49,23 +52,32 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
     },
   })
 
-  async function onSubmit() {
+  async function onSubmit(data: BasicBeneficiaryFormData) {
     setIsLoading(true)
     try {
-      // Simulate API call to create basic record
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Create a fake ID for redirection (in real app, get ID from response)
-      const newId = crypto.randomUUID()
+      // Real API call to create beneficiary with basic info
+      const newBeneficiary = await createBeneficiary.mutateAsync({
+        tc_kimlik_no: data.tcKimlikNo || null,
+        ad: data.ad,
+        soyad: data.soyad,
+        telefon: data.telefon,
+        durum: 'aktif',
+        kategori: 'genel', // Default category
+        ihtiyac_durumu: 'orta', // Default need level
+        notlar: 'Hızlı kayıt ile oluşturuldu. Detaylar doldurulacak.',
+      })
 
       toast.success('Ön kayıt oluşturuldu', {
         description: 'Detay sayfasına yönlendiriliyorsunuz...',
       })
 
       setOpen(false)
-      router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newId}?edit=true`)
-    } catch {
-      toast.error('Bir hata oluştu')
+      router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newBeneficiary.id}?edit=true`)
+    } catch (error) {
+      console.error('Quick register error:', error)
+      toast.error('Bir hata oluştu', {
+        description: error instanceof Error ? error.message : 'İhtiyaç sahibi kaydı oluşturulamadı',
+      })
     } finally {
       setIsLoading(false)
     }

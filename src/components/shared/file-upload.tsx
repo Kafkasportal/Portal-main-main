@@ -17,8 +17,8 @@ interface FileUploadProps {
 
 export function FileUpload({
   onFileSelect,
-  accept = '.pdf,.jpg,.jpeg,.png',
-  maxSize = 5,
+  accept = '.pdf,.jpg,.jpeg,.png,.doc,.docx',
+  maxSize = 10,
   disabled = false,
   className,
 }: FileUploadProps) {

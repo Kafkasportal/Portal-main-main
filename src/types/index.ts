@@ -24,8 +24,8 @@ export interface PaginatedResponse<T> {
 export type DocumentType = 'kimlik' | 'ikamet' | 'saglik' | 'gelir' | 'diger'
 
 export interface BeneficiaryDocument {
-  id: number
-  beneficiaryId: number
+  id: string // UUID from database
+  beneficiaryId: string // UUID from database
   fileName: string
   filePath: string
   fileType: string

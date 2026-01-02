@@ -173,47 +173,86 @@ type BeneficiaryRow = Tables['beneficiaries']['Row'] & {
 
 // Helper to map DB beneficiary to IhtiyacSahibi type
 function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
+  // Parse nested JSONB fields if they exist
+  const kimlikBilgileri = typeof db.kimlik_bilgileri === 'string'
+    ? JSON.parse(db.kimlik_bilgileri)
+    : (db.kimlik_bilgileri || {})
+
+  const saglikBilgileri = typeof db.saglik_bilgileri === 'string'
+    ? JSON.parse(db.saglik_bilgileri)
+    : (db.saglik_bilgileri || {})
+
+  const ekonomikDurum = typeof db.ekonomik_durum === 'string'
+    ? JSON.parse(db.ekonomik_durum)
+    : (db.ekonomik_durum || {})
+
+  const aileHaneBilgileri = typeof db.aile_hane_bilgileri === 'string'
+    ? JSON.parse(db.aile_hane_bilgileri)
+    : (db.aile_hane_bilgileri || {})
+
   return {
     id: db.id,
     ad: db.ad || '',
     soyad: db.soyad || '',
     tcKimlikNo: db.tc_kimlik_no || '',
-    yabanciKimlikNo: '',
+    yabanciKimlikNo: db.yabanci_kimlik_no || '',
     tur: (db.relationship_type === 'İhtiyaç Sahibi Kişi'
       ? 'ihtiyac-sahibi-kisi'
       : 'bakmakla-yukumlu') as IhtiyacSahibiTuru,
     kategori: (db.kategori || 'ihtiyac-sahibi-aile') as IhtiyacSahibiKategori,
     dogumTarihi: db.dogum_tarihi ? new Date(db.dogum_tarihi) : new Date(),
     cinsiyet: (db.cinsiyet || 'belirtilmemis') as Cinsiyet,
-    uyruk: 'Türkiye',
-    cepTelefonu: db.telefon || '',
-    cepTelefonuOperator: '',
+    uyruk: db.uyruk || 'Türkiye',
+    cepTelefonu: db.cep_telefonu || db.telefon || '',
+    cepTelefonuOperator: db.cep_telefonu_operator || '',
     email: db.email || '',
-    ulke: 'Türkiye',
-    sehir: db.il || '',
+    ulke: db.ulke || 'Türkiye',
+    sehir: db.sehir || db.il || '',
     ilce: db.ilce || '',
-    mahalle: '',
+    mahalle: db.mahalle || '',
     adres: db.adres || '',
-    dosyaNo: db.tc_kimlik_no || '',
+    dosyaNo: db.dosya_no || db.tc_kimlik_no || '',
     kayitTarihi: new Date(db.created_at),
     durum: (db.durum || 'aktif') as IhtiyacDurumu,
     ihtiyacDurumu: (db.ihtiyac_durumu || 'orta') as string,
     basvuruSayisi: 0,
     yardimSayisi: 0,
-    rizaBeyaniDurumu: 'alindi',
+    rizaBeyaniDurumu: db.riza_beyani_durumu || 'alindi',
     toplamYardimTutari: 0,
+    // Map nested JSONB fields
+    kimlikBilgileri: {
+      babaAdi: kimlikBilgileri.baba_adi || '',
+      anneAdi: kimlikBilgileri.anne_adi || '',
+      belgeTuru: kimlikBilgileri.belge_turu || '',
+      belgeGecerlilikTarihi: kimlikBilgileri.belge_gecerlilik_tarihi ? new Date(kimlikBilgileri.belge_gecerlilik_tarihi) : undefined,
+      seriNumarasi: kimlikBilgileri.seri_numarasi || '',
+      oncekiUyruk: kimlikBilgileri.onceki_uyruk || '',
+      oncekiIsim: kimlikBilgileri.onceki_isim || '',
+    },
+    saglikBilgileri: {
+      kanGrubu: saglikBilgileri.kan_grubu || '',
+      kronikHastalik: saglikBilgileri.kronik_hastalik || '',
+      engelDurumu: saglikBilgileri.engel_durumu || '',
+      engelOrani: saglikBilgileri.engel_orani || 0,
+      surekliIlac: saglikBilgileri.surekli_ilac || '',
+    },
     aileHaneBilgileri: {
-      medeniHal: (db.medeni_hal || 'belirtilmemis') as MedeniHal,
-      ailedekiKisiSayisi: db.hane_buyuklugu || 1,
-      cocukSayisi: 0,
-      yetimSayisi: 0,
-      calısanSayisi: 0,
-      bakmaklaYukumluSayisi: 0,
+      medeniHal: (aileHaneBilgileri.medeni_hal || db.medeni_hal || 'belirtilmemis') as MedeniHal,
+      ailedekiKisiSayisi: aileHaneBilgileri.ailedeki_kisi_sayisi || db.hane_buyuklugu || 1,
+      cocukSayisi: aileHaneBilgileri.cocuk_sayisi || 0,
+      yetimSayisi: aileHaneBilgileri.yetim_sayisi || 0,
+      calısanSayisi: aileHaneBilgileri.calisan_sayisi || 0,
+      bakmaklaYukumluSayisi: aileHaneBilgileri.bakmakla_yukumlu_sayisi || 0,
+      esAdi: aileHaneBilgileri.es_adi || '',
+      esTelefon: aileHaneBilgileri.es_telefon || '',
     },
     ekonomikSosyalDurum: {
-      meslek: db.meslek || '',
-      aylikGelir: Number(db.aylik_gelir) || 0,
-      egitimDurumu: (db.egitim_durumu || 'belirtilmemis') as EgitimDurumu,
+      meslek: ekonomikDurum.meslek || db.meslek || '',
+      aylikGelir: Number(ekonomikDurum.aylik_gelir || db.aylik_gelir) || 0,
+      egitimDurumu: (ekonomikDurum.egitim_durumu || db.egitim_durumu || 'belirtilmemis') as EgitimDurumu,
+      calismaDurumu: ekonomikDurum.calisma_durumu || '',
+      konutDurumu: ekonomikDurum.konut_durumu || '',
+      kiraTutari: ekonomikDurum.kira_tutari || 0,
     },
     createdAt: new Date(db.created_at),
     updatedAt: new Date(db.updated_at),
@@ -1926,14 +1965,17 @@ export async function fetchDocuments(
       file_type: string
       file_size: number
       document_type: string
+      uploaded_by?: string
       created_at: string
     }) => ({
       id: doc.id,
       beneficiaryId: doc.beneficiary_id,
       fileName: doc.file_name,
+      filePath: doc.file_path, // Fixed: Added missing filePath mapping
       fileType: doc.file_type,
       fileSize: doc.file_size,
       documentType: doc.document_type as DocumentType,
+      uploadedBy: doc.uploaded_by,
       createdAt: new Date(doc.created_at),
     })
   )

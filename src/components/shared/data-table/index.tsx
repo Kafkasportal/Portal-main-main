@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import React, { memo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 
 import { EmptyState } from '@/components/shared/empty-state'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -120,9 +120,11 @@ function DataTableComponent<TData, TValue>({
     manualFiltering: !!propOnColumnFiltersChange,
   })
 
-  // Get filtered data for export
-  const filteredData = (table.getFilteredRowModel().rows.map((row) => row.original) ||
-    data) as TData[]
+  // Get filtered data for export (memoized for performance)
+  const filteredData = useMemo(() => {
+    const filtered = table.getFilteredRowModel().rows
+    return (filtered.length > 0 ? filtered.map((row) => row.original) : data) as TData[]
+  }, [table.getFilteredRowModel().rows, data])
 
   // Get selected row IDs for bulk operations
   const selectedIds = table
@@ -189,7 +191,7 @@ function DataTableComponent<TData, TValue>({
         }
       />
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

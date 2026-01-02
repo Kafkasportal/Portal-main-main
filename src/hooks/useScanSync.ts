@@ -97,6 +97,30 @@ function calculateBackoffDelay(retryCount: number, baseDelay: number): number {
 }
 
 /**
+ * Abortable delay function
+ * @param ms - Milliseconds to delay
+ * @param signal - AbortSignal to cancel the delay
+ * @returns Promise that resolves after delay or rejects if aborted
+ */
+function delay(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new Error('Aborted'))
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      resolve()
+    }, ms)
+
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeoutId)
+      reject(new Error('Aborted'))
+    })
+  })
+}
+
+/**
  * Submit a scan to the server
  * Fetches the kumbara by code and marks it as collected
  */
@@ -181,6 +205,7 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
   const queryClient = useQueryClient()
   const isOnline = useNetworkStatus()
   const isSyncingRef = useRef(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Get store state and actions
   const {
@@ -283,7 +308,12 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
 
         // Small delay between batches to avoid overwhelming the server
         if (i + maxConcurrent < scans.length) {
-          await new Promise((resolve) => setTimeout(resolve, 100))
+          try {
+            await delay(100, abortControllerRef.current?.signal)
+          } catch {
+            // Aborted, stop processing
+            break
+          }
         }
       }
 
@@ -418,7 +448,12 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
         const backoffDelay = calculateBackoffDelay(maxRetryCount, baseRetryDelay)
 
         // Wait for backoff delay
-        await new Promise((resolve) => setTimeout(resolve, backoffDelay))
+        try {
+          await delay(backoffDelay, abortControllerRef.current?.signal)
+        } catch {
+          // Aborted, exit retry
+          return { total: 0, successful: 0, failed: 0, results: [] }
+        }
 
         // Refresh pending scans and process
         const updatedPendingScans = await getPendingScans()
@@ -524,13 +559,22 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
   )
 
   /**
-   * Initialize store on mount
+   * Initialize store on mount and cleanup on unmount
    */
   useEffect(() => {
+    // Initialize abort controller
+    abortControllerRef.current = new AbortController()
+
     const store = useScanQueueStore.getState()
     store.checkDbAvailability()
     if (store.isDbAvailable) {
       void store.refreshQueueStats()
+    }
+
+    // Cleanup: abort any pending delays
+    return () => {
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = null
     }
   }, [])
 

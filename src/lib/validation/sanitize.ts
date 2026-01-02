@@ -203,7 +203,7 @@ export function sanitizeFileName(filename: string): string {
 /**
  * Sanitizes JSON data recursively
  */
-export function sanitizeJSON(obj: any): any {
+export function sanitizeJSON(obj: unknown): unknown {
   if (typeof obj === 'string') {
     return sanitizeInput(obj)
   }
@@ -213,7 +213,7 @@ export function sanitizeJSON(obj: any): any {
   }
 
   if (typeof obj === 'object' && obj !== null) {
-    const sanitized: Record<string, any> = {}
+    const sanitized: Record<string, unknown> = {}
 
     for (const [key, value] of Object.entries(obj)) {
       const sanitizedKey = sanitizeInput(key)

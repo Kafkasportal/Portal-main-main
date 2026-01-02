@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import {
   Area,
   AreaChart,
@@ -17,7 +18,7 @@ interface IncomeExpenseChartProps {
   isLoading?: boolean
 }
 
-export function IncomeExpenseChart({
+export const IncomeExpenseChart = memo(function IncomeExpenseChart({
   data,
   isLoading,
 }: IncomeExpenseChartProps) {
@@ -81,5 +82,5 @@ export function IncomeExpenseChart({
       </AreaChart>
     </ResponsiveContainer>
   )
-}
+})
 

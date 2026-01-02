@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import {
   Bar,
   BarChart,
@@ -18,7 +19,7 @@ interface AidTypeBarChartProps {
   }[]
 }
 
-export function AidTypeBarChart({ data }: AidTypeBarChartProps) {
+export const AidTypeBarChart = memo(function AidTypeBarChart({ data }: AidTypeBarChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="text-muted-foreground flex h-full items-center justify-center">
@@ -57,4 +58,4 @@ export function AidTypeBarChart({ data }: AidTypeBarChartProps) {
       </BarChart>
     </ResponsiveContainer>
   )
-}
+})

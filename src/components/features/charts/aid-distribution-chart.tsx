@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
 interface AidDistributionChartProps {
@@ -10,7 +11,7 @@ interface AidDistributionChartProps {
   }[]
 }
 
-export function AidDistributionChart({ data }: AidDistributionChartProps) {
+export const AidDistributionChart = memo(function AidDistributionChart({ data }: AidDistributionChartProps) {
   if (!data || data.length === 0) {
     return (
       <div
@@ -70,4 +71,4 @@ export function AidDistributionChart({ data }: AidDistributionChartProps) {
       </PieChart>
     </ResponsiveContainer>
   )
-}
+})

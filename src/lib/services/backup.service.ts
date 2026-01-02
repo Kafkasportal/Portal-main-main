@@ -10,16 +10,16 @@ export interface BackupData {
   version: string
   timestamp: string
   tables: {
-    members?: any[]
-    beneficiaries?: any[]
-    donations?: any[]
-    social_aid_applications?: any[]
-    payments?: any[]
-    in_kind_aids?: any[]
-    kumbaras?: any[]
-    documents?: any[]
-    hospitals?: any[]
-    referrals?: any[]
+    members?: Database['public']['Tables']['members']['Row'][]
+    beneficiaries?: Database['public']['Tables']['beneficiaries']['Row'][]
+    donations?: Database['public']['Tables']['donations']['Row'][]
+    social_aid_applications?: Database['public']['Tables']['social_aid_applications']['Row'][]
+    payments?: Database['public']['Tables']['payments']['Row'][]
+    in_kind_aids?: Database['public']['Tables']['in_kind_aids']['Row'][]
+    kumbaras?: Database['public']['Tables']['kumbaras']['Row'][]
+    documents?: Database['public']['Tables']['documents']['Row'][]
+    hospitals?: Database['public']['Tables']['hospitals']['Row'][]
+    referrals?: Database['public']['Tables']['referrals']['Row'][]
   }
 }
 

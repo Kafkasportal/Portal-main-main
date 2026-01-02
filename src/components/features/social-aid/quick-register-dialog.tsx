@@ -49,21 +49,25 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
     },
   })
 
-  async function onSubmit() {
+  async function onSubmit(data: BasicBeneficiaryFormData) {
     setIsLoading(true)
     try {
       // Simulate API call to create basic record
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
-      // Create a fake ID for redirection (in real app, get ID from response)
-      const newId = crypto.randomUUID()
+      // Redirect to new page with data in query params
+      const params = new URLSearchParams()
+      if (data.tcKimlikNo) params.set('tcKimlikNo', data.tcKimlikNo)
+      if (data.ad) params.set('ad', data.ad)
+      if (data.soyad) params.set('soyad', data.soyad)
+      if (data.telefon) params.set('telefon', data.telefon)
 
-      toast.success('Ön kayıt oluşturuldu', {
+      toast.success('Ön kayıt bilgileri alındı', {
         description: 'Detay sayfasına yönlendiriliyorsunuz...',
       })
 
       setOpen(false)
-      router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newId}?edit=true`)
+      router.push(`/sosyal-yardim/ihtiyac-sahipleri/yeni?${params.toString()}`)
     } catch {
       toast.error('Bir hata oluştu')
     } finally {

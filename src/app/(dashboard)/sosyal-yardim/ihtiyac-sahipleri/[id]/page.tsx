@@ -25,7 +25,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { use, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -65,6 +65,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { DocumentList } from '@/components/features/documents/document-list'
 import { FileUpload } from '@/components/shared/file-upload'
 import { Progress } from '@/components/ui/progress'
+import { BasicInfoForm } from '@/components/features/beneficiaries/form-sections/basic-info-form'
 import {
   COUNTRIES,
   DOSYA_BAGLANTISI_LABELS,
@@ -82,6 +83,7 @@ import {
   VIZE_GIRIS_TURU_LABELS,
 } from '@/lib/constants'
 import {
+  createBeneficiary,
   fetchBeneficiaryById,
   fetchDependentPersons,
   updateBeneficiary,
@@ -169,6 +171,7 @@ export default function BeneficiaryDetailPage({
   const isNew = idParam === 'yeni'
   const id = isNew ? 0 : Number.parseInt(idParam, 10)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const queryClient = useQueryClient()
   const [, setHasChanges] = useState(false)
   const [deleteChecked, setDeleteChecked] = useState(false)
@@ -261,12 +264,13 @@ export default function BeneficiaryDetailPage({
     reset,
     setValue,
     register,
+    getValues, // Added getValues
   } = form
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const errors = formErrors as Record<string, any>
 
-  // Reset form when beneficiary data loads
+  // Reset form when beneficiary data loads or if it is new with query params
   useEffect(() => {
     if (beneficiary) {
       reset({
@@ -298,9 +302,29 @@ export default function BeneficiaryDetailPage({
         rizaBeyaniDurumu: beneficiary.rizaBeyaniDurumu,
         notlar: beneficiary.notlar,
       })
+    } else if (isNew && searchParams) {
+        // Pre-fill from query params
+        const qTc = searchParams.get('tcKimlikNo')
+        const qAd = searchParams.get('ad')
+        const qSoyad = searchParams.get('soyad')
+        const qTel = searchParams.get('telefon')
+
+        const currentValues = getValues()
+
+        reset({
+            ...currentValues,
+            ad: qAd || currentValues.ad || '',
+            soyad: qSoyad || currentValues.soyad || '',
+            tcKimlikNo: qTc || currentValues.tcKimlikNo || '',
+            cepTelefonu: qTel || currentValues.cepTelefonu || '',
+            uyruk: currentValues.uyruk || 'Türkiye', // Default
+            ulke: currentValues.ulke || 'Türkiye', // Default
+            sehir: currentValues.sehir || 'İstanbul', // Default
+            durum: 'aktif',
+        })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beneficiary, reset])
+  }, [beneficiary, isNew, searchParams, reset])
 
   const updateMutation = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -317,9 +341,34 @@ export default function BeneficiaryDetailPage({
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (data: any) => {
-    updateMutation.mutate(data)
+  const onSubmit = (formData: any) => {
+    if (isNew) {
+      // If it is new, we might need a create mutation or just handle it here.
+      // Since fetchBeneficiaryById is used for data, and updateBeneficiary for save,
+      // we need a createBeneficiary function in supabase-service.
+      // But for now, let's assume the update mutation handles it or we should add a create mutation.
+      // The current supabase-service has createBeneficiary.
+
+      // Let's create a new mutation for creation.
+      createMutation.mutate(formData)
+    } else {
+      updateMutation.mutate(formData)
+    }
   }
+
+  const createMutation = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: (data: any) => createBeneficiary(data),
+    onSuccess: (newItem) => {
+      void queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
+      toast.success('Kayıt başarıyla oluşturuldu')
+      // Redirect to the new item's page
+      router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newItem.id}`)
+    },
+    onError: () => {
+      toast.error('Kayıt oluşturulurken bir hata oluştu')
+    },
+  })
 
   // Document upload mutation
   const uploadMutation = useMutation({
@@ -411,7 +460,55 @@ export default function BeneficiaryDetailPage({
     )
   }
 
-  const data = beneficiary!
+  // Use either the fetched beneficiary or the form values as 'data' for rendering the UI
+  // When isNew is true, beneficiary is undefined, so we need to rely on form.getValues() or defaults
+  // However, form values might be empty initially.
+  // We can construct a "view model" object that mimics beneficiary structure but uses form values where applicable.
+  // Or simply use default empty values for the parts that are used in rendering outside of the form fields (like photo URL, connected records counts)
+
+  const formValues = form.getValues()
+
+  const data = beneficiary || {
+      id: 0,
+      ad: formValues.ad || '',
+      soyad: formValues.soyad || '',
+      uyruk: formValues.uyruk || 'Türkiye',
+      tcKimlikNo: formValues.tcKimlikNo || '',
+      yabanciKimlikNo: formValues.yabanciKimlikNo || '',
+      kategori: 'yetiskin',
+      fonBolgesi: '',
+      dosyaBaglantisi: '',
+      cepTelefonu: formValues.cepTelefonu || '',
+      cepTelefonuOperator: '',
+      sabitTelefon: '',
+      yurtdisiTelefon: '',
+      email: formValues.email || '',
+      ulke: formValues.ulke || 'Türkiye',
+      sehir: formValues.sehir || 'İstanbul',
+      ilce: formValues.ilce || '',
+      mahalle: formValues.mahalle || '',
+      adres: formValues.adres || '',
+      fotografUrl: null,
+      durum: 'aktif',
+      rizaBeyaniDurumu: 'alinmadi',
+      notlar: '',
+      baglantiliKayitlar: {
+          bankaHesaplari: 0,
+          dokumanlar: 0,
+          fotograflar: 0,
+          baktigiYetimler: 0,
+          baktigiKisiler: 0,
+          sponsorlar: 0,
+          referanslar: 0,
+          gorusmeKayitlari: 0,
+          gorusmeSeansTakibi: 0,
+          yardimTalepleri: 0,
+          yapilanYardimlar: 0,
+          rizaBeyannamesi: 0,
+          sosyalKartlar: 0
+      },
+      // Partial structure to satisfy types if needed, or cast as any for loose binding in UI
+  } as unknown as import('@/types').IhtiyacSahibi
 
   return (
     <div className="relative space-y-4">
@@ -684,414 +781,12 @@ export default function BeneficiaryDetailPage({
           <Card>
             <CardContent className="p-6">
               <SectionTitle>Temel Bilgiler</SectionTitle>
-
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {/* Sol Sütun */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Ad *</Label>
-                    <Input {...register('ad')} defaultValue={data.ad} />
-                    {errors.ad && (
-                      <p className="text-destructive text-sm">
-                        {errors.ad.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Soyad *</Label>
-                    <Input {...register('soyad')} defaultValue={data.soyad} />
-                    {errors.soyad && (
-                      <p className="text-destructive text-sm">
-                        {errors.soyad.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Uyruk *</Label>
-                    <Select
-                      defaultValue={data.uyruk}
-                      onValueChange={(value) =>
-                        setValue('uyruk', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.uyruk && (
-                      <p className="text-destructive text-sm">
-                        {errors.uyruk.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Kimlik No</Label>
-                    <Input
-                      {...register(
-                        data.uyruk === 'Türkiye'
-                          ? 'tcKimlikNo'
-                          : 'yabanciKimlikNo'
-                      )}
-                      defaultValue={data.tcKimlikNo || data.yabanciKimlikNo}
-                    />
-                    <div className="mt-1 flex items-center space-x-2">
-                      <Checkbox
-                        id="mernis"
-                        defaultChecked={data.mernisDogrulama}
-                      />
-                      <Label
-                        htmlFor="mernis"
-                        className="cursor-pointer text-xs"
-                      >
-                        Mernis Kontrolü Yap
-                      </Label>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Kategori *</Label>
-                    <Select
-                      defaultValue={data.kategori}
-                      onValueChange={(value: string) =>
-                        setValue('kategori', value as FormKategori, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(IHTIYAC_SAHIBI_KATEGORI_LABELS).map(
-                          ([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
-                    {errors.kategori && (
-                      <p className="text-destructive text-sm">
-                        {errors.kategori.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Fon Bölgesi</Label>
-                    <Select
-                      defaultValue={data.fonBolgesi}
-                      onValueChange={(value) =>
-                        setValue('fonBolgesi', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seçiniz" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(FON_BOLGESI_LABELS).map(
-                          ([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Dosya Bağlantısı</Label>
-                    <Select
-                      defaultValue={data.dosyaBaglantisi}
-                      onValueChange={(value) =>
-                        setValue('dosyaBaglantisi', value, {
-                          shouldDirty: true,
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seçiniz" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(DOSYA_BAGLANTISI_LABELS).map(
-                          ([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Dosya Numarası</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        value={data.dosyaNo.split('-')[0] || ''}
-                        readOnly
-                        className="bg-muted w-20"
-                      />
-                      <Input
-                        defaultValue={data.dosyaNo
-                          .split('-')
-                          .slice(1)
-                          .join('-')}
-                        onChange={() => {
-                          setHasChanges(true)
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Orta Sütun */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Cep Telefonu</Label>
-                    <div className="flex gap-2">
-                      <Select
-                        defaultValue={data.cepTelefonuOperator}
-                        onValueChange={(value) =>
-                          setValue('cepTelefonuOperator', value, {
-                            shouldDirty: true,
-                          })
-                        }
-                      >
-                        <SelectTrigger className="w-24">
-                          <SelectValue placeholder="Kod" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TELEFON_OPERATOR_KODLARI.map((kod) => (
-                            <SelectItem key={kod} value={kod}>
-                              {kod}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        {...register('cepTelefonu')}
-                        placeholder="XXX XX XX"
-                        defaultValue={data.cepTelefonu}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Sabit Telefon</Label>
-                    <Input
-                      {...register('sabitTelefon')}
-                      defaultValue={data.sabitTelefon}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Yurtdışı Telefon</Label>
-                    <Input
-                      {...register('yurtdisiTelefon')}
-                      defaultValue={data.yurtdisiTelefon}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>e-Posta Adresi</Label>
-                    <Input
-                      {...register('email')}
-                      type="email"
-                      defaultValue={data.email}
-                    />
-                    {errors.email && (
-                      <p className="text-destructive text-sm">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Bağlı Yetim</Label>
-                    <div className="flex gap-2">
-                      <Input value="-" readOnly className="bg-muted" />
-                      <Button variant="outline" size="icon">
-                        <Info className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Bağlı Kart</Label>
-                    <div className="flex gap-2">
-                      <Input value="-" readOnly className="bg-muted" />
-                      <Button variant="outline" size="icon">
-                        <Info className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Ailedeki Kişi Sayısı</Label>
-                    <Select
-                      defaultValue={String(
-                        data.aileHaneBilgileri?.ailedekiKisiSayisi || '1'
-                      )}
-                      onValueChange={() => {
-                        setHasChanges(true)
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">Yok</SelectItem>
-                        {Array.from({ length: 20 }, (_, i) => (
-                          <SelectItem key={i + 1} value={String(i + 1)}>
-                            {i + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Sağ Sütun */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Ülke *</Label>
-                    <Select
-                      defaultValue={data.ulke}
-                      onValueChange={(value) =>
-                        setValue('ulke', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.ulke && (
-                      <p className="text-destructive text-sm">
-                        {errors.ulke.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Şehir / Bölge *</Label>
-                    <Select
-                      defaultValue={data.sehir}
-                      onValueChange={(value) =>
-                        setValue('sehir', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ISTANBUL_REGIONS.map((region) => (
-                          <SelectItem key={region} value={region}>
-                            {region}
-                          </SelectItem>
-                        ))}
-                        {TURKISH_CITIES.filter(
-                          (c) => !c.includes('İstanbul')
-                        ).map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.sehir && (
-                      <p className="text-destructive text-sm">
-                        {errors.sehir.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Yerleşim</Label>
-                    <Select
-                      defaultValue={data.ilce}
-                      onValueChange={(value) =>
-                        setValue('ilce', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="İlçe seçiniz" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={data.ilce || 'ilce'}>
-                          {data.ilce || 'Seçiniz'}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Mahalle / Köy</Label>
-                    <Select
-                      defaultValue={data.mahalle}
-                      onValueChange={(value) =>
-                        setValue('mahalle', value, { shouldDirty: true })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Mahalle seçiniz" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={data.mahalle || 'mahalle'}>
-                          {data.mahalle || 'Seçiniz'}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Adres</Label>
-                    <Textarea
-                      {...register('adres')}
-                      defaultValue={data.adres}
-                      className="min-h-25"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Rıza Beyanı</Label>
-                    <Input
-                      value={RIZA_BEYANI_LABELS[data.rizaBeyaniDurumu]}
-                      readOnly
-                      className="bg-muted"
-                    />
-                  </div>
-
-                  {/* Durum Radio */}
-                  <div className="bg-muted/50 space-y-3 rounded-lg p-3">
-                    <div className="flex items-center gap-6">
-                      <Label className="text-sm font-medium">Durum:</Label>
-                      <Badge
-                        variant={
-                          data.durum === 'aktif' ? 'default' : 'secondary'
-                        }
-                      >
-                        {IHTIYAC_DURUMU_LABELS[data.durum]}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="delete"
-                        checked={deleteChecked}
-                        onCheckedChange={(checked) => {
-                          setDeleteChecked(checked as boolean)
-                        }}
-                      />
-                      <Label
-                        htmlFor="delete"
-                        className="text-destructive cursor-pointer text-sm"
-                      >
-                        Kaydı Sil
-                      </Label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <BasicInfoForm
+                form={form}
+                setHasChanges={setHasChanges}
+                setDeleteChecked={setDeleteChecked}
+                deleteChecked={deleteChecked}
+              />
             </CardContent>
           </Card>
 

@@ -2,12 +2,14 @@ import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
+  // Transpile packages that need special handling
+  transpilePackages: ['recharts', 'victory-vendor'],
+
   // Performance optimizations
   experimental: {
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-icons',
-      'recharts',
       'date-fns',
       '@tanstack/react-table',
       '@radix-ui/react-dialog',

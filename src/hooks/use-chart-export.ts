@@ -1,5 +1,4 @@
 import { useRef, useCallback } from 'react'
-import html2canvas from 'html2canvas'
 
 export function useChartExport(fileName: string) {
   const chartRef = useRef<HTMLDivElement>(null)
@@ -8,6 +7,7 @@ export function useChartExport(fileName: string) {
     if (!chartRef.current) return
 
     try {
+      const html2canvas = (await import('html2canvas')).default
       const canvas = await html2canvas(chartRef.current, {
         backgroundColor: '#ffffff', // Ensure white background
       })

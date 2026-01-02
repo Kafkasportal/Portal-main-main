@@ -196,22 +196,30 @@ export default function BeneficiaryDetailPage({
   })
 
   // React Hook Form setup
-  const defaultDurum: 'aktif' | 'pasif' | 'arsiv' = (beneficiary?.durum ??
-    'aktif') as 'aktif' | 'pasif' | 'arsiv'
+  const defaultDurum: 'aktif' | 'pasif' | 'arsiv' =
+    (['aktif', 'pasif', 'arsiv'].includes(beneficiary?.durum || '')
+      ? beneficiary?.durum
+      : 'aktif') as 'aktif' | 'pasif' | 'arsiv'
+
+  type FormKategori = 'yetiskin' | 'cocuk' | 'yetim' | 'saglik' | 'egitim' | 'engelli'
+
   // Map IhtiyacSahibiKategori to form schema kategori
-  const mapKategoriToFormSchema = (
-    kategori?: string
-  ): 'yetiskin' | 'cocuk' | 'yetim' | 'saglik' | 'egitim' | 'engelli' => {
+  const mapKategoriToFormSchema = (kategori?: string): FormKategori => {
     if (!kategori) return 'yetiskin'
     // Simple mapping - you can expand this based on business logic
     if (kategori.includes('yetim') || kategori.includes('ogrenci'))
       return 'yetim'
     if (kategori.includes('multeci') || kategori.includes('ozel'))
       return 'cocuk'
+    // Default to yetiskin if no match or if it's already a valid category
+    const validCategories: FormKategori[] = ['yetiskin', 'cocuk', 'yetim', 'saglik', 'egitim', 'engelli']
+    if (validCategories.includes(kategori as FormKategori)) {
+        return kategori as FormKategori
+    }
     return 'yetiskin'
   }
 
-  const defaultValues = {
+  const defaultValues: Partial<BeneficiaryFormData> = {
     ad: beneficiary?.ad ?? '',
     soyad: beneficiary?.soyad ?? '',
     uyruk: beneficiary?.uyruk ?? '',
@@ -239,10 +247,11 @@ export default function BeneficiaryDetailPage({
     durum: defaultDurum,
     rizaBeyaniDurumu: beneficiary?.rizaBeyaniDurumu,
     notlar: beneficiary?.notlar,
-  } satisfies Partial<BeneficiaryFormData>
+  }
 
   const form = useForm<BeneficiaryFormData>({
-    resolver: zodResolver(beneficiarySchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(beneficiarySchema) as any,
     defaultValues,
   })
 
@@ -266,7 +275,7 @@ export default function BeneficiaryDetailPage({
         uyruk: beneficiary.uyruk,
         tcKimlikNo: beneficiary.tcKimlikNo,
         yabanciKimlikNo: beneficiary.yabanciKimlikNo,
-        kategori: beneficiary.kategori,
+        kategori: mapKategoriToFormSchema(beneficiary.kategori),
         fonBolgesi: beneficiary.fonBolgesi,
         dosyaBaglantisi: beneficiary.dosyaBaglantisi,
         cepTelefonu: beneficiary.cepTelefonu,
@@ -285,11 +294,12 @@ export default function BeneficiaryDetailPage({
         ekonomikDurum: beneficiary.ekonomikDurum,
         aileHaneBilgileri: beneficiary.aileHaneBilgileri,
         sponsorlukTipi: beneficiary.sponsorlukTipi,
-        durum: beneficiary.durum,
+        durum: (['aktif', 'pasif', 'arsiv'].includes(beneficiary.durum) ? beneficiary.durum : 'aktif') as 'aktif' | 'pasif' | 'arsiv',
         rizaBeyaniDurumu: beneficiary.rizaBeyaniDurumu,
         notlar: beneficiary.notlar,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [beneficiary, reset])
 
   const updateMutation = useMutation({
@@ -306,7 +316,8 @@ export default function BeneficiaryDetailPage({
     },
   })
 
-  const onSubmit = (data: BeneficiaryFormData) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onSubmit = (data: any) => {
     updateMutation.mutate(data)
   }
 
@@ -529,7 +540,7 @@ export default function BeneficiaryDetailPage({
               <Select
                 defaultValue={data.sponsorlukTipi}
                 onValueChange={(value: string) =>
-                  setValue('sponsorlukTipi', value, { shouldDirty: true })
+                  setValue('sponsorlukTipi', value as "bireysel" | "kurumsal" | "yok", { shouldDirty: true })
                 }
               >
                 <SelectTrigger>
@@ -748,7 +759,7 @@ export default function BeneficiaryDetailPage({
                     <Select
                       defaultValue={data.kategori}
                       onValueChange={(value: string) =>
-                        setValue('kategori', value, { shouldDirty: true })
+                        setValue('kategori', value as FormKategori, { shouldDirty: true })
                       }
                     >
                       <SelectTrigger>

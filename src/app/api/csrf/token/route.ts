@@ -4,13 +4,13 @@
  */
 
 import { generateCSRFToken, createCSRFCookie } from '@/lib/csrf'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 /**
  * GET handler - Generate new CSRF token
  * Returns token in response body and sets it as a cookie
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Generate new CSRF token
     const token = generateCSRFToken()

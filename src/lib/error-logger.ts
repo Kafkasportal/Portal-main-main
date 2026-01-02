@@ -29,6 +29,7 @@ class ErrorLogger {
     if (this.isProduction) {
       // Sentry integration - automatically configured via sentry.client.config.ts
       if (typeof window !== 'undefined' && 'Sentry' in window) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const Sentry = (window as any).Sentry
         if (Sentry && Sentry.captureException) {
           Sentry.captureException(error, {

@@ -14,6 +14,14 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['src/lib/**/*.ts', 'src/hooks/**/*.ts', 'src/stores/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/**/*.d.ts'],
+      thresholds: {
+        global: {
+          branches: 50,
+          functions: 50,
+          lines: 50,
+          statements: 50,
+        },
+      },
     },
   },
   resolve: {

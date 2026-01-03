@@ -107,6 +107,7 @@ export function TreatmentCostForm({
     )
   }
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form's watch API is standard usage
   const paymentStatus = form.watch('payment_status')
 
   return (

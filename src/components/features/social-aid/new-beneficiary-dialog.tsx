@@ -155,6 +155,9 @@ export function NewBeneficiaryDialog({
     form.getValues('cinsiyet') &&
     form.getValues('dosyaNo')
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form's watch API is standard usage
+  const selectedUyruk = form.watch('uyruk')
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-150">
@@ -340,7 +343,7 @@ export function NewBeneficiaryDialog({
                     <FormControl>
                       <Input
                         placeholder={
-                          form.watch('uyruk') === 'Türkiye'
+                          selectedUyruk === 'Türkiye'
                             ? 'TC Kimlik No'
                             : 'Yabancı Kimlik No'
                         }

@@ -135,6 +135,7 @@ export function FileUpload({
         {selectedFile ? (
           <div className="flex items-center gap-4">
             {preview ? (
+              /* eslint-disable-next-line @next/next/no-img-element -- Using img for data URL preview of user-uploaded files */
               <img
                 src={preview}
                 alt="Preview"

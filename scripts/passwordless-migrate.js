@@ -6,10 +6,11 @@
  * Service Role Key ile çalışır, database password gerekmez
  */
 
-const https = require('node:https')
-const http = require('http')
-const fs = require('fs')
-const path = require('path')
+const https = require('node:https');
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const readline = require('node:readline');
 
 const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov'
 const SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`
@@ -125,7 +126,7 @@ async function executeSqlViaManagementApi(sql) {
  * Opens browser for user to manually execute
  */
 function openBrowserSqlEditor() {
-  const exec = require('node:child_process').exec
+  const exec = require('node:child_process').exec;
   const dashboardUrl = `https://supabase.com/dashboard/project/${SUPABASE_PROJECT_REF}/sql`
 
   console.log(`\n🌐 Browser açılıyor: ${dashboardUrl}\n`)
@@ -158,6 +159,140 @@ const migrations = [
   'supabase/migrations/20260102_improve_storage_rls_policies.sql',
 ]
 
+async function tryApiMigrations(migrationContents) {
+  console.log('═'.repeat(70));
+  console.log('\n🔧 YÖNTEM 1: Supabase SQL API\n');
+
+  let apiSuccess = true;
+
+  for (const migration of migrationContents) {
+    console.log(`📦 ${migration.name}...`);
+
+    try {
+      await executeSqlViaApi(migration.sql);
+      console.log('✅ Başarılı!\n');
+    } catch (error) {
+      console.log(`❌ Hata: ${error.message}\n`);
+      apiSuccess = false;
+      break;
+    }
+  }
+
+  if (apiSuccess) {
+    console.log("\n🎉 Tüm migration'lar API ile başarılı!\n");
+    console.log('═'.repeat(70));
+  }
+
+  return apiSuccess;
+}
+
+async function tryManagementApiMigrations(migrationContents) {
+  console.log('═'.repeat(70));
+  console.log('\n🔧 YÖNTEM 2: Supabase Management API\n');
+
+  if (!process.env.SUPABASE_MANAGEMENT_API_KEY) {
+    console.log('⚠️  Management API key bulunamadı, atlanıyor...\n');
+    return false;
+  }
+
+  let mgmtSuccess = true;
+
+  for (const migration of migrationContents) {
+    console.log(`📦 ${migration.name}...`);
+
+    try {
+      await executeSqlViaManagementApi(migration.sql);
+      console.log('✅ Başarılı!\n');
+    } catch (error) {
+      console.log(`❌ Hata: ${error.message}\n`);
+      mgmtSuccess = false;
+      break;
+    }
+  }
+
+  if (mgmtSuccess) {
+    console.log("\n🎉 Tüm migration'lar Management API ile başarılı!\n");
+    console.log('═'.repeat(70));
+  }
+
+  return mgmtSuccess;
+}
+
+async function runBrowserBasedMigrations(migrationContents) {
+  console.log('═'.repeat(70));
+  console.log('\n🌐 YÖNTEM 3: Browser-Based (Yarı-Otomatik)\n');
+  console.log("   API erişimi yok, browser'da açılacak.\n");
+
+  console.log('📋 ADIMLAR:\n');
+  console.log('   1. Browser SQL Editor açılacak');
+  console.log('   2. Her migration için SQL gösterilecek');
+  console.log('   3. Kopyala → Yapıştır → Run\n');
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  for (let i = 0; i < migrationContents.length; i++) {
+    const migration = migrationContents[i];
+
+    console.log('─'.repeat(70));
+    console.log(
+      `\n📦 Migration ${i + 1}/${migrationContents.length}: ${migration.name}\n`
+    );
+
+    console.log('📝 SQL:\n');
+    console.log('─'.repeat(70));
+    console.log(migration.sql);
+    console.log('─'.repeat(70));
+
+    await new Promise((resolve) => {
+      rl.question('\n✅ SQL kopyalandı mı? [y/n] ', (answer) => {
+        if (answer.toLowerCase() === 'y') {
+          if (i === 0) {
+            openBrowserSqlEditor();
+          }
+          resolve();
+        } else {
+          console.log('❌ İptal edildi.');
+          process.exit(0);
+        }
+      });
+    });
+  }
+
+  rl.close();
+
+  console.log('\n═'.repeat(70));
+  console.log("\n🎉 TÜM MIGRATION SQL'LERİ GÖSTERİLDİ!\n");
+  console.log(
+    "   Dashboard SQL Editor'de çalıştırıldıysa migration tamamdır.\n"
+  );
+  console.log('═'.repeat(70));
+}
+
+function loadMigrations() {
+  const migrationContents = [];
+
+  for (const migrationFile of migrations) {
+    const migrationPath = path.resolve(process.cwd(), migrationFile);
+
+    if (!fs.existsSync(migrationPath)) {
+      console.log(`\n⚠️  Dosya bulunamadı: ${migrationFile}`);
+      continue;
+    }
+
+    const sql = fs.readFileSync(migrationPath, 'utf8');
+    migrationContents.push({
+      file: migrationFile,
+      name: path.basename(migrationFile, '.sql'),
+      sql: sql,
+    });
+  }
+
+  return migrationContents;
+}
+
 async function runPasswordlessMigration() {
   console.log('\n' + '█'.repeat(70))
   console.log('█' + ' '.repeat(68) + '█')
@@ -174,140 +309,26 @@ async function runPasswordlessMigration() {
   console.log('═'.repeat(70))
 
   // Tüm migration SQL'lerini oku
-  const migrationContents = []
-
-  for (const migrationFile of migrations) {
-    const migrationPath = path.resolve(process.cwd(), migrationFile)
-
-    if (!fs.existsSync(migrationPath)) {
-      console.log(`\n⚠️  Dosya bulunamadı: ${migrationFile}`)
-      continue
-    }
-
-    const sql = fs.readFileSync(migrationPath, 'utf8')
-    migrationContents.push({
-      file: migrationFile,
-      name: path.basename(migrationFile, '.sql'),
-      sql: sql,
-    })
-  }
+  const migrationContents = loadMigrations()
 
   console.log(`\n📦 ${migrationContents.length} migration bulundu\n`)
 
   // Yöntem 1: SQL API dene
-  console.log('═'.repeat(70))
-  console.log('\n🔧 YÖNTEM 1: Supabase SQL API\n')
-
-  let apiSuccess = false
-
-  for (const migration of migrationContents) {
-    console.log(`📦 ${migration.name}...`)
-
-    try {
-      await executeSqlViaApi(migration.sql)
-      console.log('✅ Başarılı!\n')
-      apiSuccess = true
-    } catch (error) {
-      console.log(`❌ Hata: ${error.message}\n`)
-      apiSuccess = false
-      break
-    }
-  }
-
-  if (apiSuccess) {
-    console.log("\n🎉 Tüm migration'lar API ile başarılı!\n")
-    console.log('═'.repeat(70))
-    return
-  }
+  const apiSuccess = await tryApiMigrations(migrationContents)
+  if (apiSuccess) return
 
   // Yöntem 2: Management API dene
-  console.log('═'.repeat(70))
-  console.log('\n🔧 YÖNTEM 2: Supabase Management API\n')
-
-  if (process.env.SUPABASE_MANAGEMENT_API_KEY) {
-    let mgmtSuccess = false
-
-    for (const migration of migrationContents) {
-      console.log(`📦 ${migration.name}...`)
-
-      try {
-        await executeSqlViaManagementApi(migration.sql)
-        console.log('✅ Başarılı!\n')
-        mgmtSuccess = true
-      } catch (error) {
-        console.log(`❌ Hata: ${error.message}\n`)
-        mgmtSuccess = false
-        break
-      }
-    }
-
-    if (mgmtSuccess) {
-      console.log("\n🎉 Tüm migration'lar Management API ile başarılı!\n")
-      console.log('═'.repeat(70))
-      return
-    }
-  } else {
-    console.log('⚠️  Management API key bulunamadı, atlanıyor...\n')
-  }
+  const mgmtSuccess = await tryManagementApiMigrations(migrationContents)
+  if (mgmtSuccess) return
 
   // Yöntem 3: Browser-based (fallback)
-  console.log('═'.repeat(70))
-  console.log('\n🌐 YÖNTEM 3: Browser-Based (Yarı-Otomatik)\n')
-  console.log("   API erişimi yok, browser'da açılacak.\n")
-
-  console.log('📋 ADIMLAR:\n')
-  console.log('   1. Browser SQL Editor açılacak')
-  console.log('   2. Her migration için SQL gösterilecek')
-  console.log('   3. Kopyala → Yapıştır → Run\n')
-
-  // readline ile kullanıcıdan onay al
-  const readline = require('readline')
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  })
-
-  for (let i = 0; i < migrationContents.length; i++) {
-    const migration = migrationContents[i]
-
-    console.log('─'.repeat(70))
-    console.log(
-      `\n📦 Migration ${i + 1}/${migrationContents.length}: ${migration.name}\n`
-    )
-
-    console.log('📝 SQL:\n')
-    console.log('─'.repeat(70))
-    console.log(migration.sql)
-    console.log('─'.repeat(70))
-
-    await new Promise((resolve) => {
-      rl.question('\n✅ SQL kopyalandı mı? [y/n] ', (answer) => {
-        if (answer.toLowerCase() === 'y') {
-          if (i === 0) {
-            // İlk migration için browser aç
-            openBrowserSqlEditor()
-          }
-          resolve()
-        } else {
-          console.log('❌ İptal edildi.')
-          process.exit(0)
-        }
-      })
-    })
-  }
-
-  rl.close()
-
-  console.log('\n═'.repeat(70))
-  console.log("\n🎉 TÜM MIGRATION SQL'LERİ GÖSTERİLDİ!\n")
-  console.log(
-    "   Dashboard SQL Editor'de çalıştırıldıysa migration tamamdır.\n"
-  )
-  console.log('═'.repeat(70))
+  await runBrowserBasedMigrations(migrationContents)
 }
 
-// Run
-runPasswordlessMigration().catch((error) => {
-  console.error('\n💥 Unhandled error:', error)
-  process.exit(1)
-})
+// Run with top-level await
+try {
+  await runPasswordlessMigration();
+} catch (error) {
+  console.error('\n💥 Unhandled error:', error);
+  process.exit(1);
+}

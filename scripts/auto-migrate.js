@@ -6,8 +6,8 @@
  */
 
 const { Client } = require('pg');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // Supabase connection parameters
 const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov';
@@ -33,11 +33,7 @@ const migrations = [
   'supabase/migrations/20260102_improve_storage_rls_policies.sql'
 ];
 
-async function runMigrations() {
-  console.log('\n🚀 Supabase Auto Migration\n');
-  console.log('='.repeat(70));
-
-  // Password kontrolü
+function checkPasswordOrExit() {
   if (!DB_PASSWORD) {
     console.log('\n❌ HATA: Database password bulunamadı!\n');
     console.log('🔑 Password almak için:\n');
@@ -49,6 +45,53 @@ async function runMigrations() {
     console.log('='.repeat(70));
     process.exit(1);
   }
+}
+
+async function executeMigration(client, migrationFile, index, total) {
+  const migrationPath = path.resolve(process.cwd(), migrationFile);
+
+  console.log('='.repeat(70));
+  console.log(`\n📦 Migration ${index + 1}/${total}: ${path.basename(migrationFile)}\n`);
+
+  if (!fs.existsSync(migrationPath)) {
+    console.log(`❌ Dosya bulunamadı: ${migrationPath}`);
+    return false;
+  }
+
+  const sql = fs.readFileSync(migrationPath, 'utf8');
+
+  console.log('📝 SQL Preview:');
+  console.log(sql.split('\n').slice(0, 5).join('\n') + '...\n');
+
+  try {
+    console.log('⚙️  Çalıştırılıyor...');
+    await client.query(sql);
+    console.log('✅ Migration başarılı!');
+    return true;
+  } catch (error) {
+    console.log('❌ Migration hatası:', error.message);
+
+    if (error.code) {
+      console.log('   Error Code:', error.code);
+    }
+    if (error.position) {
+      console.log('   Position:', error.position);
+    }
+
+    // Constraint zaten varsa devam et
+    if (error.code === '42710' || error.message.includes('already exists')) {
+      console.log('⚠️  Already exists - devam ediliyor...');
+      return true;
+    }
+    throw error;
+  }
+}
+
+async function runMigrations() {
+  console.log('\n🚀 Supabase Auto Migration\n');
+  console.log('='.repeat(70));
+
+  checkPasswordOrExit();
 
   const client = new Client(connectionConfig);
 
@@ -63,44 +106,7 @@ async function runMigrations() {
 
     // Migration'ları çalıştır
     for (let i = 0; i < migrations.length; i++) {
-      const migrationFile = migrations[i];
-      const migrationPath = path.resolve(process.cwd(), migrationFile);
-
-      console.log('='.repeat(70));
-      console.log(`\n📦 Migration ${i + 1}/${migrations.length}: ${path.basename(migrationFile)}\n`);
-
-      if (!fs.existsSync(migrationPath)) {
-        console.log(`❌ Dosya bulunamadı: ${migrationPath}`);
-        continue;
-      }
-
-      const sql = fs.readFileSync(migrationPath, 'utf8');
-
-      console.log('📝 SQL Preview:');
-      console.log(sql.split('\n').slice(0, 5).join('\n') + '...\n');
-
-      try {
-        console.log('⚙️  Çalıştırılıyor...');
-        await client.query(sql);
-        console.log('✅ Migration başarılı!');
-      } catch (error) {
-        console.log('❌ Migration hatası:', error.message);
-
-        // Detaylı hata bilgisi
-        if (error.code) {
-          console.log('   Error Code:', error.code);
-        }
-        if (error.position) {
-          console.log('   Position:', error.position);
-        }
-
-        // Constraint zaten varsa devam et
-        if (error.code === '42710' || error.message.includes('already exists')) {
-          console.log('⚠️  Already exists - devam ediliyor...');
-        } else {
-          throw error;
-        }
-      }
+      await executeMigration(client, migrations[i], i, migrations.length);
     }
 
     console.log('\n' + '='.repeat(70));
@@ -156,5 +162,10 @@ async function runMigrations() {
   }
 }
 
-// Run
-runMigrations().catch(console.error);
+// Run with top-level await
+try {
+  await runMigrations();
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}

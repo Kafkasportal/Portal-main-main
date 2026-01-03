@@ -8,8 +8,8 @@
  */
 
 const { Client } = require('pg');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov';
 const SUPABASE_REGION = 'eu-central-1';
@@ -38,13 +38,7 @@ async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function runFullMigration() {
-  console.log('\n' + '█'.repeat(70));
-  console.log('█' + ' '.repeat(68) + '█');
-  console.log('█' + '  🚀 SUPABASE FULL AUTO MIGRATION'.padEnd(68) + '█');
-  console.log('█' + ' '.repeat(68) + '█');
-  console.log('█'.repeat(70));
-
+function checkPasswordOrExit() {
   if (!DB_PASSWORD) {
     console.log('\n❌ CRITICAL: Database password gerekli!\n');
     console.log('📋 Password almak için 2 yöntem:\n');
@@ -64,6 +58,63 @@ async function runFullMigration() {
     console.log('═'.repeat(70));
     process.exit(1);
   }
+}
+
+async function executeMigration(client, migrationFile, index, total) {
+  const migrationPath = path.resolve(process.cwd(), migrationFile);
+  const migrationName = path.basename(migrationFile, '.sql');
+
+  console.log('─'.repeat(70));
+  console.log(`\n📦 Migration ${index + 1}/${total}\n`);
+  console.log(`   Dosya: ${migrationName}`);
+  console.log(`   Path: ${migrationFile}\n`);
+
+  if (!fs.existsSync(migrationPath)) {
+    console.log(`❌ Dosya bulunamadı, atlanıyor...\n`);
+    return false;
+  }
+
+  const migrationSql = fs.readFileSync(migrationPath, 'utf8');
+
+  console.log('📝 SQL Preview:');
+  const sqlLines = migrationSql.split('\n').filter(l =>
+    l.trim() && !l.trim().startsWith('--')
+  );
+  console.log(sqlLines.slice(0, 3).join('\n') + '\n   ...\n');
+
+  console.log('⏳ Çalıştırılıyor...');
+
+  try {
+    await client.query(migrationSql);
+    console.log('✅ Migration başarılı!\n');
+    await sleep(500);
+    return true;
+  } catch (error) {
+    console.log(`⚠️  Hata: ${error.message}\n`);
+
+    // Bazı hatalar normal (already exists, etc)
+    const isExpectedError = 
+      error.message.includes('already exists') ||
+      error.message.includes('does not exist') ||
+      error.code === '42710' || // duplicate object
+      error.code === '42P07';    // duplicate table
+
+    if (isExpectedError) {
+      console.log('ℹ️  Bu hata normal, devam ediliyor...\n');
+      return true;
+    }
+    throw error;
+  }
+}
+
+async function runFullMigration() {
+  console.log('\n' + '█'.repeat(70));
+  console.log('█' + ' '.repeat(68) + '█');
+  console.log('█' + '  🚀 SUPABASE FULL AUTO MIGRATION'.padEnd(68) + '█');
+  console.log('█' + ' '.repeat(68) + '█');
+  console.log('█'.repeat(70));
+
+  checkPasswordOrExit();
 
   const client = new Client(connectionConfig);
 
@@ -105,49 +156,7 @@ async function runFullMigration() {
     console.log('\n🔄 ADIM 3: Migration\'ları Çalıştırma\n');
 
     for (let i = 0; i < migrations.length; i++) {
-      const migrationFile = migrations[i];
-      const migrationPath = path.resolve(process.cwd(), migrationFile);
-      const migrationName = path.basename(migrationFile, '.sql');
-
-      console.log('─'.repeat(70));
-      console.log(`\n📦 Migration ${i + 1}/${migrations.length}\n`);
-      console.log(`   Dosya: ${migrationName}`);
-      console.log(`   Path: ${migrationFile}\n`);
-
-      if (!fs.existsSync(migrationPath)) {
-        console.log(`❌ Dosya bulunamadı, atlanıyor...\n`);
-        continue;
-      }
-
-      const migrationSql = fs.readFileSync(migrationPath, 'utf8');
-
-      console.log('📝 SQL Preview:');
-      const sqlLines = migrationSql.split('\n').filter(l =>
-        l.trim() && !l.trim().startsWith('--')
-      );
-      console.log(sqlLines.slice(0, 3).join('\n') + '\n   ...\n');
-
-      console.log('⏳ Çalıştırılıyor...');
-
-      try {
-        await client.query(migrationSql);
-        console.log('✅ Migration başarılı!\n');
-        await sleep(500); // Küçük delay
-      } catch (error) {
-        console.log(`⚠️  Hata: ${error.message}\n`);
-
-        // Bazı hatalar normal (already exists, etc)
-        if (
-          error.message.includes('already exists') ||
-          error.message.includes('does not exist') ||
-          error.code === '42710' || // duplicate object
-          error.code === '42P07'    // duplicate table
-        ) {
-          console.log('ℹ️  Bu hata normal, devam ediliyor...\n');
-        } else {
-          throw error;
-        }
-      }
+      await executeMigration(client, migrations[i], i, migrations.length);
     }
 
     console.log('═'.repeat(70));
@@ -236,8 +245,10 @@ async function runFullMigration() {
   }
 }
 
-// Run
-runFullMigration().catch(error => {
+// Run with top-level await
+try {
+  await runFullMigration();
+} catch (error) {
   console.error('\n💥 Unhandled error:', error);
   process.exit(1);
-});
+}

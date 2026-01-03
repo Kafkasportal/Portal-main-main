@@ -172,7 +172,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🚪 Check Quality Gate Status
-        uses: sonarqube-quality-gate-action@master
+        uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io

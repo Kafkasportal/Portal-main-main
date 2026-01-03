@@ -66,9 +66,11 @@ All hardcoded secrets have been removed from:
    - Revoke at: https://dashboard.render.com/u/settings
    - Generate new key
 
-4. **GitHub Token** (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)
-   - Revoke at: https://github.com/settings/tokens
-   - Generate new token
+4. **GitHub Token** (EXPOSED - IMMEDIATE REVOCATION REQUIRED)
+   - **Status**: ⚠️ CRITICAL SECURITY INCIDENT
+   - **Action**: Revoke immediately at https://github.com/settings/tokens
+   - **Generate**: New token with minimum required scopes
+   - **Store**: Use GitHub Secrets or secure vault
 
 ### 📝 Local Development
 
@@ -87,6 +89,43 @@ SUPABASE_SERVICE_ROLE_KEY=your-new-service-role-key
 3. **Use .env.local** - Keep local secrets out of git
 4. **Minimum permissions** - Only grant required scopes
 5. **Monitor access** - Check Supabase/GitHub/Render logs regularly
+
+### 🚨 Security Incident Response
+
+**IMMEDIATE ACTIONS REQUIRED:**
+
+1. **Revoked Tokens**: All exposed tokens must be revoked immediately
+2. **Audit Logs**: Review authentication logs for unauthorized access
+3. **Rotate Secrets**: Generate new secrets with proper storage
+4. **Scan Codebase**: Remove any remaining hardcoded secrets
+5. **Update Documentation**: Ensure no secrets remain in documentation
+
+### 🔍 Incident Analysis Checklist
+
+- [ ] **Review GitHub access logs** for unusual activity
+- [ ] **Check Supabase audit logs** for unauthorized API calls
+- [ ] **Monitor Render deployment logs** for suspicious activity
+- [ ] **Scan git history** for additional exposed secrets
+- [ ] **Update all integrations** with new secrets
+- [ ] **Enable additional monitoring** for security events
+
+### 🛡️ Prevention Measures
+
+**Going forward, all secrets must:**
+- Be stored in environment variables or secret vaults
+- Never be committed to version control
+- Use principle of least privilege
+- Be rotated regularly (every 90 days)
+- Have audit logging enabled
+
+### 📞 Emergency Contacts
+
+- **Security Team**: [security@kafkasder.org]
+- **GitHub Support**: https://github.com/contact
+- **Supabase Support**: https://supabase.com/support
+- **Render Support**: https://render.com/support
+
+---
 
 ## 📊 Security Compliance
 

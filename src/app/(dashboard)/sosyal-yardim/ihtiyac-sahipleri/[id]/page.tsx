@@ -250,9 +250,29 @@ export default function BeneficiaryDetailPage({
   }
 
   const form = useForm<BeneficiaryFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(beneficiarySchema) as any,
-    defaultValues,
+    resolver: zodResolver(beneficiarySchema),
+    defaultValues: {
+      ad: beneficiary?.ad || '',
+      soyad: beneficiary?.soyad || '',
+      uyruk: beneficiary?.uyruk || 'saglik',
+      kategori: beneficiary?.kategori || 'yetiskin',
+      ulke: beneficiary?.ulke || '',
+      sehir: beneficiary?.sehir || '',
+      tcKimlikNo: beneficiary?.tcKimlikNo || undefined,
+      yabanciKimlikNo: beneficiary?.yabanciKimlikNo || undefined,
+      telefon: beneficiary?.telefon || '',
+      eposta: beneficiary?.eposta || '',
+      adres: beneficiary?.adres || '',
+      kimlikBilgileri: beneficiary?.kimlikBilgileri || {},
+      pasaportVizeBilgileri: beneficiary?.pasaportVizeBilgileri || {},
+      saglikBilgileri: beneficiary?.saglikBilgileri || {},
+      ekonomikDurum: beneficiary?.ekonomikDurum || '',
+      aileHaneBilgileri: beneficiary?.aileHaneBilgileri || {},
+      sponsorlukTipi: beneficiary?.sponsorlukTipi || '',
+      durum: defaultDurum || 'aktif',
+      rizaBeyaniDurumu: beneficiary?.rizaBeyaniDurumu || '',
+      notlar: beneficiary?.notlar || '',
+    },
   })
 
   const {

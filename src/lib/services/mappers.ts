@@ -103,8 +103,10 @@ export function mapKumbara(db: Tables['kumbaras']['Row']): Kumbara {
       kod: db.kod,
       tapilanTarih: db.created_at ? new Date(db.created_at) : undefined,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sorumlu: { id: db.sorumlu_id, name: 'Sorumlu' } as any,
+    sorumlu: { 
+      id: db.sorumlu_id, 
+      name: 'Sorumlu' 
+    },
     toplamTutar: db.toplam_toplanan || 0,
     toplamaBaşarina: db.toplam_toplanan || 0,
     toplamaGecmisi: [],

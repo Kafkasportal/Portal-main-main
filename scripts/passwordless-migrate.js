@@ -6,20 +6,22 @@
  * Service Role Key ile çalışır, database password gerekmez
  */
 
-const https = require('https');
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const https = require('node:https')
+const http = require('http')
+const fs = require('fs')
+const path = require('path')
 
-const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov';
-const SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`;
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov'
+const SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!SERVICE_ROLE_KEY) {
-  console.error('❌ ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required');
-  console.error('   Set it before running this script:');
-  console.error('   export SUPABASE_SERVICE_ROLE_KEY="your-key-here"');
-  process.exit(1);
+  console.error(
+    '❌ ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required'
+  )
+  console.error('   Set it before running this script:')
+  console.error('   export SUPABASE_SERVICE_ROLE_KEY="your-key-here"')
+  process.exit(1)
 }
 
 /**
@@ -27,43 +29,43 @@ if (!SERVICE_ROLE_KEY) {
  */
 function makeRequest(url, options, body = null) {
   return new Promise((resolve, reject) => {
-    const urlObj = new URL(url);
-    const protocol = urlObj.protocol === 'https:' ? https : http;
+    const urlObj = new URL(url)
+    const protocol = urlObj.protocol === 'https:' ? https : http
 
     const reqOptions = {
       ...options,
       hostname: urlObj.hostname,
       port: urlObj.port,
       path: urlObj.pathname + urlObj.search,
-    };
-
-    const req = protocol.request(reqOptions, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve({ status: res.statusCode, data, headers: res.headers });
-        } else {
-          reject(new Error(`HTTP ${res.statusCode}: ${data}`));
-        }
-      });
-    });
-
-    req.on('error', reject);
-
-    if (body) {
-      req.write(typeof body === 'string' ? body : JSON.stringify(body));
     }
 
-    req.end();
-  });
+    const req = protocol.request(reqOptions, (res) => {
+      let data = ''
+      res.on('data', (chunk) => (data += chunk))
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve({ status: res.statusCode, data, headers: res.headers })
+        } else {
+          reject(new Error(`HTTP ${res.statusCode}: ${data}`))
+        }
+      })
+    })
+
+    req.on('error', reject)
+
+    if (body) {
+      req.write(typeof body === 'string' ? body : JSON.stringify(body))
+    }
+
+    req.end()
+  })
 }
 
 /**
  * Supabase SQL API - SQL execute eder
  */
 async function executeSqlViaApi(sql) {
-  console.log('🔧 SQL API deneniyor (Supabase Labs özelliği)...\n');
+  console.log('🔧 SQL API deneniyor (Supabase Labs özelliği)...\n')
 
   try {
     const response = await makeRequest(
@@ -72,17 +74,17 @@ async function executeSqlViaApi(sql) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': SERVICE_ROLE_KEY,
-          'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
-          'Prefer': 'return=representation'
-        }
+          apikey: SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+          Prefer: 'return=representation',
+        },
       },
       { sql: sql }
-    );
+    )
 
-    return JSON.parse(response.data);
+    return JSON.parse(response.data)
   } catch (error) {
-    throw new Error(`SQL API failed: ${error.message}`);
+    throw new Error(`SQL API failed: ${error.message}`)
   }
 }
 
@@ -91,13 +93,13 @@ async function executeSqlViaApi(sql) {
  * Requires Management API key (farklı key)
  */
 async function executeSqlViaManagementApi(sql) {
-  const MANAGEMENT_API_KEY = process.env.SUPABASE_MANAGEMENT_API_KEY;
+  const MANAGEMENT_API_KEY = process.env.SUPABASE_MANAGEMENT_API_KEY
 
   if (!MANAGEMENT_API_KEY) {
-    throw new Error('Management API key not found');
+    throw new Error('Management API key not found')
   }
 
-  console.log('🔧 Management API deneniyor...\n');
+  console.log('🔧 Management API deneniyor...\n')
 
   try {
     const response = await makeRequest(
@@ -106,15 +108,15 @@ async function executeSqlViaManagementApi(sql) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${MANAGEMENT_API_KEY}`
-        }
+          Authorization: `Bearer ${MANAGEMENT_API_KEY}`,
+        },
       },
       { query: sql }
-    );
+    )
 
-    return JSON.parse(response.data);
+    return JSON.parse(response.data)
   } catch (error) {
-    throw new Error(`Management API failed: ${error.message}`);
+    throw new Error(`Management API failed: ${error.message}`)
   }
 }
 
@@ -123,185 +125,189 @@ async function executeSqlViaManagementApi(sql) {
  * Opens browser for user to manually execute
  */
 function openBrowserSqlEditor() {
-  const exec = require('child_process').exec;
-  const dashboardUrl = `https://supabase.com/dashboard/project/${SUPABASE_PROJECT_REF}/sql`;
+  const exec = require('node:child_process').exec
+  const dashboardUrl = `https://supabase.com/dashboard/project/${SUPABASE_PROJECT_REF}/sql`
 
-  console.log(`\n🌐 Browser açılıyor: ${dashboardUrl}\n`);
+  console.log(`\n🌐 Browser açılıyor: ${dashboardUrl}\n`)
 
   // Platform'a göre browser aç
-  const platform = process.platform;
-  let command;
+  const platform = process.platform
+  let command
 
   switch (platform) {
     case 'darwin':
-      command = `open "${dashboardUrl}"`;
-      break;
+      command = `open "${dashboardUrl}"`
+      break
     case 'win32':
-      command = `start "${dashboardUrl}"`;
-      break;
+      command = `start "${dashboardUrl}"`
+      break
     default:
-      command = `xdg-open "${dashboardUrl}"`;
+      command = `xdg-open "${dashboardUrl}"`
   }
 
   exec(command, (error) => {
     if (error) {
-      console.log('⚠️  Browser açılamadı, manuel olarak açın:');
-      console.log(`   ${dashboardUrl}\n`);
+      console.log('⚠️  Browser açılamadı, manuel olarak açın:')
+      console.log(`   ${dashboardUrl}\n`)
     }
-  });
+  })
 }
 
 const migrations = [
   'supabase/migrations/20260102_update_file_size_limits.sql',
-  'supabase/migrations/20260102_improve_storage_rls_policies.sql'
-];
+  'supabase/migrations/20260102_improve_storage_rls_policies.sql',
+]
 
 async function runPasswordlessMigration() {
-  console.log('\n' + '█'.repeat(70));
-  console.log('█' + ' '.repeat(68) + '█');
-  console.log('█' + '  🔓 PASSWORDLESS AUTO MIGRATION'.padEnd(68) + '█');
-  console.log('█' + ' '.repeat(68) + '█');
-  console.log('█'.repeat(70));
+  console.log('\n' + '█'.repeat(70))
+  console.log('█' + ' '.repeat(68) + '█')
+  console.log('█' + '  🔓 PASSWORDLESS AUTO MIGRATION'.padEnd(68) + '█')
+  console.log('█' + ' '.repeat(68) + '█')
+  console.log('█'.repeat(70))
 
-  console.log('\n═'.repeat(70));
-  console.log('\n💡 NASIL ÇALIŞIR:\n');
-  console.log('   Bu script 3 yöntem dener:\n');
-  console.log('   1️⃣  Supabase SQL API (Rest API)');
-  console.log('   2️⃣  Supabase Management API');
-  console.log('   3️⃣  Browser-based (Manuel kopyala-yapıştır)\n');
-  console.log('═'.repeat(70));
+  console.log('\n═'.repeat(70))
+  console.log('\n💡 NASIL ÇALIŞIR:\n')
+  console.log('   Bu script 3 yöntem dener:\n')
+  console.log('   1️⃣  Supabase SQL API (Rest API)')
+  console.log('   2️⃣  Supabase Management API')
+  console.log('   3️⃣  Browser-based (Manuel kopyala-yapıştır)\n')
+  console.log('═'.repeat(70))
 
   // Tüm migration SQL'lerini oku
-  const migrationContents = [];
+  const migrationContents = []
 
   for (const migrationFile of migrations) {
-    const migrationPath = path.resolve(process.cwd(), migrationFile);
+    const migrationPath = path.resolve(process.cwd(), migrationFile)
 
     if (!fs.existsSync(migrationPath)) {
-      console.log(`\n⚠️  Dosya bulunamadı: ${migrationFile}`);
-      continue;
+      console.log(`\n⚠️  Dosya bulunamadı: ${migrationFile}`)
+      continue
     }
 
-    const sql = fs.readFileSync(migrationPath, 'utf8');
+    const sql = fs.readFileSync(migrationPath, 'utf8')
     migrationContents.push({
       file: migrationFile,
       name: path.basename(migrationFile, '.sql'),
-      sql: sql
-    });
+      sql: sql,
+    })
   }
 
-  console.log(`\n📦 ${migrationContents.length} migration bulundu\n`);
+  console.log(`\n📦 ${migrationContents.length} migration bulundu\n`)
 
   // Yöntem 1: SQL API dene
-  console.log('═'.repeat(70));
-  console.log('\n🔧 YÖNTEM 1: Supabase SQL API\n');
+  console.log('═'.repeat(70))
+  console.log('\n🔧 YÖNTEM 1: Supabase SQL API\n')
 
-  let apiSuccess = false;
+  let apiSuccess = false
 
   for (const migration of migrationContents) {
-    console.log(`📦 ${migration.name}...`);
+    console.log(`📦 ${migration.name}...`)
 
     try {
-      await executeSqlViaApi(migration.sql);
-      console.log('✅ Başarılı!\n');
-      apiSuccess = true;
+      await executeSqlViaApi(migration.sql)
+      console.log('✅ Başarılı!\n')
+      apiSuccess = true
     } catch (error) {
-      console.log(`❌ Hata: ${error.message}\n`);
-      apiSuccess = false;
-      break;
+      console.log(`❌ Hata: ${error.message}\n`)
+      apiSuccess = false
+      break
     }
   }
 
   if (apiSuccess) {
-    console.log('\n🎉 Tüm migration\'lar API ile başarılı!\n');
-    console.log('═'.repeat(70));
-    return;
+    console.log("\n🎉 Tüm migration'lar API ile başarılı!\n")
+    console.log('═'.repeat(70))
+    return
   }
 
   // Yöntem 2: Management API dene
-  console.log('═'.repeat(70));
-  console.log('\n🔧 YÖNTEM 2: Supabase Management API\n');
+  console.log('═'.repeat(70))
+  console.log('\n🔧 YÖNTEM 2: Supabase Management API\n')
 
   if (process.env.SUPABASE_MANAGEMENT_API_KEY) {
-    let mgmtSuccess = false;
+    let mgmtSuccess = false
 
     for (const migration of migrationContents) {
-      console.log(`📦 ${migration.name}...`);
+      console.log(`📦 ${migration.name}...`)
 
       try {
-        await executeSqlViaManagementApi(migration.sql);
-        console.log('✅ Başarılı!\n');
-        mgmtSuccess = true;
+        await executeSqlViaManagementApi(migration.sql)
+        console.log('✅ Başarılı!\n')
+        mgmtSuccess = true
       } catch (error) {
-        console.log(`❌ Hata: ${error.message}\n`);
-        mgmtSuccess = false;
-        break;
+        console.log(`❌ Hata: ${error.message}\n`)
+        mgmtSuccess = false
+        break
       }
     }
 
     if (mgmtSuccess) {
-      console.log('\n🎉 Tüm migration\'lar Management API ile başarılı!\n');
-      console.log('═'.repeat(70));
-      return;
+      console.log("\n🎉 Tüm migration'lar Management API ile başarılı!\n")
+      console.log('═'.repeat(70))
+      return
     }
   } else {
-    console.log('⚠️  Management API key bulunamadı, atlanıyor...\n');
+    console.log('⚠️  Management API key bulunamadı, atlanıyor...\n')
   }
 
   // Yöntem 3: Browser-based (fallback)
-  console.log('═'.repeat(70));
-  console.log('\n🌐 YÖNTEM 3: Browser-Based (Yarı-Otomatik)\n');
-  console.log('   API erişimi yok, browser\'da açılacak.\n');
+  console.log('═'.repeat(70))
+  console.log('\n🌐 YÖNTEM 3: Browser-Based (Yarı-Otomatik)\n')
+  console.log("   API erişimi yok, browser'da açılacak.\n")
 
-  console.log('📋 ADIMLAR:\n');
-  console.log('   1. Browser SQL Editor açılacak');
-  console.log('   2. Her migration için SQL gösterilecek');
-  console.log('   3. Kopyala → Yapıştır → Run\n');
+  console.log('📋 ADIMLAR:\n')
+  console.log('   1. Browser SQL Editor açılacak')
+  console.log('   2. Her migration için SQL gösterilecek')
+  console.log('   3. Kopyala → Yapıştır → Run\n')
 
   // readline ile kullanıcıdan onay al
-  const readline = require('readline');
+  const readline = require('readline')
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
-  });
+    output: process.stdout,
+  })
 
   for (let i = 0; i < migrationContents.length; i++) {
-    const migration = migrationContents[i];
+    const migration = migrationContents[i]
 
-    console.log('─'.repeat(70));
-    console.log(`\n📦 Migration ${i + 1}/${migrationContents.length}: ${migration.name}\n`);
+    console.log('─'.repeat(70))
+    console.log(
+      `\n📦 Migration ${i + 1}/${migrationContents.length}: ${migration.name}\n`
+    )
 
-    console.log('📝 SQL:\n');
-    console.log('─'.repeat(70));
-    console.log(migration.sql);
-    console.log('─'.repeat(70));
+    console.log('📝 SQL:\n')
+    console.log('─'.repeat(70))
+    console.log(migration.sql)
+    console.log('─'.repeat(70))
 
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       rl.question('\n✅ SQL kopyalandı mı? [y/n] ', (answer) => {
         if (answer.toLowerCase() === 'y') {
           if (i === 0) {
             // İlk migration için browser aç
-            openBrowserSqlEditor();
+            openBrowserSqlEditor()
           }
-          resolve();
+          resolve()
         } else {
-          console.log('❌ İptal edildi.');
-          process.exit(0);
+          console.log('❌ İptal edildi.')
+          process.exit(0)
         }
-      });
-    });
+      })
+    })
   }
 
-  rl.close();
+  rl.close()
 
-  console.log('\n═'.repeat(70));
-  console.log('\n🎉 TÜM MIGRATION SQL\'LERİ GÖSTERİLDİ!\n');
-  console.log('   Dashboard SQL Editor\'de çalıştırıldıysa migration tamamdır.\n');
-  console.log('═'.repeat(70));
+  console.log('\n═'.repeat(70))
+  console.log("\n🎉 TÜM MIGRATION SQL'LERİ GÖSTERİLDİ!\n")
+  console.log(
+    "   Dashboard SQL Editor'de çalıştırıldıysa migration tamamdır.\n"
+  )
+  console.log('═'.repeat(70))
 }
 
 // Run
-runPasswordlessMigration().catch(error => {
-  console.error('\n💥 Unhandled error:', error);
-  process.exit(1);
-});
+runPasswordlessMigration().catch((error) => {
+  console.error('\n💥 Unhandled error:', error)
+  process.exit(1)
+})

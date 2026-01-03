@@ -180,7 +180,9 @@ export function useCreateDonation(
     },
     onError: (error) => {
       toast.error('Bağış kaydedilirken hata oluştu')
-      console.error('Create donation error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create donation error:', error)
+      }
     },
     ...options,
   })
@@ -236,7 +238,9 @@ export function useCreateMember(
     },
     onError: (error) => {
       toast.error('Üye kaydı oluşturulurken hata oluştu')
-      console.error('Create member error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create member error:', error)
+      }
     },
     ...options,
   })
@@ -294,7 +298,9 @@ export function useCreateBeneficiary(
     },
     onError: (error) => {
       toast.error('İhtiyaç sahibi kaydı oluşturulurken hata oluştu')
-      console.error('Create beneficiary error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create beneficiary error:', error)
+      }
     },
     ...options,
   })
@@ -324,7 +330,9 @@ export function useUpdateBeneficiary(
     },
     onError: (error) => {
       toast.error('Güncelleme sırasında hata oluştu')
-      console.error('Update beneficiary error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update beneficiary error:', error)
+      }
     },
     ...options,
   })
@@ -386,7 +394,9 @@ export function useUpdateApplicationStatus(
     },
     onError: (error) => {
       toast.error('Durum güncellenirken hata oluştu')
-      console.error('Update application status error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update application status error:', error)
+      }
     },
     ...options,
   })
@@ -440,7 +450,9 @@ export function useCreateKumbara(
     },
     onError: (error) => {
       toast.error('Kumbara oluşturulurken hata oluştu')
-      console.error('Create kumbara error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create kumbara error:', error)
+      }
     },
     ...options,
   })
@@ -466,7 +478,9 @@ export function useCollectKumbara(
     },
     onError: (error) => {
       toast.error('Kumbara boşaltılırken hata oluştu')
-      console.error('Collect kumbara error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Collect kumbara error:', error)
+      }
     },
     ...options,
   })
@@ -533,7 +547,9 @@ export function useCreateUser(
     },
     onError: (error) => {
       toast.error('Kullanıcı oluşturulurken hata oluştu')
-      console.error('Create user error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create user error:', error)
+      }
     },
     ...options,
   })
@@ -560,7 +576,9 @@ export function useUpdateUser(
     },
     onError: (error) => {
       toast.error('Kullanıcı güncellenirken hata oluştu')
-      console.error('Update user error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update user error:', error)
+      }
     },
     ...options,
   })
@@ -584,7 +602,9 @@ export function useDeleteUser(
     },
     onError: (error) => {
       toast.error('Kullanıcı silinirken hata oluştu')
-      console.error('Delete user error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Delete user error:', error)
+      }
     },
     ...options,
   })
@@ -611,7 +631,9 @@ export function useUpdateProfile(
     },
     onError: (error) => {
       toast.error('Profil güncellenirken hata oluştu')
-      console.error('Update profile error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update profile error:', error)
+      }
     },
     ...options,
   })
@@ -634,7 +656,9 @@ export function useUpdatePassword(
       const errorMessage =
         error instanceof Error ? error.message : 'Şifre güncellenirken hata oluştu'
       toast.error(errorMessage)
-      console.error('Update password error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update password error:', error)
+      }
     },
     ...options,
   })
@@ -677,7 +701,9 @@ export function useUpdateNotificationPreferences(
     },
     onError: (error) => {
       toast.error('Bildirim tercihleri kaydedilirken hata oluştu')
-      console.error('Update notification preferences error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update notification preferences error:', error)
+      }
     },
     ...options,
   })
@@ -731,7 +757,9 @@ export function useCreatePayment(
     },
     onError: (error) => {
       toast.error('Ödeme kaydedilirken hata oluştu')
-      console.error('Create payment error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Create payment error:', error)
+      }
     },
     ...options,
   })
@@ -758,7 +786,9 @@ export function useUpdatePayment(
     },
     onError: (error) => {
       toast.error('Ödeme güncellenirken hata oluştu')
-      console.error('Update payment error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Update payment error:', error)
+      }
     },
     ...options,
   })

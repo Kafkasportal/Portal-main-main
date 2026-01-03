@@ -36,6 +36,10 @@ jobs:
     name: 🔍 Lint & Type Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
 
     steps:
       - name: 📥 Checkout

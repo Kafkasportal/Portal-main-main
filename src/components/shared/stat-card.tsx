@@ -52,6 +52,107 @@ const trendBadgeStyles: Record<'up' | 'down' | 'neutral', string> = {
   neutral: 'bg-muted text-muted-foreground',
 }
 
+const sizeStyles = {
+  compact: 'p-4',
+  default: 'p-5',
+  large: 'p-6',
+} as const
+
+const valueSizes = {
+  compact: 'text-xl',
+  default: 'text-2xl',
+  large: 'text-3xl',
+} as const
+
+type TrendDirection = 'up' | 'down' | 'neutral'
+
+// Helper: Get trend direction from value
+function getTrendDirection(trend?: number): TrendDirection {
+  if (!trend || trend === 0) return 'neutral'
+  return trend > 0 ? 'up' : 'down'
+}
+
+// Helper: Get trend icon for direction
+function getTrendIcon(direction: TrendDirection) {
+  if (direction === 'neutral') return <Minus className="size-3" />
+  return direction === 'up' ? (
+    <TrendingUp className="size-3" />
+  ) : (
+    <TrendingDown className="size-3" />
+  )
+}
+
+// Helper: Handle keyboard interaction
+function handleKeyDown(
+  e: React.KeyboardEvent,
+  onClick?: () => void
+) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    onClick?.()
+  }
+}
+
+// Helper: Generate trend badge label
+function getTrendLabel(direction: TrendDirection): string {
+  return direction === 'up' ? 'artış' : direction === 'down' ? 'azalış' : 'değişiklik yok'
+}
+
+// Component: Trend Badge
+function TrendBadge({
+  trend,
+  trendLabel,
+  trendUnit,
+}: {
+  trend?: number
+  trendLabel?: string
+  trendUnit?: string
+}) {
+  const direction = getTrendDirection(trend)
+
+  return (
+    <div
+      className={cn(
+        'mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium',
+        trendBadgeStyles[direction]
+      )}
+      role="status"
+      aria-label={`Trend: ${getTrendLabel(direction)}`}
+    >
+      {getTrendIcon(direction)}
+      <span>
+        {trend !== undefined && `${trend > 0 ? '+' : ''}${trend.toFixed(1)}${trendUnit}`}
+        {trendLabel && ` ${trendLabel}`}
+      </span>
+    </div>
+  )
+}
+
+// Component: Icon Container
+function IconContainer({
+  Icon,
+  variant,
+  size,
+  interactive,
+}: {
+  Icon: LucideIcon
+  variant: StatCardVariant
+  size: 'default' | 'compact' | 'large'
+  interactive: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        'shrink-0 rounded-xl p-3 transition-transform duration-200',
+        iconStyles[variant],
+        interactive && 'group-hover:scale-110'
+      )}
+    >
+      <Icon className={cn(size === 'compact' ? 'size-5' : 'size-6')} />
+    </div>
+  )
+}
+
 export const StatCard = memo(function StatCard({
   label,
   value,
@@ -66,33 +167,6 @@ export const StatCard = memo(function StatCard({
   description,
   className,
 }: StatCardProps) {
-  const getTrendDirection = () => {
-    if (!trend || trend === 0) return 'neutral'
-    return trend > 0 ? 'up' : 'down'
-  }
-
-  const getTrendIcon = () => {
-    const direction = getTrendDirection()
-    if (direction === 'neutral') return <Minus className="size-3" />
-    return direction === 'up' ? (
-      <TrendingUp className="size-3" />
-    ) : (
-      <TrendingDown className="size-3" />
-    )
-  }
-
-  const sizeStyles = {
-    compact: 'p-4',
-    default: 'p-5',
-    large: 'p-6',
-  }
-
-  const valueSizes = {
-    compact: 'text-xl',
-    default: 'text-2xl',
-    large: 'text-3xl',
-  }
-
   const cardId = `stat-card-${(label || 'stat').toLowerCase().replace(/\s+/g, '-')}`
 
   return (
@@ -109,16 +183,7 @@ export const StatCard = memo(function StatCard({
         className
       )}
       onClick={interactive ? onClick : undefined}
-      onKeyDown={
-        interactive
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onClick?.()
-              }
-            }
-          : undefined
-      }
+      onKeyDown={interactive ? (e) => handleKeyDown(e, onClick) : undefined}
     >
       <CardContent className={sizeStyles[size]}>
         <div className="flex items-start justify-between gap-4">
@@ -144,35 +209,11 @@ export const StatCard = memo(function StatCard({
             )}
 
             {(trend !== undefined || trendLabel) && (
-              <div
-                className={cn(
-                  'mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium',
-                  trendBadgeStyles[getTrendDirection()]
-                )}
-                role="status"
-                aria-label={`Trend: ${getTrendDirection() === 'up' ? 'artış' : getTrendDirection() === 'down' ? 'azalış' : 'değişiklik yok'}`}
-              >
-                {getTrendIcon()}
-                <span>
-                  {trend !== undefined &&
-                    `${trend > 0 ? '+' : ''}${trend.toFixed(1)}${trendUnit}`}
-                  {trendLabel && ` ${trendLabel}`}
-                </span>
-              </div>
+              <TrendBadge trend={trend} trendLabel={trendLabel} trendUnit={trendUnit} />
             )}
           </div>
 
-          {Icon && (
-            <div
-              className={cn(
-                'shrink-0 rounded-xl p-3 transition-transform duration-200',
-                iconStyles[variant],
-                interactive && 'group-hover:scale-110'
-              )}
-            >
-              <Icon className={cn(size === 'compact' ? 'size-5' : 'size-6')} />
-            </div>
-          )}
+          {Icon && <IconContainer Icon={Icon} variant={variant} size={size} interactive={interactive} />}
         </div>
       </CardContent>
     </Card>

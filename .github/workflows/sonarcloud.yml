@@ -37,17 +37,17 @@ jobs:
 
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # SonarCloud needs full history
 
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1
+        uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
@@ -89,7 +89,7 @@ jobs:
 
       - name: 📢 PR Comment with Results
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a23f34cd
+        uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
@@ -142,7 +142,7 @@ jobs:
         run: pnpm audit --audit-level=moderate
 
       - name: 🔍 OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@75ba02d6183445fe0761d26e836bde58b1560600
+        uses: dependency-check/Dependency-Check_Action@v1
         with:
           project: 'kafkasder-panel'
           path: '.'
@@ -150,7 +150,7 @@ jobs:
           out: 'dependency-check-reports'
 
       - name: 📊 Upload Security Reports
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -172,7 +172,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v4
 
       - name: 🚪 Check Quality Gate Status
         uses: sonarsource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b
@@ -183,7 +183,7 @@ jobs:
 
       - name: 📢 Update PR Status
         if: failure()
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a23f34cd
+        uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.pull_request.number;

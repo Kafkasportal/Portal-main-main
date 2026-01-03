@@ -18,10 +18,10 @@ import type { NavItem } from '@/types'
 import { ChevronDown, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 
 // Nav Item Component with Tooltip support
-function NavItemComponent({
+const NavItemComponent = memo(function NavItemComponent({
   item,
   depth = 0,
 }: {
@@ -29,9 +29,13 @@ function NavItemComponent({
   depth?: number
 }) {
   const pathname = usePathname()
-  const { openMenus, toggleMenu, isCollapsed } = useSidebarStore()
 
-  const isOpen = openMenus.includes(item.label)
+  // Use selectors to prevent unnecessary re-renders
+  const isCollapsed = useSidebarStore((state) => state.isCollapsed)
+  const toggleMenu = useSidebarStore((state) => state.toggleMenu)
+  // Only re-render if THIS item's open state changes
+  const isOpen = useSidebarStore((state) => state.openMenus.includes(item.label))
+
   const isActive = item.href === pathname
   const hasChildren = item.children && item.children.length > 0
 
@@ -134,12 +138,12 @@ function NavItemComponent({
   ) : (
     linkElement
   )
-}
+})
 
 // User Section Component
 function UserSection() {
-  const { isCollapsed } = useSidebarStore()
-  const { user } = useUserStore()
+  const isCollapsed = useSidebarStore((state) => state.isCollapsed)
+  const user = useUserStore((state) => state.user)
 
   return (
     <div
@@ -170,17 +174,26 @@ function UserSection() {
 // Desktop Sidebar
 function DesktopSidebar() {
   const pathname = usePathname()
-  const { isCollapsed, setCollapsed, openMenus, toggleMenu } = useSidebarStore()
+
+  // Select only what we need for rendering
+  const isCollapsed = useSidebarStore((state) => state.isCollapsed)
+  const setCollapsed = useSidebarStore((state) => state.setCollapsed)
+  const toggleMenu = useSidebarStore((state) => state.toggleMenu)
+  // Note: openMenus is NOT selected here to avoid re-renders when menus are toggled
 
   // Aktif sayfaya göre ilgili menüyü otomatik aç
   useEffect(() => {
     const activeParent = NAV_ITEMS.find((item) =>
       item.children?.some((child) => child.href === pathname)
     )
+
+    // Access state directly to avoid subscription to openMenus
+    const { openMenus } = useSidebarStore.getState()
+
     if (activeParent && !openMenus.includes(activeParent.label)) {
       toggleMenu(activeParent.label)
     }
-  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pathname, toggleMenu])
 
   return (
     <TooltipProvider>
@@ -278,7 +291,8 @@ function DesktopSidebar() {
 
 // Mobile Sidebar (Sheet)
 function MobileSidebar() {
-  const { isOpen, setOpen } = useSidebarStore()
+  const isOpen = useSidebarStore((state) => state.isOpen)
+  const setOpen = useSidebarStore((state) => state.setOpen)
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -340,7 +354,7 @@ function MobileSidebar() {
 // Main Sidebar Export
 export function Sidebar() {
   const isMobile = useIsMobile()
-  const { setMobile } = useSidebarStore()
+  const setMobile = useSidebarStore((state) => state.setMobile)
 
   useEffect(() => {
     setMobile(isMobile)

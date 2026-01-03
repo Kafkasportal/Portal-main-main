@@ -17,7 +17,7 @@
 NEXT_PUBLIC_SENTRY_DSN=https://fb90a51020186d9145ae70fbedf5e27e@o4510438396395520.ingest.de.sentry.io/4510612076757072
 SENTRY_ORG=kafkasder-oc
 SENTRY_PROJECT=portal
-SENTRY_AUTH_TOKEN=sntrys_eyJpYXQ...
+SENTRY_AUTH_TOKEN=sntrys_... (Verified & Added to GitHub)
 SENTRY_ACCESS_TOKEN=sntrys_eyJpYXQ...
 ```
 
@@ -312,7 +312,7 @@ STORMMCP_API_KEY=ag_HTt9LMOo... (Updated 2026-01-03)
    ✅ DSN configured
    ✅ Organization set
    ✅ Project set
-   ✅ Auth tokens valid
+   ✅ Auth tokens valid (Added to GitHub)
    ✅ Source maps uploading
 
 ✅ Supabase MCP

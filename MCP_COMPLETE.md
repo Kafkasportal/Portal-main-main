@@ -57,7 +57,7 @@ Success Rate: 100%
 NEXT_PUBLIC_SENTRY_DSN=https://fb90a51020186d9145ae70fbedf5e27e@o4510438396395520.ingest.de.sentry.io/4510612076757072
 SENTRY_ORG=kafkasder-oc
 SENTRY_PROJECT=portal
-SENTRY_AUTH_TOKEN=sntrys_eyJpYXQ...
+SENTRY_AUTH_TOKEN=sntrys_... (Added to GitHub Secrets)
 ```
 
 ### Features
@@ -324,7 +324,7 @@ Response:
 ## 📋 CHECKLIST
 
 ### Setup Complete
-- [x] Sentry MCP configured
+- [x] Sentry MCP configured (DSN + Auth Token on GitHub)
 - [x] Supabase MCP configured
 - [x] Render MCP configured
 - [x] GitHub MCP configured

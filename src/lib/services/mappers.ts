@@ -159,7 +159,7 @@ export function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
       calısanSayisi: 0,
       bakmaklaYukumluSayisi: 0,
     },
-    ekonomikSosyalDurum: {
+    ekonomikDurum: {
       meslek: db.meslek || '',
       aylikGelir: Number(db.aylik_gelir) || 0,
       egitimDurumu: (db.egitim_durumu || 'belirtilmemis') as EgitimDurumu,
@@ -227,20 +227,18 @@ export function mapPayment(
 /**
  * Database in_kind_aids row → InKindAid type
  */
-export function mapInKindAid(
-  db: {
-    id: number
-    beneficiary_id: number
-    yardim_turu: string
-    miktar: number
-    birim: string
-    dagitim_tarihi: string
-    notlar: string | null
-    created_at: string
-    updated_at: string
-    beneficiaries?: { ad: string; soyad: string } | null
-  }
-): import('@/types').InKindAid {
+export function mapInKindAid(db: {
+  id: number
+  beneficiary_id: number
+  yardim_turu: string
+  miktar: number
+  birim: string
+  dagitim_tarihi: string
+  notlar: string | null
+  created_at: string
+  updated_at: string
+  beneficiaries?: { ad: string; soyad: string } | null
+}): import('@/types').InKindAid {
   return {
     id: db.id,
     beneficiaryId: db.beneficiary_id,
@@ -263,7 +261,9 @@ export function mapInKindAid(
 /**
  * Database hospital row → Hospital type
  */
-export function mapHospital(db: Tables['hospitals']['Row']): import('@/types').Hospital {
+export function mapHospital(
+  db: Tables['hospitals']['Row']
+): import('@/types').Hospital {
   return {
     id: db.id,
     name: db.name,
@@ -337,7 +337,9 @@ export function mapTreatmentCost(
     currency: db.currency as import('@/types').Currency,
     paymentStatus: db.payment_status as import('@/types').TreatmentCostStatus,
     paymentDate: db.payment_date ? new Date(db.payment_date) : undefined,
-    paymentMethod: db.payment_method as import('@/types').PaymentMethod | undefined,
+    paymentMethod: db.payment_method as
+      | import('@/types').PaymentMethod
+      | undefined,
     incurredDate: new Date(db.incurred_date),
     createdAt: new Date(db.created_at),
     updatedAt: new Date(db.updated_at),
@@ -372,7 +374,11 @@ export function mapUser(db: Tables['users']['Row']): import('@/types').User {
     id: db.id,
     name: db.name,
     email: db.email,
-    role: (db.role === 'moderator' ? 'gorevli' : db.role === 'user' ? 'uye' : db.role) as import('@/types').UserRole,
+    role: (db.role === 'moderator'
+      ? 'gorevli'
+      : db.role === 'user'
+        ? 'uye'
+        : db.role) as import('@/types').UserRole,
     avatar: db.avatar_url || undefined,
     isActive: true,
     permissions: [],

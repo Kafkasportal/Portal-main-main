@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -90,7 +90,6 @@ export function NewBeneficiaryDialog({
 }: NewBeneficiaryDialogProps) {
   const router = useRouter()
   const [mernisKontrol, setMernisKontrol] = useState(false)
-  const [uyruk, setUyruk] = useState('Türkiye')
 
   const form = useForm<NewBeneficiaryFormData>({
     resolver: zodResolver(newBeneficiarySchema),
@@ -123,39 +122,37 @@ export function NewBeneficiaryDialog({
     },
   })
 
-  // Update uyruk state when form value changes
-  useEffect(() => {
-    const currentUyruk = form.getValues('uyruk')
-    setUyruk(currentUyruk || 'Türkiye')
-    const subscription = form.watch((value) => {
-      if ('uyruk' in value && value.uyruk) {
-        setUyruk(value.uyruk)
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [form])
-
   const onSubmit = (data: NewBeneficiaryFormData) => {
+    // Construct notes from additional form fields
+    const notlar = [
+      data.fonBolgesi && `Fon Bölgesi: ${FON_BOLGESI_LABELS[data.fonBolgesi]}`,
+      data.dosyaBaglantisi &&
+        `Dosya Bağlantısı: ${DOSYA_BAGLANTISI_LABELS[data.dosyaBaglantisi]}`,
+      data.dosyaBaglantisiDetay && `Detay: ${data.dosyaBaglantisiDetay}`,
+      mernisKontrol && 'Mernis kontrolü yapıldı',
+      `Dosya No: ${data.dosyaNo}`,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    // Determine which ID field to use based on nationality
     const isTurkish = data.uyruk === 'Türkiye'
-    const identityNo = data.kimlikNo || data.dosyaNo
+    const kimlikNo = data.kimlikNo?.trim() || ''
 
     createBeneficiary({
       ad: data.ad,
       soyad: data.soyad,
-      tc_kimlik_no: isTurkish ? identityNo : null,
-      yabanci_kimlik_no: !isTurkish ? identityNo : null,
-      uyruk: data.uyruk,
-      telefon: data.telefon || '',
+      // Set TC kimlik for Turkish citizens, yabanci_kimlik_no for foreigners
+      tc_kimlik_no: isTurkish ? (kimlikNo || data.dosyaNo) : null,
+      yabanci_kimlik_no: !isTurkish ? (kimlikNo || data.dosyaNo) : null,
+      telefon: data.telefon || null,
       cinsiyet: data.cinsiyet,
       kategori: data.kategori,
-      dogum_tarihi: data.dogumTarihi || undefined,
+      dogum_tarihi: data.dogumTarihi || null,
+      uyruk: data.uyruk,
       durum: 'aktif',
       ihtiyac_durumu: 'orta',
-      fon_bolgesi: data.fonBolgesi,
-      dosya_baglantisi: data.dosyaNo,
-      mernis_dogrulama: mernisKontrol,
-      riza_beyani_durumu: 'alinmadi',
-      notlar: data.dosyaBaglantisiDetay ? `Bağlantı Detayı: ${data.dosyaBaglantisiDetay}` : undefined,
+      notlar: notlar || null,
     })
   }
 
@@ -353,7 +350,7 @@ export function NewBeneficiaryDialog({
                     <FormControl>
                       <Input
                         placeholder={
-                          uyruk === 'Türkiye'
+                          form.watch('uyruk') === 'Türkiye'
                             ? 'TC Kimlik No'
                             : 'Yabancı Kimlik No'
                         }

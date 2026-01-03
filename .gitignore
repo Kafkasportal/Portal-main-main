@@ -97,3 +97,5 @@ conductor/
 # Binary files and executables
 crush/
 crush_*/
+
+.mcp.json

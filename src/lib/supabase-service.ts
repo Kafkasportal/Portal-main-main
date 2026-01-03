@@ -159,9 +159,15 @@ function mapKumbara(db: Tables['kumbaras']['Row']): Kumbara {
       kod: db.kod,
       tapilanTarih: db.created_at ? new Date(db.created_at) : undefined,
     },
-    sorumlu: { 
-      id: db.sorumlu_id, 
-      name: 'Sorumlu' 
+    sorumlu: {
+      id: String(db.sorumlu_id || ''),
+      name: 'Sorumlu',
+      email: '',
+      role: 'gorevli' as const,
+      isActive: true,
+      permissions: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     toplamTutar: db.toplam_toplanan || 0,
     toplamaBaşarina: db.toplam_toplanan || 0,

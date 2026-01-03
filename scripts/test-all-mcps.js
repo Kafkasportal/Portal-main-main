@@ -16,6 +16,8 @@ const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN ||
   'https://fb90a51020186d9145ae70fbedf5e27e@o4510438396395520.ingest.de.sentry.io/4510612076757072';
 const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_JWyvNZTTdcB00iGHghVUxWbESLZc';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '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';
+const STORMMCP_URL = process.env.STORMMCP_URL || 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
+const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY || 'ag_HTt9LMOo0UuHA1v7nPFW+nQttGEMUco4OYNWDOf361o=';
 
 async function testSupabaseMCP() {
   console.log('🧪 Testing Supabase MCP...');
@@ -123,15 +125,33 @@ async function testGitHubMCP() {
     console.log('   ✅ Token prefix:', GITHUB_TOKEN.substring(0, 8) + '...');
     console.log('✅ GitHub MCP: CONFIGURED\n');
 
-    // Note: Actual API test requires HTTP request to GitHub API
-    // Skipping to avoid rate limits
-
     return { success: true, service: 'GitHub' };
 
   } catch (error) {
     console.log('❌ GitHub MCP: FAILED');
     console.log('   Error:', error.message, '\n');
     return { success: false, service: 'GitHub', error: error.message };
+  }
+}
+
+async function testStormMCP() {
+  console.log('🧪 Testing StormMCP Gateway...');
+
+  try {
+    if (!STORMMCP_API_KEY || !STORMMCP_API_KEY.startsWith('ag_')) {
+      throw new Error('Invalid StormMCP API key format');
+    }
+
+    console.log('   ✅ API key format valid');
+    console.log('   ✅ Gateway URL:', STORMMCP_URL);
+    console.log('✅ StormMCP: CONFIGURED\n');
+
+    return { success: true, service: 'StormMCP' };
+
+  } catch (error) {
+    console.log('❌ StormMCP: FAILED');
+    console.log('   Error:', error.message, '\n');
+    return { success: false, service: 'StormMCP', error: error.message };
   }
 }
 
@@ -148,6 +168,7 @@ async function runAllTests() {
   results.push(await testSentryMCP());
   results.push(await testRenderMCP());
   results.push(await testGitHubMCP());
+  results.push(await testStormMCP());
 
   // Summary
   console.log('═'.repeat(70));

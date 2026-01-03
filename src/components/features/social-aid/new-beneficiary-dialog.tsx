@@ -123,28 +123,26 @@ export function NewBeneficiaryDialog({
   })
 
   const onSubmit = (data: NewBeneficiaryFormData) => {
-    // Construct notes from additional form fields
-    const notlar = [
-      data.fonBolgesi && `Fon Bölgesi: ${FON_BOLGESI_LABELS[data.fonBolgesi]}`,
-      data.dosyaBaglantisi &&
-        `Dosya Bağlantısı: ${DOSYA_BAGLANTISI_LABELS[data.dosyaBaglantisi]}`,
-      data.dosyaBaglantisiDetay && `Detay: ${data.dosyaBaglantisiDetay}`,
-      mernisKontrol && 'Mernis kontrolü yapıldı',
-    ]
-      .filter(Boolean)
-      .join('\n')
+    const isTurkish = data.uyruk === 'Türkiye'
+    const identityNo = data.kimlikNo || data.dosyaNo
 
     createBeneficiary({
       ad: data.ad,
       soyad: data.soyad,
-      tc_kimlik_no: data.kimlikNo || data.dosyaNo, // Use dosyaNo as fallback ID
+      tc_kimlik_no: isTurkish ? identityNo : null,
+      yabanci_kimlik_no: !isTurkish ? identityNo : null,
+      uyruk: data.uyruk,
       telefon: data.telefon || '',
       cinsiyet: data.cinsiyet,
       kategori: data.kategori,
       dogum_tarihi: data.dogumTarihi || undefined,
       durum: 'aktif',
       ihtiyac_durumu: 'orta',
-      notlar: notlar || undefined,
+      fon_bolgesi: data.fonBolgesi,
+      dosya_baglantisi: data.dosyaNo,
+      mernis_dogrulama: mernisKontrol,
+      riza_beyani_durumu: 'alinmadi',
+      notlar: data.dosyaBaglantisiDetay ? `Bağlantı Detayı: ${data.dosyaBaglantisiDetay}` : undefined,
     })
   }
 

@@ -106,6 +106,9 @@ function mapDonation(db: Tables['donations']['Row']): Bagis {
       id: db.member_id || db.id,
       ad: db.bagisci_adi || '',
       soyad: '',
+      telefon: db.bagisci_telefon || undefined,
+      email: db.bagisci_email || undefined,
+      adres: db.bagisci_adres || undefined,
     },
     tutar: db.tutar,
     currency: db.currency as Currency,
@@ -127,15 +130,17 @@ function mapApplication(
   return {
     id: db.id,
     basvuranKisi: {
-      ad: db.beneficiaries?.ad || '',
-      soyad: db.beneficiaries?.soyad || '',
-      tcKimlikNo: db.beneficiaries?.tc_kimlik_no || '',
-      telefon: db.beneficiaries?.telefon || '',
-      adres: db.beneficiaries?.adres || '',
+      ad: db.basvuran_ad || db.beneficiaries?.ad || '',
+      soyad: db.basvuran_soyad || db.beneficiaries?.soyad || '',
+      tcKimlikNo: db.basvuran_tc_kimlik_no || db.beneficiaries?.tc_kimlik_no || '',
+      telefon: db.basvuran_telefon || db.beneficiaries?.telefon || '',
+      adres: db.basvuran_adres || db.beneficiaries?.adres || '',
     },
     yardimTuru: db.yardim_turu as YardimTuru,
     talepEdilenTutar: db.talep_edilen_tutar || undefined,
+    onaylananTutar: db.onaylanan_tutar || undefined,
     gerekce: db.gerekce || '',
+    notlar: db.notlar || '',
     belgeler: [],
     durum: (db.durum || 'beklemede') as BasvuruDurumu,
     createdAt: new Date(db.created_at),
@@ -173,7 +178,7 @@ type BeneficiaryRow = Tables['beneficiaries']['Row'] & {
 
 // Helper to map DB beneficiary to IhtiyacSahibi type
 function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
-  // Parse nested JSONB fields if they exist
+  // Parse nested JSONB fields if they exist (backward compatibility)
   const kimlikBilgileri = typeof db.kimlik_bilgileri === 'string'
     ? JSON.parse(db.kimlik_bilgileri)
     : (db.kimlik_bilgileri || {})
@@ -211,43 +216,43 @@ function mapBeneficiary(db: BeneficiaryRow): IhtiyacSahibi {
     ilce: db.ilce || '',
     mahalle: db.mahalle || '',
     adres: db.adres || '',
-    dosyaNo: db.dosya_no || db.tc_kimlik_no || '',
+    dosyaNo: db.dosya_baglantisi || db.tc_kimlik_no || '',
     kayitTarihi: new Date(db.created_at),
     durum: (db.durum || 'aktif') as IhtiyacDurumu,
     ihtiyacDurumu: (db.ihtiyac_durumu || 'orta') as string,
     basvuruSayisi: 0,
     yardimSayisi: 0,
-    rizaBeyaniDurumu: db.riza_beyani_durumu || 'alindi',
+    rizaBeyaniDurumu: db.riza_beyani_durumu || 'alinmadi',
     toplamYardimTutari: 0,
-    // Map nested JSONB fields
+    // Map flattened columns with JSONB fallbacks
     kimlikBilgileri: {
-      babaAdi: kimlikBilgileri.baba_adi || '',
-      anneAdi: kimlikBilgileri.anne_adi || '',
-      belgeTuru: kimlikBilgileri.belge_turu || '',
-      belgeGecerlilikTarihi: kimlikBilgileri.belge_gecerlilik_tarihi ? new Date(kimlikBilgileri.belge_gecerlilik_tarihi) : undefined,
-      seriNumarasi: kimlikBilgileri.seri_numarasi || '',
-      oncekiUyruk: kimlikBilgileri.onceki_uyruk || '',
-      oncekiIsim: kimlikBilgileri.onceki_isim || '',
+      babaAdi: db.baba_adi || kimlikBilgileri.baba_adi || '',
+      anneAdi: db.anne_adi || kimlikBilgileri.anne_adi || '',
+      belgeTuru: db.belge_turu || kimlikBilgileri.belge_turu || '',
+      belgeGecerlilikTarihi: (db.belge_gecerlilik_tarihi || kimlikBilgileri.belge_gecerlilik_tarihi) ? new Date(db.belge_gecerlilik_tarihi || kimlikBilgileri.belge_gecerlilik_tarihi) : undefined,
+      seriNumarasi: db.seri_numarasi || kimlikBilgileri.seri_numarasi || '',
+      oncekiUyruk: db.onceki_uyruk || kimlikBilgileri.onceki_uyruk || '',
+      oncekiIsim: db.onceki_isim || kimlikBilgileri.onceki_isim || '',
     },
     saglikBilgileri: {
-      kanGrubu: saglikBilgileri.kan_grubu || '',
-      kronikHastalik: saglikBilgileri.kronik_hastalik || '',
-      engelDurumu: saglikBilgileri.engel_durumu || '',
-      engelOrani: saglikBilgileri.engel_orani || 0,
-      surekliIlac: saglikBilgileri.surekli_ilac || '',
+      kanGrubu: db.kan_grubu || saglikBilgileri.kan_grubu || '',
+      kronikHastalik: db.kronik_hastalik || saglikBilgileri.kronik_hastalik || '',
+      engelDurumu: db.engel_durumu || saglikBilgileri.engel_durumu || '',
+      engelOrani: db.engel_orani || saglikBilgileri.engel_orani || 0,
+      surekliIlac: db.surekli_ilac || saglikBilgileri.surekli_ilac || '',
     },
     aileHaneBilgileri: {
-      medeniHal: (aileHaneBilgileri.medeni_hal || db.medeni_hal || 'belirtilmemis') as MedeniHal,
-      ailedekiKisiSayisi: aileHaneBilgileri.ailedeki_kisi_sayisi || db.hane_buyuklugu || 1,
-      cocukSayisi: aileHaneBilgileri.cocuk_sayisi || 0,
-      yetimSayisi: aileHaneBilgileri.yetim_sayisi || 0,
-      calısanSayisi: aileHaneBilgileri.calisan_sayisi || 0,
-      bakmaklaYukumluSayisi: aileHaneBilgileri.bakmakla_yukumlu_sayisi || 0,
-      esAdi: aileHaneBilgileri.es_adi || '',
-      esTelefon: aileHaneBilgileri.es_telefon || '',
+      medeniHal: (db.medeni_hal || aileHaneBilgileri.medeni_hal || 'belirtilmemis') as MedeniHal,
+      ailedekiKisiSayisi: db.ailedeki_kisi_sayisi || aileHaneBilgileri.ailedeki_kisi_sayisi || db.hane_buyuklugu || 1,
+      cocukSayisi: db.cocuk_sayisi || aileHaneBilgileri.cocuk_sayisi || 0,
+      yetimSayisi: db.yetim_sayisi || aileHaneBilgileri.yetim_sayisi || 0,
+      calısanSayisi: db.calisan_sayisi || aileHaneBilgileri.calisan_sayisi || 0,
+      bakmaklaYukumluSayisi: db.bakmakla_yukumlu_sayisi || aileHaneBilgileri.bakmakla_yukumlu_sayisi || 0,
+      esAdi: db.es_adi || aileHaneBilgileri.es_adi || '',
+      esTelefon: db.es_telefon || aileHaneBilgileri.es_telefon || '',
     },
     ekonomikSosyalDurum: {
-      meslek: ekonomikDurum.meslek || db.meslek || '',
+      meslek: db.meslek || ekonomikDurum.meslek || '',
       aylikGelir: Number(ekonomikDurum.aylik_gelir || db.aylik_gelir) || 0,
       egitimDurumu: (ekonomikDurum.egitim_durumu || db.egitim_durumu || 'belirtilmemis') as EgitimDurumu,
       calismaDurumu: ekonomikDurum.calisma_durumu || '',
@@ -1944,22 +1949,23 @@ export async function uploadDocument(
  * Fetch documents for a beneficiary
  */
 export async function fetchDocuments(
-  beneficiaryId: string
+  beneficiaryId: number | string
 ): Promise<BeneficiaryDocument[]> {
   const supabase = getSupabaseClient()
+  const bId = typeof beneficiaryId === 'string' ? parseInt(beneficiaryId, 10) : beneficiaryId
 
   const { data, error } = await supabase
     .from('documents')
     .select('*')
-    .eq('beneficiary_id', beneficiaryId)
+    .eq('beneficiary_id', bId)
     .order('created_at', { ascending: false })
 
   if (error) throw error
 
   return (data || []).map(
     (doc: {
-      id: string
-      beneficiary_id: string
+      id: number
+      beneficiary_id: number
       file_name: string
       file_path: string
       file_type: string
@@ -1971,7 +1977,7 @@ export async function fetchDocuments(
       id: doc.id,
       beneficiaryId: doc.beneficiary_id,
       fileName: doc.file_name,
-      filePath: doc.file_path, // Fixed: Added missing filePath mapping
+      filePath: doc.file_path,
       fileType: doc.file_type,
       fileSize: doc.file_size,
       documentType: doc.document_type as DocumentType,

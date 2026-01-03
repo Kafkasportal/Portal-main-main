@@ -24,8 +24,8 @@ export interface PaginatedResponse<T> {
 export type DocumentType = 'kimlik' | 'ikamet' | 'saglik' | 'gelir' | 'diger'
 
 export interface BeneficiaryDocument {
-  id: string // UUID from database
-  beneficiaryId: string // UUID from database
+  id: number
+  beneficiaryId: number
   fileName: string
   filePath: string
   fileType: string
@@ -274,7 +274,9 @@ export interface SosyalYardimBasvuru extends Timestamps {
   basvuranKisi: BasvuranKisi
   yardimTuru: YardimTuru
   talepEdilenTutar?: number
+  onaylananTutar?: number
   gerekce: string
+  notlar?: string
   belgeler: BasvuruBelge[]
   durum: BasvuruDurumu
   degerlendiren?: User

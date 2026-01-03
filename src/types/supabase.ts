@@ -14,7 +14,8 @@ export interface Database {
           id: string
           email: string
           name: string
-          role: 'admin' | 'moderator' | 'user'
+          role: 'admin' | 'moderator' | 'muhasebe' | 'user'
+          phone: string | null
           avatar_url: string | null
           created_at: string
           updated_at: string
@@ -23,7 +24,8 @@ export interface Database {
           id?: string
           email: string
           name: string
-          role?: 'admin' | 'moderator' | 'user'
+          role?: 'admin' | 'moderator' | 'muhasebe' | 'user'
+          phone?: string | null
           avatar_url?: string | null
           created_at?: string
           updated_at?: string
@@ -32,7 +34,8 @@ export interface Database {
           id?: string
           email?: string
           name?: string
-          role?: 'admin' | 'moderator' | 'user'
+          role?: 'admin' | 'moderator' | 'muhasebe' | 'user'
+          phone?: string | null
           avatar_url?: string | null
           updated_at?: string
         }
@@ -50,8 +53,9 @@ export interface Database {
           adres: string | null
           il: string | null
           ilce: string | null
-          kan_grubu: string | null
+          kan_grubu: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | '0+' | '0-' | null
           meslek: string | null
+          meslegi: string | null
           uye_turu: 'standart' | 'onursal' | 'fahri'
           kayit_tarihi: string
           aidat_durumu: 'odendi' | 'beklemede' | 'gecikti'
@@ -71,8 +75,9 @@ export interface Database {
           adres?: string | null
           il?: string | null
           ilce?: string | null
-          kan_grubu?: string | null
+          kan_grubu?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | '0+' | '0-' | null
           meslek?: string | null
+          meslegi?: string | null
           uye_turu?: 'standart' | 'onursal' | 'fahri'
           kayit_tarihi?: string
           aidat_durumu?: 'odendi' | 'beklemede' | 'gecikti'
@@ -91,8 +96,9 @@ export interface Database {
           adres?: string | null
           il?: string | null
           ilce?: string | null
-          kan_grubu?: string | null
+          kan_grubu?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | '0+' | '0-' | null
           meslek?: string | null
+          meslegi?: string | null
           uye_turu?: 'standart' | 'onursal' | 'fahri'
           aidat_durumu?: 'odendi' | 'beklemede' | 'gecikti'
           notlar?: string | null
@@ -103,8 +109,11 @@ export interface Database {
         Row: {
           id: number
           bagisci_adi: string
+          bagisci_telefon: string | null
+          bagisci_email: string | null
+          bagisci_adres: string | null
           tutar: number
-          currency: 'TRY' | 'EUR' | 'USD'
+          currency: 'TRY' | 'USD' | 'EUR'
           amac: string
           odeme_yontemi: 'nakit' | 'havale' | 'kredi_karti' | 'kumbara'
           makbuz_no: string | null
@@ -116,8 +125,11 @@ export interface Database {
         Insert: {
           id?: number
           bagisci_adi: string
+          bagisci_telefon?: string | null
+          bagisci_email?: string | null
+          bagisci_adres?: string | null
           tutar: number
-          currency?: 'TRY' | 'EUR' | 'USD'
+          currency?: 'TRY' | 'USD' | 'EUR'
           amac: string
           odeme_yontemi: 'nakit' | 'havale' | 'kredi_karti' | 'kumbara'
           makbuz_no?: string | null
@@ -128,8 +140,11 @@ export interface Database {
         }
         Update: {
           bagisci_adi?: string
+          bagisci_telefon?: string | null
+          bagisci_email?: string | null
+          bagisci_adres?: string | null
           tutar?: number
-          currency?: 'TRY' | 'EUR' | 'USD'
+          currency?: 'TRY' | 'USD' | 'EUR'
           amac?: string
           odeme_yontemi?: 'nakit' | 'havale' | 'kredi_karti' | 'kumbara'
           makbuz_no?: string | null
@@ -141,7 +156,7 @@ export interface Database {
       beneficiaries: {
         Row: {
           id: number
-          tc_kimlik_no: string
+          tc_kimlik_no: string | null
           ad: string
           soyad: string
           telefon: string
@@ -156,22 +171,64 @@ export interface Database {
           meslek: string | null
           aylik_gelir: number | null
           hane_buyuklugu: number | null
-          durum: 'aktif' | 'pasif' | 'beklemede'
+          durum: 'aktif' | 'pasif' | 'arsiv' | 'beklemede'
           ihtiyac_durumu: 'acil' | 'yuksek' | 'orta' | 'dusuk'
           kategori: string | null
           notlar: string | null
-          // Bağlantılı kişiler için yeni sütunlar
           parent_id: number | null
-          relationship_type:
-            | 'İhtiyaç Sahibi Kişi'
-            | 'Bakmakla Yükümlü Olunan Kişi'
-            | null
+          relationship_type: 'İhtiyaç Sahibi Kişi' | 'Bakmakla Yükümlü Olunan Kişi' | null
+          uyruk: string | null
+          yabanci_kimlik_no: string | null
+          fon_bolgesi: string | null
+          dosya_baglantisi: string | null
+          mernis_dogrulama: boolean | null
+          cep_telefonu: string | null
+          cep_telefonu_operator: string | null
+          sabit_telefon: string | null
+          yurtdisi_telefon: string | null
+          ulke: string | null
+          sehir: string | null
+          mahalle: string | null
+          baba_adi: string | null
+          anne_adi: string | null
+          belge_turu: string | null
+          belge_gecerlilik_tarihi: string | null
+          seri_numarasi: string | null
+          onceki_uyruk: string | null
+          onceki_isim: string | null
+          pasaport_turu: string | null
+          pasaport_numarasi: string | null
+          pasaport_gecerlilik_tarihi: string | null
+          vize_giris_turu: string | null
+          vize_bitis_tarihi: string | null
+          kan_grubu: string | null
+          kronik_hastalik: string | null
+          engel_durumu: string | null
+          engel_orani: number | null
+          surekli_ilac: string | null
+          calisma_durumu: string | null
+          konut_durumu: string | null
+          kira_tutari: number | null
+          es_adi: string | null
+          es_telefon: string | null
+          ailedeki_kisi_sayisi: number | null
+          cocuk_sayisi: number | null
+          yetim_sayisi: number | null
+          calisan_sayisi: number | null
+          bakmakla_yukumlu_sayisi: number | null
+          sponsorluk_tipi: 'bireysel' | 'kurumsal' | 'yok' | null
+          riza_beyani_durumu: 'alinmadi' | 'alindi' | 'reddetti' | null
           created_at: string
           updated_at: string
+          // JSONB fields sometimes added via extension
+          kimlik_bilgileri?: Json | null
+          saglik_bilgileri?: Json | null
+          ekonomik_durum?: Json | null
+          aile_hane_bilgileri?: Json | null
         }
         Insert: {
           id?: number
-          tc_kimlik_no: string
+          tc_kimlik_no?: string | null
           ad: string
           soyad: string
           telefon: string
@@ -186,20 +243,58 @@ export interface Database {
           meslek?: string | null
           aylik_gelir?: number | null
           hane_buyuklugu?: number | null
-          durum?: 'aktif' | 'pasif' | 'beklemede'
+          durum?: 'aktif' | 'pasif' | 'arsiv' | 'beklemede'
           ihtiyac_durumu?: 'acil' | 'yuksek' | 'orta' | 'dusuk'
           kategori?: string | null
           notlar?: string | null
           parent_id?: number | null
-          relationship_type?:
-            | 'İhtiyaç Sahibi Kişi'
-            | 'Bakmakla Yükümlü Olunan Kişi'
-            | null
+          relationship_type?: 'İhtiyaç Sahibi Kişi' | 'Bakmakla Yükümlü Olunan Kişi' | null
+          uyruk?: string | null
+          yabanci_kimlik_no?: string | null
+          fon_bolgesi?: string | null
+          dosya_baglantisi?: string | null
+          mernis_dogrulama?: boolean | null
+          cep_telefonu?: string | null
+          cep_telefonu_operator?: string | null
+          sabit_telefon?: string | null
+          yurtdisi_telefon?: string | null
+          ulke?: string | null
+          sehir?: string | null
+          mahalle?: string | null
+          baba_adi?: string | null
+          anne_adi?: string | null
+          belge_turu?: string | null
+          belge_gecerlilik_tarihi?: string | null
+          seri_numarasi?: string | null
+          onceki_uyruk?: string | null
+          onceki_isim?: string | null
+          pasaport_turu?: string | null
+          pasaport_numarasi?: string | null
+          pasaport_gecerlilik_tarihi?: string | null
+          vize_giris_turu?: string | null
+          vize_bitis_tarihi?: string | null
+          kan_grubu?: string | null
+          kronik_hastalik?: string | null
+          engel_durumu?: string | null
+          engel_orani?: number | null
+          surekli_ilac?: string | null
+          calisma_durumu?: string | null
+          konut_durumu?: string | null
+          kira_tutari?: number | null
+          es_adi?: string | null
+          es_telefon?: string | null
+          ailedeki_kisi_sayisi?: number | null
+          cocuk_sayisi?: number | null
+          yetim_sayisi?: number | null
+          calisan_sayisi?: number | null
+          bakmakla_yukumlu_sayisi?: number | null
+          sponsorluk_tipi?: 'bireysel' | 'kurumsal' | 'yok' | null
+          riza_beyani_durumu?: 'alinmadi' | 'alindi' | 'reddetti' | null
           created_at?: string
           updated_at?: string
         }
         Update: {
-          tc_kimlik_no?: string
+          tc_kimlik_no?: string | null
           ad?: string
           soyad?: string
           telefon?: string
@@ -214,15 +309,53 @@ export interface Database {
           meslek?: string | null
           aylik_gelir?: number | null
           hane_buyuklugu?: number | null
-          durum?: 'aktif' | 'pasif' | 'beklemede'
+          durum?: 'aktif' | 'pasif' | 'arsiv' | 'beklemede'
           ihtiyac_durumu?: 'acil' | 'yuksek' | 'orta' | 'dusuk'
           kategori?: string | null
           notlar?: string | null
           parent_id?: number | null
-          relationship_type?:
-            | 'İhtiyaç Sahibi Kişi'
-            | 'Bakmakla Yükümlü Olunan Kişi'
-            | null
+          relationship_type?: 'İhtiyaç Sahibi Kişi' | 'Bakmakla Yükümlü Olunan Kişi' | null
+          uyruk?: string | null
+          yabanci_kimlik_no?: string | null
+          fon_bolgesi?: string | null
+          dosya_baglantisi?: string | null
+          mernis_dogrulama?: boolean | null
+          cep_telefonu?: string | null
+          cep_telefonu_operator?: string | null
+          sabit_telefon?: string | null
+          yurtdisi_telefon?: string | null
+          ulke?: string | null
+          sehir?: string | null
+          mahalle?: string | null
+          baba_adi?: string | null
+          anne_adi?: string | null
+          belge_turu?: string | null
+          belge_gecerlilik_tarihi?: string | null
+          seri_numarasi?: string | null
+          onceki_uyruk?: string | null
+          onceki_isim?: string | null
+          pasaport_turu?: string | null
+          pasaport_numarasi?: string | null
+          pasaport_gecerlilik_tarihi?: string | null
+          vize_giris_turu?: string | null
+          vize_bitis_tarihi?: string | null
+          kan_grubu?: string | null
+          kronik_hastalik?: string | null
+          engel_durumu?: string | null
+          engel_orani?: number | null
+          surekli_ilac?: string | null
+          calisma_durumu?: string | null
+          konut_durumu?: string | null
+          kira_tutari?: number | null
+          es_adi?: string | null
+          es_telefon?: string | null
+          ailedeki_kisi_sayisi?: number | null
+          cocuk_sayisi?: number | null
+          yetim_sayisi?: number | null
+          calisan_sayisi?: number | null
+          bakmakla_yukumlu_sayisi?: number | null
+          sponsorluk_tipi?: 'bireysel' | 'kurumsal' | 'yok' | null
+          riza_beyani_durumu?: 'alinmadi' | 'alindi' | 'reddetti' | null
           updated_at?: string
         }
       }
@@ -265,8 +398,13 @@ export interface Database {
       social_aid_applications: {
         Row: {
           id: number
-          basvuran_id: number
-          yardim_turu: string
+          basvuran_id: number | null
+          basvuran_ad: string | null
+          basvuran_soyad: string | null
+          basvuran_tc_kimlik_no: string | null
+          basvuran_telefon: string | null
+          basvuran_adres: string | null
+          yardim_turu: 'ayni' | 'nakdi' | 'egitim' | 'saglik' | 'kira' | 'fatura' | string
           talep_edilen_tutar: number | null
           onaylanan_tutar: number | null
           durum: 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'
@@ -279,8 +417,13 @@ export interface Database {
         }
         Insert: {
           id?: number
-          basvuran_id: number
-          yardim_turu: string
+          basvuran_id?: number | null
+          basvuran_ad?: string | null
+          basvuran_soyad?: string | null
+          basvuran_tc_kimlik_no?: string | null
+          basvuran_telefon?: string | null
+          basvuran_adres?: string | null
+          yardim_turu: 'ayni' | 'nakdi' | 'egitim' | 'saglik' | 'kira' | 'fatura' | string
           talep_edilen_tutar?: number | null
           onaylanan_tutar?: number | null
           durum?: 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'
@@ -292,8 +435,13 @@ export interface Database {
           updated_at?: string
         }
         Update: {
-          basvuran_id?: number
-          yardim_turu?: string
+          basvuran_id?: number | null
+          basvuran_ad?: string | null
+          basvuran_soyad?: string | null
+          basvuran_tc_kimlik_no?: string | null
+          basvuran_telefon?: string | null
+          basvuran_adres?: string | null
+          yardim_turu?: 'ayni' | 'nakdi' | 'egitim' | 'saglik' | 'kira' | 'fatura' | string
           talep_edilen_tutar?: number | null
           onaylanan_tutar?: number | null
           durum?: 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'
@@ -312,6 +460,7 @@ export interface Database {
           odeme_tarihi: string
           odeme_yontemi: 'nakit' | 'havale' | 'elden'
           durum: 'beklemede' | 'odendi' | 'iptal'
+          makbuz_no: string | null
           notlar: string | null
           created_at: string
         }
@@ -323,6 +472,7 @@ export interface Database {
           odeme_tarihi?: string
           odeme_yontemi: 'nakit' | 'havale' | 'elden'
           durum?: 'beklemede' | 'odendi' | 'iptal'
+          makbuz_no?: string | null
           notlar?: string | null
           created_at?: string
         }
@@ -331,7 +481,119 @@ export interface Database {
           odeme_tarihi?: string
           odeme_yontemi?: 'nakit' | 'havale' | 'elden'
           durum?: 'beklemede' | 'odendi' | 'iptal'
+          makbuz_no?: string | null
           notlar?: string | null
+        }
+      }
+      documents: {
+        Row: {
+          id: string
+          beneficiary_id: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          file_size: number
+          document_type: 'kimlik' | 'ikamet' | 'saglik' | 'gelir' | 'diger'
+          mime_type: string | null
+          is_verified: boolean
+          verification_date: string | null
+          verified_by: string | null
+          description: string | null
+          tags: string[] | null
+          storage_bucket: string
+          storage_path: string | null
+          entity_type: 'beneficiary' | 'member' | 'application' | 'payment' | 'other' | null
+          entity_id: number | null
+          uploaded_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          beneficiary_id?: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          file_size: number
+          document_type: 'kimlik' | 'ikamet' | 'saglik' | 'gelir' | 'diger'
+          mime_type?: string | null
+          is_verified?: boolean
+          verification_date?: string | null
+          verified_by?: string | null
+          description?: string | null
+          tags?: string[] | null
+          storage_bucket?: string
+          storage_path?: string | null
+          entity_type?: 'beneficiary' | 'member' | 'application' | 'payment' | 'other' | null
+          entity_id?: number | null
+          uploaded_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          beneficiary_id?: string | null
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          file_size?: number
+          document_type?: 'kimlik' | 'ikamet' | 'saglik' | 'gelir' | 'diger'
+          mime_type?: string | null
+          is_verified?: boolean
+          verification_date?: string | null
+          verified_by?: string | null
+          description?: string | null
+          tags?: string[] | null
+          storage_bucket?: string
+          storage_path?: string | null
+          entity_type?: 'beneficiary' | 'member' | 'application' | 'payment' | 'other' | null
+          entity_id?: number | null
+          uploaded_by?: string | null
+        }
+      }
+      audit_logs: {
+        Row: {
+          id: string
+          user_id: string | null
+          action: string
+          table_name: string
+          record_id: string | null
+          old_data: Json | null
+          new_data: Json | null
+          ip_address: string | null
+          action_type: 'create' | 'update' | 'delete' | 'view' | 'export' | 'login' | 'logout' | 'access_denied' | null
+          entity_name: string | null
+          change_summary: string | null
+          severity: 'info' | 'warning' | 'critical'
+          status: 'success' | 'failure' | 'attempted'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          action: string
+          table_name: string
+          record_id?: string | null
+          old_data?: Json | null
+          new_data?: Json | null
+          ip_address?: string | null
+          action_type?: 'create' | 'update' | 'delete' | 'view' | 'export' | 'login' | 'logout' | 'access_denied' | null
+          entity_name?: string | null
+          change_summary?: string | null
+          severity?: 'info' | 'warning' | 'critical'
+          status?: 'success' | 'failure' | 'attempted'
+          created_at?: string
+        }
+        Update: {
+          user_id?: string | null
+          action?: string
+          table_name?: string
+          record_id?: string | null
+          old_data?: Json | null
+          new_data?: Json | null
+          ip_address?: string | null
+          action_type?: 'create' | 'update' | 'delete' | 'view' | 'export' | 'login' | 'logout' | 'access_denied' | null
+          entity_name?: string | null
+          change_summary?: string | null
+          severity?: 'info' | 'warning' | 'critical'
+          status?: 'success' | 'failure' | 'attempted'
         }
       }
       hospitals: {

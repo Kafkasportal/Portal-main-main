@@ -1,0 +1,98 @@
+# =============================================================================
+# KafkasDer MCP Health Check Workflow
+# =============================================================================
+# MCP servislerinin durumunu kontrol eder
+# =============================================================================
+
+name: MCP Health Check
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Her 6 saatte bir
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: 🔗 MCP Services Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🔗 Check Supabase
+        id: supabase
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}/rest/v1/" \
+            -H "apikey: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}")
+          if [ "$response" = "200" ] || [ "$response" = "401" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $response)" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 🔗 Check Sentry
+        id: sentry
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://sentry.io/api/0/")
+          if [ "$response" = "200" ] || [ "$response" = "401" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $response)" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 🔗 Check Render
+        id: render
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.render.com/v1/services" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}")
+          if [ "$response" = "200" ] || [ "$response" = "401" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $response)" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 🔗 Check StormMCP
+        id: stormmcp
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${{ secrets.STORMMCP_URL }}" \
+            -H "X-API-Key: ${{ secrets.STORMMCP_API_KEY }}" \
+            -H "Accept: application/json")
+          if [ "$response" = "200" ] || [ "$response" = "400" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $response)" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 📊 Generate Report
+        run: |
+          echo "## 🔗 MCP Health Check Report" > health-report.md
+          echo "" >> health-report.md
+          echo "**Time**: $(date -u)" >> health-report.md
+          echo "" >> health-report.md
+          echo "| Service | Status |" >> health-report.md
+          echo "|---------|--------|" >> health-report.md
+          echo "| Supabase | ${{ steps.supabase.outputs.status }} |" >> health-report.md
+          echo "| Sentry | ${{ steps.sentry.outputs.status }} |" >> health-report.md
+          echo "| Render | ${{ steps.render.outputs.status }} |" >> health-report.md
+          echo "| StormMCP | ${{ steps.stormmcp.outputs.status }} |" >> health-report.md
+          cat health-report.md
+
+      - name: 📤 Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-health-report
+          path: health-report.md
+          retention-days: 7

@@ -6,6 +6,85 @@ import * as Sentry from '@sentry/nextjs'
 
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
 
+// Helper: Check if error should be filtered (edge-specific)
+function shouldFilterEdgeError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const message = error.message.toLowerCase()
+
+  // Skip connection reset errors (common in serverless/edge environments)
+  if (
+    message.includes('econnreset') ||
+    message.includes('socket hang up')
+  ) {
+    return true
+  }
+
+  // Skip timeout errors that may be caused by slow client connections
+  return message.includes('timeout') && message.includes('client')
+}
+
+// Helper: Strip sensitive headers (edge-specific with more keys)
+function stripEdgeHeaders(
+  headers: Record<string, string>
+): Record<string, string> {
+  const filtered = { ...headers }
+  const sensitiveKeys = [
+    'Authorization',
+    'authorization',
+    'Cookie',
+    'cookie',
+    'x-supabase-auth',
+    'x-api-key',
+  ]
+  sensitiveKeys.forEach((key) => delete filtered[key])
+  return filtered
+}
+
+// Helper: Strip sensitive data from request body (edge-specific)
+function stripEdgeSensitiveData(data: unknown): unknown {
+  if (typeof data !== 'object' || data === null) {
+    return data
+  }
+
+  const sensitiveKeys = [
+    'password',
+    'token',
+    'secret',
+    'api_key',
+    'apiKey',
+    'access_token',
+    'refresh_token',
+    'service_role_key',
+  ]
+  const result = { ...data }
+
+  for (const key of sensitiveKeys) {
+    if (key in result) {
+      ;(result as Record<string, unknown>)[key] = '[FILTERED]'
+    }
+  }
+
+  return result
+}
+
+// Helper: Process and sanitize event for edge runtime
+function sanitizeEdgeEvent(event: Sentry.Event): Sentry.Event {
+  // Strip sensitive data from error contexts
+  if (event.request?.headers) {
+    event.request.headers = stripEdgeHeaders(event.request.headers)
+  }
+
+  // Strip passwords from request data
+  if (event.request?.data) {
+    event.request.data = stripEdgeSensitiveData(event.request.data)
+  }
+
+  return event
+}
+
 // Gracefully skip initialization if DSN is not configured
 if (!SENTRY_DSN) {
   if (process.env.NODE_ENV === 'development') {
@@ -39,59 +118,12 @@ if (!SENTRY_DSN) {
       const error = hint.originalException
 
       // Filter out known non-critical errors
-      if (error instanceof Error) {
-        const message = error.message.toLowerCase()
-
-        // Skip connection reset errors (common in serverless/edge environments)
-        if (
-          message.includes('econnreset') ||
-          message.includes('socket hang up')
-        ) {
-          return null
-        }
-
-        // Skip timeout errors that may be caused by slow client connections
-        if (message.includes('timeout') && message.includes('client')) {
-          return null
-        }
+      if (shouldFilterEdgeError(error)) {
+        return null
       }
 
-      // Strip sensitive data from error contexts
-      if (event.request?.headers) {
-        // Remove Authorization header to prevent token leakage
-        delete event.request.headers['Authorization']
-        delete event.request.headers['authorization']
-        // Remove cookies to prevent session token exposure
-        delete event.request.headers['Cookie']
-        delete event.request.headers['cookie']
-        // Remove other sensitive headers
-        delete event.request.headers['x-supabase-auth']
-        delete event.request.headers['x-api-key']
-      }
-
-      // Strip sensitive data from request body
-      if (event.request?.data) {
-        const data = event.request.data
-        if (typeof data === 'object' && data !== null) {
-          const sensitiveKeys = [
-            'password',
-            'token',
-            'secret',
-            'api_key',
-            'apiKey',
-            'access_token',
-            'refresh_token',
-            'service_role_key',
-          ]
-          for (const key of sensitiveKeys) {
-            if (key in data) {
-              ;(data as Record<string, unknown>)[key] = '[FILTERED]'
-            }
-          }
-        }
-      }
-
-      return event
+      // Sanitize event data
+      return sanitizeEdgeEvent(event) as Sentry.ErrorEvent
     },
 
     // Set sample rate for errors (1.0 means capture all errors)

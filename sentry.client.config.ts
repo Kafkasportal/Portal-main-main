@@ -6,6 +6,71 @@ import * as Sentry from '@sentry/nextjs'
 
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
 
+// Helper: Check if error should be filtered
+function shouldFilterError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const message = error.message.toLowerCase()
+  const filterPatterns = [
+    'extension',
+    'chrome-extension',
+    'moz-extension',
+    'resizeobserver',
+  ]
+
+  // Skip network errors that may be caused by user connectivity issues
+  if (message.includes('failed to fetch') && message.includes('network')) {
+    return true
+  }
+
+  return filterPatterns.some((pattern) => message.includes(pattern))
+}
+
+// Helper: Strip sensitive headers
+function stripSensitiveHeaders(
+  headers: Record<string, string>
+): Record<string, string> {
+  const filtered = { ...headers }
+  const sensitiveKeys = ['Authorization', 'authorization', 'Cookie', 'cookie']
+  sensitiveKeys.forEach((key) => delete filtered[key])
+  return filtered
+}
+
+// Helper: Strip sensitive data from request body
+function stripSensitiveData(data: unknown): unknown {
+  if (typeof data !== 'object' || data === null) {
+    return data
+  }
+
+  const sensitiveKeys = ['password', 'token', 'secret', 'api_key']
+  const result = { ...data }
+
+  for (const key of sensitiveKeys) {
+    if (key in result) {
+      ;(result as Record<string, unknown>)[key] = '[FILTERED]'
+    }
+  }
+
+  return result
+}
+
+// Helper: Process and sanitize event
+function sanitizeEvent(event: Sentry.Event): Sentry.Event {
+  // Strip sensitive data from error contexts
+  if (event.request?.headers) {
+    event.request.headers = stripSensitiveHeaders(event.request.headers)
+  }
+
+  // Strip passwords from request data
+  if (event.request?.data) {
+    event.request.data = stripSensitiveData(event.request.data)
+  }
+
+  return event
+}
+
 // Gracefully skip initialization if DSN is not configured
 if (!SENTRY_DSN) {
   if (process.env.NODE_ENV === 'development') {
@@ -19,7 +84,10 @@ if (!SENTRY_DSN) {
 
     // Release tracking - associates errors with specific deployments
     // This enables: regression detection, commit association, deploy notifications
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || process.env.VERCEL_GIT_COMMIT_SHA || 'development',
+    release:
+      process.env.NEXT_PUBLIC_SENTRY_RELEASE ||
+      process.env.VERCEL_GIT_COMMIT_SHA ||
+      'development',
 
     // Environment configuration
     environment: process.env.NODE_ENV || 'development',
@@ -39,57 +107,13 @@ if (!SENTRY_DSN) {
     beforeSend(event, hint) {
       const error = hint.originalException
 
-      // Filter out browser extension errors
-      if (error instanceof Error) {
-        const message = error.message.toLowerCase()
-
-        // Skip common browser extension errors
-        if (
-          message.includes('extension') ||
-          message.includes('chrome-extension') ||
-          message.includes('moz-extension')
-        ) {
-          return null
-        }
-
-        // Skip ResizeObserver errors (common browser quirk)
-        if (message.includes('resizeobserver')) {
-          return null
-        }
-
-        // Skip network errors that may be caused by user connectivity issues
-        if (
-          message.includes('failed to fetch') &&
-          message.includes('network')
-        ) {
-          return null
-        }
+      // Filter out browser extension errors and other non-critical issues
+      if (shouldFilterError(error)) {
+        return null
       }
 
-      // Strip sensitive data from error contexts
-      if (event.request?.headers) {
-        // Remove Authorization header to prevent token leakage
-        delete event.request.headers['Authorization']
-        delete event.request.headers['authorization']
-        // Remove cookies to prevent session token exposure
-        delete event.request.headers['Cookie']
-        delete event.request.headers['cookie']
-      }
-
-      // Strip passwords from request data
-      if (event.request?.data) {
-        const data = event.request.data
-        if (typeof data === 'object' && data !== null) {
-          const sensitiveKeys = ['password', 'token', 'secret', 'api_key']
-          for (const key of sensitiveKeys) {
-            if (key in data) {
-              ;(data as Record<string, unknown>)[key] = '[FILTERED]'
-            }
-          }
-        }
-      }
-
-      return event
+      // Sanitize event data
+      return sanitizeEvent(event) as Sentry.ErrorEvent
     },
 
     // Configure integrations

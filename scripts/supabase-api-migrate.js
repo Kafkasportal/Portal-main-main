@@ -191,5 +191,12 @@ async function runMigrations() {
   }
 }
 
-// Run
-runMigrations().catch(console.error);
+// Run with async IIFE pattern (compatible with CommonJS)
+(async () => {
+  try {
+    await runMigrations();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+})();

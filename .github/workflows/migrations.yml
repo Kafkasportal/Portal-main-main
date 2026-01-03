@@ -9,7 +9,7 @@ name: Database Migrations
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'supabase/migrations/**'
   workflow_dispatch:

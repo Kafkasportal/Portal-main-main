@@ -17,11 +17,6 @@ export function createClient() {
 let browserClient: ReturnType<typeof createBrowserClient> | null = null
 
 export function getSupabaseClient() {
-  // Only create client on browser
-  if (typeof window === 'undefined') {
-    throw new Error('getSupabaseClient can only be called on the client-side')
-  }
-
   if (!browserClient) {
     browserClient = createClient()
   }

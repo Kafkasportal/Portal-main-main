@@ -26,7 +26,8 @@ async function fetchUserPermissions(userId: string): Promise<{
   // Get user's role
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select(`
+    .select(
+      `
       role_id,
       roles (
         id,
@@ -37,7 +38,8 @@ async function fetchUserPermissions(userId: string): Promise<{
         is_system_role,
         is_active
       )
-    `)
+    `
+    )
     .eq('id', userId)
     .single()
 
@@ -46,12 +48,19 @@ async function fetchUserPermissions(userId: string): Promise<{
   const role = userData?.roles
     ? {
         id: (userData.roles as Record<string, unknown>).id as string,
-        name: (userData.roles as Record<string, unknown>).name as PermissionName,
-        displayName: (userData.roles as Record<string, unknown>).display_name as string,
-        description: (userData.roles as Record<string, unknown>).description as string | undefined,
-        hierarchyLevel: (userData.roles as Record<string, unknown>).hierarchy_level as number,
-        isSystemRole: (userData.roles as Record<string, unknown>).is_system_role as boolean,
-        isActive: (userData.roles as Record<string, unknown>).is_active as boolean,
+        name: (userData.roles as Record<string, unknown>)
+          .name as PermissionName,
+        displayName: (userData.roles as Record<string, unknown>)
+          .display_name as string,
+        description: (userData.roles as Record<string, unknown>).description as
+          | string
+          | undefined,
+        hierarchyLevel: (userData.roles as Record<string, unknown>)
+          .hierarchy_level as number,
+        isSystemRole: (userData.roles as Record<string, unknown>)
+          .is_system_role as boolean,
+        isActive: (userData.roles as Record<string, unknown>)
+          .is_active as boolean,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -60,9 +69,11 @@ async function fetchUserPermissions(userId: string): Promise<{
   // Get role permissions
   const { data: rolePerms, error: rolePermsError } = await supabase
     .from('role_permissions')
-    .select(`
+    .select(
+      `
       permissions (name)
-    `)
+    `
+    )
     .eq('role_id', userData?.role_id)
 
   if (rolePermsError) throw rolePermsError
@@ -70,10 +81,12 @@ async function fetchUserPermissions(userId: string): Promise<{
   // Get direct user permissions
   const { data: userPerms, error: userPermsError } = await supabase
     .from('user_permissions')
-    .select(`
+    .select(
+      `
       permissions (name),
       expires_at
-    `)
+    `
+    )
     .eq('user_id', userId)
 
   if (userPermsError) throw userPermsError
@@ -88,15 +101,20 @@ async function fetchUserPermissions(userId: string): Promise<{
     }
   })
 
-  userPerms?.forEach((up: { permissions: { name: string } | null; expires_at: string | null }) => {
-    const perm = up.permissions
-    if (perm?.name) {
-      // Check if not expired
-      if (!up.expires_at || new Date(up.expires_at) > new Date()) {
-        permissions.add(perm.name as PermissionName)
+  userPerms?.forEach(
+    (up: {
+      permissions: { name: string } | null
+      expires_at: string | null
+    }) => {
+      const perm = up.permissions
+      if (perm?.name) {
+        // Check if not expired
+        if (!up.expires_at || new Date(up.expires_at) > new Date()) {
+          permissions.add(perm.name as PermissionName)
+        }
       }
     }
-  })
+  )
 
   return {
     permissions: Array.from(permissions),
@@ -115,7 +133,10 @@ export function usePermissions(userId?: string): UserPermissionsData & {
 } {
   const { data, isLoading, error } = useQuery({
     queryKey: ['user-permissions', userId],
-    queryFn: () => (userId ? fetchUserPermissions(userId) : Promise.resolve({ permissions: [], role: null })),
+    queryFn: () =>
+      userId
+        ? fetchUserPermissions(userId)
+        : Promise.resolve({ permissions: [], role: null }),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -161,11 +182,10 @@ export function usePermissions(userId?: string): UserPermissionsData & {
  * Hook to fetch all roles
  */
 export function useRoles() {
-  const supabase = getSupabaseClient()
-
   return useQuery({
     queryKey: ['roles'],
     queryFn: async () => {
+      const supabase = getSupabaseClient()
       const { data, error } = await supabase
         .from('roles')
         .select('*')
@@ -192,11 +212,10 @@ export function useRoles() {
  * Hook to fetch all permissions
  */
 export function useAllPermissions() {
-  const supabase = getSupabaseClient()
-
   return useQuery({
     queryKey: ['permissions'],
     queryFn: async () => {
+      const supabase = getSupabaseClient()
       const { data, error } = await supabase
         .from('permissions')
         .select('*')
@@ -221,19 +240,20 @@ export function useAllPermissions() {
  * Hook to fetch role with its permissions
  */
 export function useRolePermissions(roleId?: string) {
-  const supabase = getSupabaseClient()
-
   return useQuery({
     queryKey: ['role-permissions', roleId],
     queryFn: async () => {
       if (!roleId) return []
 
+      const supabase = getSupabaseClient()
       const { data, error } = await supabase
         .from('role_permissions')
-        .select(`
+        .select(
+          `
           permission_id,
           permissions (*)
-        `)
+        `
+        )
         .eq('role_id', roleId)
 
       if (error) throw error
@@ -273,7 +293,8 @@ export function RequirePermission({
   children,
   requireAll = false,
 }: RequirePermissionProps) {
-  const { hasAnyPermission, hasAllPermissions, isLoading } = usePermissions(userId)
+  const { hasAnyPermission, hasAllPermissions, isLoading } =
+    usePermissions(userId)
 
   if (isLoading) {
     return null

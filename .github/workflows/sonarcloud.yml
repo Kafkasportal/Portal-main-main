@@ -75,7 +75,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=Kafkasportal_Portal-main-main
-            -Dsonar.organization=kafkasder-portal
+            -Dsonar.organization=kafkasportal
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.sources=src
             -Dsonar.tests=src

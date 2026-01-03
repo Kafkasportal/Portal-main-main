@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   escapeHTML,
   stripHTML,
@@ -261,9 +261,9 @@ describe('sanitize', () => {
     })
 
     it('should detect data:text/html', () => {
-      expect(containsXSSPatterns('data:text/html,<script>alert(1)</script>')).toBe(
-        true
-      )
+      expect(
+        containsXSSPatterns('data:text/html,<script>alert(1)</script>')
+      ).toBe(true)
     })
 
     it('should detect eval', () => {
@@ -342,7 +342,9 @@ describe('sanitize', () => {
     })
 
     it('should sanitize email type', () => {
-      const result = sanitizeAndValidate('  TEST@EXAMPLE.COM  ', { type: 'email' })
+      const result = sanitizeAndValidate('  TEST@EXAMPLE.COM  ', {
+        type: 'email',
+      })
       expect(result.isValid).toBe(true)
       expect(result.sanitized).toBe('test@example.com')
     })

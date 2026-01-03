@@ -60,10 +60,11 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
         tc_kimlik_no: data.tcKimlikNo || null,
         ad: data.ad,
         soyad: data.soyad,
-        telefon: data.telefon,
-        durum: 'aktif',
+        telefon: data.telefon || '',
+        cinsiyet: 'erkek' as const, // Default
+        durum: 'aktif' as const,
         kategori: 'genel', // Default category
-        ihtiyac_durumu: 'orta', // Default need level
+        ihtiyac_durumu: 'orta' as const, // Default need level
         notlar: 'Hızlı kayıt ile oluşturuldu. Detaylar doldurulacak.',
       })
 
@@ -72,11 +73,16 @@ export function QuickRegisterDialog({ children }: QuickRegisterDialogProps) {
       })
 
       setOpen(false)
-      router.push(`/sosyal-yardim/ihtiyac-sahipleri/${newBeneficiary.id}?edit=true`)
+      router.push(
+        `/sosyal-yardim/ihtiyac-sahipleri/${newBeneficiary.id}?edit=true`
+      )
     } catch (error) {
       console.error('Quick register error:', error)
       toast.error('Bir hata oluştu', {
-        description: error instanceof Error ? error.message : 'İhtiyaç sahibi kaydı oluşturulamadı',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'İhtiyaç sahibi kaydı oluşturulamadı',
       })
     } finally {
       setIsLoading(false)

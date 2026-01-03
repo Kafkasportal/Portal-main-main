@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useDebounce } from '../use-debounce'
 
 describe('useDebounce', () => {
@@ -153,7 +153,7 @@ describe('useDebounce', () => {
     )
 
     rerender({ value: 'updated', delay: 100 })
-    
+
     act(() => {
       vi.advanceTimersByTime(100)
     })

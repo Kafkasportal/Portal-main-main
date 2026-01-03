@@ -128,7 +128,7 @@ export function KumbaraToplamaDialog({
   const { mutate, isPending } = useMutation({
     mutationFn: collectKumbara,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
+      queryClient.invalidateQueries({ queryKey: ['kumbaras'] })
       toast.success('Toplama başarıyla kaydedildi', {
         description: `${formatCurrency(form.getValues('tutar'))} toplandı`,
       })

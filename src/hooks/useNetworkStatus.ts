@@ -109,7 +109,7 @@ export function useOnNetworkChange(
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const lastStatusRef = useRef<boolean>(isOnline)
 
-  // Stable callback refs - update in effect to avoid render-time mutation
+  // Stable callback refs - update in effect to arender-time mutation
   const onOnlineRef = useRef(onOnline)
   const onOfflineRef = useRef(onOffline)
 
@@ -120,7 +120,7 @@ export function useOnNetworkChange(
   })
 
   useEffect(() => {
-    // Skip first render to avoid triggering callbacks on mount
+    // Skip first render to atriggering callbacks on mount
     if (isFirstRender.current) {
       isFirstRender.current = false
       lastStatusRef.current = isOnline
@@ -180,7 +180,7 @@ export function useOnReconnect(
   const hasTriggeredRef = useRef(false)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Keep callback ref updated in effect to avoid render-time mutation
+  // Keep callback ref updated in effect to arender-time mutation
   useEffect(() => {
     callbackRef.current = callback
   })
@@ -232,7 +232,7 @@ export function useOnReconnect(
  * Returns false during SSR or in environments without network detection support
  */
 export function useCanDetectNetwork(): boolean {
-  // Use lazy initialization to avoid effect-based setState
+  // Use lazy initialization to aeffect-based setState
   const [canDetect] = useState(() => {
     if (typeof window === 'undefined') return false
     return typeof navigator !== 'undefined' && 'onLine' in navigator

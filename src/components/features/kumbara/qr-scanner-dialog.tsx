@@ -109,7 +109,7 @@ export function QRScannerDialog({
           }
         }
 
-        void decode()
+        decode()
       }
     } catch {
       // Camera error - silent in production

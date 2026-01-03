@@ -114,7 +114,7 @@ export const ScanQueueIndicator = memo(function ScanQueueIndicator({
 
   useEffect(() => {
     if (isDbAvailable) {
-      void refreshQueueStats()
+      refreshQueueStats()
     }
   }, [isDbAvailable, refreshQueueStats])
 

@@ -174,7 +174,7 @@ export function useCreateDonation(
   return useMutation({
     mutationFn: service.createDonation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
       toast.success('Bağış başarıyla kaydedildi')
     },
@@ -232,7 +232,7 @@ export function useCreateMember(
   return useMutation({
     mutationFn: service.createMember,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.members.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.members.all })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
       toast.success('Üye kaydı başarıyla oluşturuldu')
     },
@@ -290,7 +290,7 @@ export function useCreateBeneficiary(
   return useMutation({
     mutationFn: service.createBeneficiary,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.beneficiaries.all,
       })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
@@ -320,10 +320,10 @@ export function useUpdateBeneficiary(
     mutationFn: ({ id, data }) =>
       service.updateBeneficiary(Number.parseInt(id, 10), data),
     onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.beneficiaries.all,
       })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.beneficiaries.detail(variables.id),
       })
       toast.success('İhtiyaç sahibi bilgileri güncellendi')
@@ -383,10 +383,10 @@ export function useUpdateApplicationStatus(
     mutationFn: (args) =>
       service.updateApplicationStatus(args[0], args[1], args[2]),
     onSuccess: (_data, [id]) => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.applications.all,
       })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.applications.detail(id),
       })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
@@ -445,7 +445,7 @@ export function useCreateKumbara(
   return useMutation({
     mutationFn: service.createKumbara,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
       toast.success('Kumbara başarıyla oluşturuldu')
     },
     onError: (error) => {
@@ -542,7 +542,7 @@ export function useCreateUser(
   return useMutation({
     mutationFn: service.createUser,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       toast.success('Kullanıcı başarıyla oluşturuldu')
     },
     onError: (error) => {
@@ -568,8 +568,8 @@ export function useUpdateUser(
   return useMutation({
     mutationFn: ({ id, data }) => service.updateUser(id, data),
     onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.id),
       })
       toast.success('Kullanıcı bilgileri güncellendi')
@@ -597,7 +597,7 @@ export function useDeleteUser(
   return useMutation({
     mutationFn: service.deleteUser,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       toast.success('Kullanıcı başarıyla silindi')
     },
     onError: (error) => {
@@ -623,8 +623,8 @@ export function useUpdateProfile(
   return useMutation({
     mutationFn: ({ id, data }) => service.updateUserProfile(id, data),
     onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.users.current })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.current })
+      queryClient.invalidateQueries({
         queryKey: queryKeys.users.detail(variables.id),
       })
       toast.success('Profil bilgileri güncellendi')
@@ -694,7 +694,7 @@ export function useUpdateNotificationPreferences(
     mutationFn: (preferences) =>
       service.updateNotificationPreferences(userId, preferences),
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.users.notifications(userId),
       })
       toast.success('Bildirim tercihleri kaydedildi')
@@ -750,7 +750,7 @@ export function useCreatePayment(
   return useMutation({
     mutationFn: service.createPayment,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.payments.all,
       })
       toast.success('Ödeme başarıyla kaydedildi')
@@ -776,10 +776,10 @@ export function useUpdatePayment(
   return useMutation({
     mutationFn: ({ id, data }) => service.updatePayment(id, data),
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.payments.all,
       })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.payments.detail(data.id),
       })
       toast.success('Ödeme başarıyla güncellendi')
@@ -801,7 +801,7 @@ export function useDeletePayment(
   return useMutation({
     mutationFn: service.deletePayment,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.payments.all,
       })
       toast.success('Ödeme başarıyla silindi')
@@ -893,7 +893,7 @@ export function useCreateInKindAid(
   return useMutation({
     mutationFn: service.createInKindAid,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.inKindAids.all,
       })
       toast.success('Ayni yardım başarıyla kaydedildi')
@@ -917,10 +917,10 @@ export function useUpdateInKindAid(
   return useMutation({
     mutationFn: ({ id, data }) => service.updateInKindAid(id, data),
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.inKindAids.all,
       })
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.inKindAids.detail(data.id),
       })
       toast.success('Ayni yardım başarıyla güncellendi')
@@ -940,7 +940,7 @@ export function useDeleteInKindAid(
   return useMutation({
     mutationFn: service.deleteInKindAid,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: queryKeys.socialAid.inKindAids.all,
       })
       toast.success('Ayni yardım başarıyla silindi')
@@ -969,7 +969,7 @@ export function useCreateHospital() {
   return useMutation({
     mutationFn: service.createHospital,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.hospitals.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.hospitals.all })
       toast.success('Hastane kaydı oluşturuldu')
     },
   })
@@ -995,7 +995,7 @@ export function useCreateReferral() {
   return useMutation({
     mutationFn: service.createReferral,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.all })
       toast.success('Sevk kaydı oluşturuldu')
     },
   })
@@ -1006,8 +1006,8 @@ export function useUpdateReferral(id: string) {
   return useMutation({
     mutationFn: (data: Parameters<typeof service.updateReferral>[1]) => service.updateReferral(id, data),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.detail(id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.detail(id) })
       toast.success('Sevk durumu güncellendi')
     },
   })
@@ -1026,7 +1026,7 @@ export function useCreateAppointment(referralId: string) {
   return useMutation({
     mutationFn: service.createAppointment,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.appointments(referralId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.appointments(referralId) })
       toast.success('Randevu oluşturuldu')
     },
   })
@@ -1045,7 +1045,7 @@ export function useCreateTreatmentCost(referralId: string) {
   return useMutation({
     mutationFn: service.createTreatmentCost,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.costs(referralId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.costs(referralId) })
       toast.success('Gider kaydı eklendi')
     },
   })
@@ -1064,7 +1064,7 @@ export function useCreateOutcome(referralId: string) {
   return useMutation({
     mutationFn: service.createTreatmentOutcome,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.outcomes(referralId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.outcomes(referralId) })
       toast.success('Tedavi sonucu kaydedildi')
     },
   })
@@ -1075,7 +1075,7 @@ export function useUpdateOutcome(referralId: string) {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Parameters<typeof service.updateTreatmentOutcome>[1] }) => service.updateTreatmentOutcome(id, data),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.referrals.outcomes(referralId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.referrals.outcomes(referralId) })
       toast.success('Tedavi sonucu güncellendi')
     },
   })

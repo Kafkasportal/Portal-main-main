@@ -33,10 +33,16 @@ Object.defineProperty(window, 'matchMedia', {
 // Mock IntersectionObserver (for lazy loading components)
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
-  disconnect() {}
-  observe() {}
+  disconnect() {
+    // Mock: no-op for testing
+  }
+  observe() {
+    // Mock: no-op for testing
+  }
   takeRecords() {
     return []
   }
-  unobserve() {}
+  unobserve() {
+    // Mock: no-op for testing
+  }
 } as unknown as typeof IntersectionObserver

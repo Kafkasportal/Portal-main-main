@@ -55,8 +55,8 @@ export default function ApplicationDetailPage({
         durum as 'beklemede' | 'inceleniyor' | 'onaylandi' | 'reddedildi'
       ),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['application', id] })
-      void queryClient.invalidateQueries({ queryKey: ['applications'] })
+      queryClient.invalidateQueries({ queryKey: ['application', id] })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
       toast.success('Başvuru durumu başarıyla güncellendi')
     },
     onError: () => {

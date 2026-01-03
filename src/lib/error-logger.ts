@@ -75,7 +75,7 @@ class ErrorLogger {
       // Get existing errors
       const existingErrors = this.getStoredErrors()
 
-      // Keep only last 10 errors to avoid filling localStorage
+      // Keep only last 10 errors to afilling localStorage
       const updatedErrors = [errorLog, ...existingErrors].slice(0, 10)
 
       localStorage.setItem('app_error_logs', JSON.stringify(updatedErrors))

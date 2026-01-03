@@ -380,9 +380,9 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
       }
 
       // Invalidate related queries on successful sync
-      void queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
 
       if (result.failed === 0) {
         toast.success(`${result.successful} tarama başarıyla senkronize edildi`)
@@ -475,9 +475,9 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
         return
       }
 
-      void queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
-      void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats })
 
       if (result.failed === 0) {
         toast.success(`${result.successful} tarama yeniden denendi ve başarılı`)
@@ -521,8 +521,8 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
     },
     onSuccess: (result) => {
       if (result.success) {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
-        void queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
+        queryClient.invalidateQueries({ queryKey: queryKeys.kumbaras.all })
+        queryClient.invalidateQueries({ queryKey: queryKeys.donations.all })
         toast.success('Tarama senkronize edildi')
       } else {
         toast.error(result.error || 'Tarama senkronize edilemedi')
@@ -568,7 +568,7 @@ export function useScanSync(options: ScanSyncOptions = {}): ScanSyncState {
     const store = useScanQueueStore.getState()
     store.checkDbAvailability()
     if (store.isDbAvailable) {
-      void store.refreshQueueStats()
+      store.refreshQueueStats()
     }
 
     // Cleanup: abort any pending delays

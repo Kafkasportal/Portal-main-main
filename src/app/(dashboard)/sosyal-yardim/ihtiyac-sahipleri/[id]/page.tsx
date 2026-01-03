@@ -164,7 +164,7 @@ export default function BeneficiaryDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  // Unwrap params immediately to avoid serialization issues
+  // Unwrap params immediately to aserialization issues
   const { id: idParam } = use(params)
   const isNew = idParam === 'yeni'
   const id = isNew ? 0 : Number.parseInt(idParam, 10)
@@ -296,8 +296,8 @@ export default function BeneficiaryDetailPage({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: (data: any) => updateBeneficiary(id, data),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['beneficiary', id] })
-      void queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
+      queryClient.invalidateQueries({ queryKey: ['beneficiary', id] })
+      queryClient.invalidateQueries({ queryKey: ['beneficiaries'] })
       toast.success('Kayıt başarıyla güncellendi')
       reset(undefined, { keepValues: true })
     },

@@ -75,11 +75,15 @@ echo "🔍 Doğrulama:"
 echo ""
 
 # Test connection
-node -e "
+ANON_KEY="${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}"
+if [ -z "$ANON_KEY" ]; then
+  echo "   ⚠️  NEXT_PUBLIC_SUPABASE_ANON_KEY not set, skipping test"
+else
+  node -e "
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(
   'https://$PROJECT_REF.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc2lpYXl5dnlnY2dlZ21xY292Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDg4NjMsImV4cCI6MjA4MTkyNDg2M30.blDE-L_aRNSwoawUCD3esFt_CMk2fhy8TpShsgyshZQ'
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
 async function test() {
@@ -99,7 +103,8 @@ async function test() {
 }
 
 test().catch(e => console.log('   ❌ Test hatası:', e.message));
-" 2>/dev/null || echo "   ⚠️  Node.js test atlandı"
+  " 2>/dev/null || echo "   ⚠️  Node.js test atlandı"
+fi
 
 echo ""
 echo "══════════════════════════════════════════════════════════════════════"

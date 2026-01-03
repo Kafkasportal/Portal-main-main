@@ -88,10 +88,10 @@ services:
         value: https://idsiipayyvgcgegmqcov.supabase.co
 
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc2lpYXl5dnlnY2dlZ21xY292Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDg4NjMsImV4cCI6MjA4MTkyNDg2M30.blDE-L_aRNSwoawUCD3esFt_CMk2fhy8TpShsgyshZQ
+        sync: false # Set via Render Dashboard - never commit this token
 
       - key: SUPABASE_SERVICE_ROLE_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc2lpYXl5dnlnY2dlZ21xY292Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjM0ODg2MywiZXhwIjoyMDgxOTI0ODYzfQ.Wv-s1d65uagiS6d0SCnfZKL3AGKQJelVWo13x5B4SZ4
+        sync: false # CRITICAL: Set via Render Dashboard - NEVER commit this token
 
       # API ayarları
       - key: NEXT_PUBLIC_API_URL
@@ -143,12 +143,10 @@ services:
 
       # MCP (Model Context Protocol) Configuration
       - key: RENDER_API_KEY
-        value: rnd_JWyvNZTTdcB00iGHghVUxWbESLZc
-        sync: false
+        sync: false # CRITICAL: Set via Render Dashboard - NEVER commit API keys
 
       - key: GITHUB_TOKEN
-        value: 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
-        sync: false
+        sync: false # CRITICAL: Set via Render Dashboard - NEVER commit GitHub tokens
 
       - key: RENDER_DEFAULT_WORKSPACE
         value: Kafkasportal

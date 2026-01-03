@@ -13,8 +13,14 @@ const path = require('path');
 
 const SUPABASE_PROJECT_REF = 'idsiiayyvygcgegmqcov';
 const SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`;
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc2lpYXl5dnlnY2dlZ21xY292Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjM0ODg2MywiZXhwIjoyMDgxOTI0ODYzfQ.Wv-s1d65uagiS6d0SCnfZKL3AGKQJelVWo13x5B4SZ4';
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SERVICE_ROLE_KEY) {
+  console.error('❌ ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required');
+  console.error('   Set it before running this script:');
+  console.error('   export SUPABASE_SERVICE_ROLE_KEY="your-key-here"');
+  process.exit(1);
+}
 
 /**
  * HTTP request helper

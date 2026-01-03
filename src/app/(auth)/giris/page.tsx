@@ -88,7 +88,11 @@ export default function LoginPage() {
                       placeholder="ornek@kafkasder.org veya demo"
                       autoComplete="email"
                       aria-label="E-posta adresi"
-                      aria-describedby={form.formState.errors.email ? `${field.name}-error` : undefined}
+                      aria-describedby={
+                        form.formState.errors.email
+                          ? `${field.name}-error`
+                          : undefined
+                      }
                       aria-invalid={!!form.formState.errors.email}
                       {...field}
                       onBlur={(e) => {
@@ -116,7 +120,11 @@ export default function LoginPage() {
                         placeholder="••••••••"
                         autoComplete="current-password"
                         aria-label="Şifre"
-                        aria-describedby={form.formState.errors.password ? `${field.name}-error` : undefined}
+                        aria-describedby={
+                          form.formState.errors.password
+                            ? `${field.name}-error`
+                            : undefined
+                        }
                         aria-invalid={!!form.formState.errors.password}
                         {...field}
                         onChange={(e) => {
@@ -130,7 +138,9 @@ export default function LoginPage() {
                         variant="ghost"
                         size="icon"
                         className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
-                        aria-label={showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                        aria-label={
+                          showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'
+                        }
                         aria-pressed={showPassword}
                         onClick={() => {
                           setShowPassword(!showPassword)
@@ -167,9 +177,9 @@ export default function LoginPage() {
               )}
             />
 
-            <Button 
-              type="submit" 
-              className="w-full" 
+            <Button
+              type="submit"
+              className="w-full"
               loading={isLoading}
               aria-label="Giriş yap"
               disabled={isLoading}
@@ -188,8 +198,9 @@ export default function LoginPage() {
         {/* Demo credentials hint */}
         <div className="bg-muted/50 mt-6 rounded-lg p-3 text-center">
           <p className="text-muted-foreground text-xs">
-            Demo: Herhangi bir e-posta ve 6+ karakterli şifre ile giriş
-            yapabilirsiniz
+            Demo Hesabı:{' '}
+            <span className="font-semibold">admin_test@kafkasder.org</span> /
+            Şifre: <span className="font-semibold">admin123456</span>
           </p>
         </div>
       </CardContent>

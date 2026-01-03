@@ -96,6 +96,7 @@ export function TreatmentOutcomeForm({ referralId, outcome, onSuccess }: Treatme
     })
   }
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form's watch API is standard usage
   const followUpNeeded = form.watch('follow_up_needed')
 
   return (

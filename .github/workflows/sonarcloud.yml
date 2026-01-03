@@ -74,7 +74,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=kafkasder-panel
+            -Dsonar.projectKey=Kafkasportal_Portal-main-main
             -Dsonar.organization=kafkasder-portal
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.sources=src
@@ -97,7 +97,7 @@ jobs:
 
             **Status**: ✅ Analysis Complete
 
-            [View detailed analysis on SonarCloud](https://sonarcloud.io/dashboard?id=kafkasder-panel)
+            [View detailed analysis on SonarCloud](https://sonarcloud.io/project/overview?id=Kafkasportal_Portal-main-main)
 
             **Quality Gate**: Pending review on SonarCloud
 
@@ -179,7 +179,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-          PROJECT_KEY: kafkasder-panel
+          PROJECT_KEY: Kafkasportal_Portal-main-main
 
       - name: 📢 Update PR Status
         if: failure()
@@ -191,7 +191,7 @@ jobs:
 
             **SonarCloud analysis detected issues that must be resolved before merge.**
 
-            [View detailed analysis on SonarCloud](https://sonarcloud.io/dashboard?id=kafkasder-panel)
+            [View detailed analysis on SonarCloud](https://sonarcloud.io/project/overview?id=Kafkasportal_Portal-main-main)
 
             **Required Actions:**
             - Review and fix critical issues
@@ -214,7 +214,7 @@ jobs:
               repo: context.repo.repo,
               sha: context.sha,
               state: 'failure',
-              target_url: 'https://sonarcloud.io/dashboard?id=kafkasder-panel',
+              target_url: 'https://sonarcloud.io/project/overview?id=Kafkasportal_Portal-main-main',
               description: 'Quality gate failed - review SonarCloud issues',
               context: 'sonarcloud-quality-gate'
             });

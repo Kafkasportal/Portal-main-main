@@ -17,7 +17,7 @@ const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN ||
 const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_JWyvNZTTdcB00iGHghVUxWbESLZc';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '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';
 const STORMMCP_URL = process.env.STORMMCP_URL || 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
-const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY || 'ag_HTt9LMOo0UuHA1v7nPFW+nQttGEMUco4OYNWDOf361o=';
+const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY || 'ag_HTt9LMOo0UuHA1v7nPFW+ucR9ITuqQVkMmCqkZDU8uo=';
 
 async function testSupabaseMCP() {
   console.log('🧪 Testing Supabase MCP...');

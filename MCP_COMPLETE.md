@@ -44,7 +44,7 @@ node scripts/test-all-mcps.js
 ✅ Render          PASS
 ✅ GitHub          PASS
 
-Total: 4/4 MCPs working
+Total: 5/5 MCPs working
 Success Rate: 100%
 ```
 
@@ -178,7 +178,7 @@ GITHUB_TOKEN=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
 ### Configuration
 ```env
 STORMMCP_URL=https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp
-STORMMCP_API_KEY=ag_HTt9LMOo...
+STORMMCP_API_KEY=ag_HTt9LMOo... (Updated 2026-01-03)
 ```
 
 ### Features

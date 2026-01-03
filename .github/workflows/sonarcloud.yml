@@ -1,0 +1,217 @@
+# =============================================================================
+# SonarCloud Code Analysis Pipeline
+# =============================================================================
+# Bu workflow, kod kalitesi ve güvenlik analizi için SonarCloud kullanır
+# MSP (Managed Service Provider) standartlarına uygun konfigürasyon
+# =============================================================================
+
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # =============================================================================
+  # SonarCloud Analysis
+  # =============================================================================
+  sonarcloud:
+    name: 🔍 SonarCloud Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # SonarCloud needs full history
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Lint
+        run: pnpm lint
+
+      - name: 📝 Type Check
+        run: pnpm type-check
+
+      - name: 🧪 Run Tests with Coverage
+        run: pnpm test:coverage
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: 📊 Prepare SonarCloud
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=kafkasder-panel
+            -Dsonar.organization=kafkasder-portal
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.spec.ts,**/*.test.tsx,**/*.spec.tsx
+            -Dsonar.exclusions=**/*.config.js,**/*.config.ts,**/node_modules/**,**/.next/**,**/out/**,**/coverage/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.tsconfigPath=tsconfig.json
+            -Dsonar.coverage.exclusions=**/*.test.ts,**/*.spec.ts,**/*.stories.tsx,**/*.d.ts
+            -Dsonar.eslint.reportPaths=eslint-report.json
+            -Dsonar.pmd.reportPaths=pmd-report.xml
+
+      - name: 📢 PR Comment with Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const message = `## 🔍 SonarCloud Analysis Results
+
+            **Status**: ✅ Analysis Complete
+
+            [View detailed analysis on SonarCloud](https://sonarcloud.io/dashboard?id=kafkasder-panel)
+
+            **Quality Gate**: Pending review on SonarCloud
+
+            ---
+            *Commit: ${context.sha.substring(0, 7)}*`;
+
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+  # =============================================================================
+  # Security Vulnerability Scan
+  # =============================================================================
+  security-scan:
+    name: 🔐 Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: sonarcloud
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔐 Audit Dependencies
+        run: pnpm audit --audit-level=moderate
+
+      - name: 🔍 OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'kafkasder-panel'
+          path: '.'
+          format: 'HTML'
+          out: 'dependency-check-reports'
+
+      - name: 📊 Upload Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: dependency-check-reports
+          retention-days: 30
+
+  # =============================================================================
+  # Quality Gate Enforcement
+  # =============================================================================
+  quality-gate:
+    name: 🚪 Quality Gate Check
+    runs-on: ubuntu-latest
+    needs: [sonarcloud, security-scan]
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🚪 Check Quality Gate Status
+        uses: sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+          PROJECT_KEY: kafkasder-panel
+
+      - name: 📢 Update PR Status
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const message = `## 🚨 Quality Gate Failed
+
+            **SonarCloud analysis detected issues that must be resolved before merge.**
+
+            [View detailed analysis on SonarCloud](https://sonarcloud.io/dashboard?id=kafkasder-panel)
+
+            **Required Actions:**
+            - Review and fix critical issues
+            - Address security vulnerabilities
+            - Improve test coverage if needed
+
+            ---
+            *Automated quality gate enforcement*`;
+
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+            // Add failing status check
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'failure',
+              target_url: 'https://sonarcloud.io/dashboard?id=kafkasder-panel',
+              description: 'Quality gate failed - review SonarCloud issues',
+              context: 'sonarcloud-quality-gate'
+            });

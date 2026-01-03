@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "kafkasportal",
+        "projectKey": "Kafkasportal_Portal-main-main"
+    }
+}

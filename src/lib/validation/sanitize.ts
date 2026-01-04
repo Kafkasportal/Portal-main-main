@@ -186,11 +186,20 @@ export function sanitizeFileName(filename: string): string {
   // Remove path separators
   let sanitized = filename.replace(/[\/\\]/g, '')
 
-  // Remove dots for relative paths
-  sanitized = sanitized.replace(/^\.*/, '')
+  // Remove leading dots and multiple consecutive dots (path traversal protection)
+  sanitized = sanitized.replace(/^\.\.*/g, '')
+  sanitized = sanitized.replace(/\.+/g, '.')
+
+  // Remove any remaining dots at the end or beginning
+  sanitized = sanitized.replace(/^\.\.|\.+$/g, '')
 
   // Allow only alphanumeric, dots, hyphens, underscores
   sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, '_')
+
+  // Check for path traversal attempts
+  if (sanitized.includes('..')) {
+    throw new Error('Invalid filename: path traversal detected')
+  }
 
   // Limit length
   if (sanitized.length > 255) {
@@ -224,6 +233,119 @@ export function sanitizeJSON(obj: unknown): unknown {
   }
 
   return obj
+}
+
+/**
+ * Validates file type for upload security
+ */
+export function validateFileType(
+  file: File,
+  allowedTypes: string[] = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ]
+): { isValid: boolean; error?: string } {
+  if (!file) {
+    return { isValid: false, error: 'Dosya seçilmedi' }
+  }
+
+  const mimeType = file.type
+
+  // Check if MIME type is allowed
+  if (!allowedTypes.includes(mimeType)) {
+    return {
+      isValid: false,
+      error: `Desteklenmeyen dosya türü: ${mimeType}`,
+    }
+  }
+
+  // Additional validation: check file extension matches MIME type
+  const fileExtension = file.name.split('.').pop()?.toLowerCase()
+  const extensionMap: Record<string, string[]> = {
+    'application/pdf': ['pdf'],
+    'image/jpeg': ['jpg', 'jpeg'],
+    'image/png': ['png'],
+    'image/webp': ['webp'],
+    'image/gif': ['gif'],
+    'application/msword': ['doc'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['docx'],
+  }
+
+  const expectedExtensions = extensionMap[mimeType] || []
+  if (!expectedExtensions.includes(fileExtension || '')) {
+    return {
+      isValid: false,
+      error: 'Dosya uzantısı ile MIME tipi eşleşmiyor',
+    }
+  }
+
+  return { isValid: true }
+}
+
+/**
+ * Maximum file size constants (in bytes)
+ */
+export const MAX_FILE_SIZES = {
+  IMAGE: 10 * 1024 * 1024, // 10MB
+  PDF: 10 * 1024 * 1024, // 10MB
+  DOCUMENT: 10 * 1024 * 1024, // 10MB
+  DEFAULT: 5 * 1024 * 1024, // 5MB
+} as const
+
+/**
+ * Validates file size based on type
+ */
+export function validateFileSize(
+  file: File,
+  maxSize: number = MAX_FILE_SIZES.DEFAULT
+): { isValid: boolean; error?: string } {
+  if (!file) {
+    return { isValid: false, error: 'Dosya seçilmedi' }
+  }
+
+  if (file.size > maxSize) {
+    const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1)
+    return {
+      isValid: false,
+      error: `Dosya boyutu ${maxSizeMB}MB'den büyük olamaz`,
+    }
+  }
+
+  return { isValid: true }
+}
+
+/**
+ * Comprehensive file validation for uploads
+ */
+export function validateFileUpload(
+  file: File,
+  options?: {
+    allowedTypes?: string[]
+    maxSize?: number
+  }
+): { isValid: boolean; error?: string } {
+  if (!file) {
+    return { isValid: false, error: 'Dosya seçilmedi' }
+  }
+
+  // Validate file type
+  const typeValidation = validateFileType(file, options?.allowedTypes)
+  if (!typeValidation.isValid) {
+    return typeValidation
+  }
+
+  // Validate file size
+  const sizeValidation = validateFileSize(file, options?.maxSize)
+  if (!sizeValidation.isValid) {
+    return sizeValidation
+  }
+
+  return { isValid: true }
 }
 
 /**

@@ -1887,6 +1887,11 @@ export async function updateTreatmentOutcome(
 /**
  * Upload file to Supabase Storage
  */
+import {
+  validateFileUpload,
+  MAX_FILE_SIZES,
+} from '@/lib/validation/sanitize'
+
 export async function uploadDocument(
   file: File,
   beneficiaryId: string,
@@ -1895,7 +1900,16 @@ export async function uploadDocument(
 ): Promise<BeneficiaryDocument> {
   const supabase = getSupabaseClient()
 
-  // Generate unique file path
+  // Validate file before upload (security enhancement)
+  const { isValid, error: validationError } = validateFileUpload(file, {
+    maxSize: MAX_FILE_SIZES.DOCUMENT,
+  })
+
+  if (!isValid) {
+    throw new Error(validationError || 'Dosya doğrulaması başarısız')
+  }
+
+  // Generate secure file path
   const fileExt = file.name.split('.').pop()
   // Use crypto for secure random string
   const randomStr = crypto.randomBytes(8).toString('hex')

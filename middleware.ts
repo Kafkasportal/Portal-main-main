@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { rateLimit, getRateLimitForPath, type RateLimitResult } from '@/lib/security/rate-limit'
 
 /**
  * Security Headers Middleware
@@ -9,8 +10,40 @@ import { updateSession } from '@/lib/supabase/middleware'
  * - Referrer-Policy: Controls referrer information
  * - Permissions-Policy: Manages browser features and APIs
  * - Strict-Transport-Security (HSTS): Forces HTTPS connections
+ * - Rate Limiting: Protects against brute force and DDoS attacks
  */
 export async function middleware(request: NextRequest) {
+  // Get IP address for rate limiting
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+            request.headers.get('x-real-ip') ||
+            '127.0.0.1'
+
+  // Apply rate limiting
+  const rateLimitOptions = getRateLimitForPath(request.nextUrl.pathname)
+  const { success, remaining, resetTime } = rateLimit(ip, rateLimitOptions)
+
+  if (!success) {
+    // Rate limit exceeded - return 429 Too Many Requests
+    const response = new Response(
+      JSON.stringify({
+        error: 'Çok fazla istek',
+        message: 'Lütfen bir süre bekleyin',
+        resetTime: resetTime.toISOString(),
+      }),
+      {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': Math.ceil((resetTime.getTime() - Date.now()) / 1000).toString(),
+          'X-RateLimit-Limit': rateLimitOptions.maxRequests?.toString() || '100',
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': resetTime.toISOString(),
+        },
+      }
+    )
+    return response
+  }
+
   // Update session (Supabase auth middleware)
   const response = await updateSession(request)
 
@@ -62,6 +95,11 @@ export async function middleware(request: NextRequest) {
   ].join('; ')
 
   response.headers.set('Content-Security-Policy', csp)
+
+  // Add rate limit headers to successful responses
+  response.headers.set('X-RateLimit-Limit', rateLimitOptions.maxRequests?.toString() || '100')
+  response.headers.set('X-RateLimit-Remaining', remaining.toString())
+  response.headers.set('X-RateLimit-Reset', resetTime.toISOString())
 
   return response
 }

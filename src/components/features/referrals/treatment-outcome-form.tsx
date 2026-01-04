@@ -101,11 +101,11 @@ export function TreatmentOutcomeForm({ referralId, outcome, onSuccess }: Treatme
   // Update follow-up date visibility when follow_up_needed changes
   useEffect(() => {
     const needed = form.getValues('follow_up_needed')
-    setShowFollowUpDate(needed)
+    setShowFollowUpDate(needed ?? false)
     // Also update when form values change
     const subscription = form.watch((value) => {
       if ('follow_up_needed' in value) {
-        setShowFollowUpDate(value.follow_up_needed)
+        setShowFollowUpDate(value.follow_up_needed ?? false)
       }
     })
     return () => subscription.unsubscribe()

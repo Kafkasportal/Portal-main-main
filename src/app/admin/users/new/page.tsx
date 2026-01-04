@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { UserForm } from '@/components/admin/users/user-form'
 import { useCreateUser } from '@/hooks/use-users'
+import type { CreateUserData } from '@/types/users'
 
 export default function NewUserPage() {
   const createUserMutation = useCreateUser()
@@ -48,7 +49,7 @@ export default function NewUserPage() {
           </CardHeader>
           <CardContent>
             <UserForm
-              onSubmit={(data) => createUserMutation.mutate(data)}
+              onSubmit={(data) => createUserMutation.mutate(data as CreateUserData)}
               isLoading={createUserMutation.isPending}
               mode="create"
             />

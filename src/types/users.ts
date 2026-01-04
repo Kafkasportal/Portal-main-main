@@ -168,16 +168,17 @@ export const DEFAULT_ADMIN_PERMISSIONS: UserPermissions = {
  */
 export interface User {
   id: string
-  
+
   // Temel bilgiler
   email: string
   name: string
   phone?: string | null
   avatar_url?: string | null
   role: Role
-  
+
   // Durum bilgileri
-  is_active: boolean
+  isActive: boolean
+  is_active?: boolean // Deprecated, use isActive
   last_login?: string | null
   created_at: string
   updated_at: string
@@ -198,8 +199,6 @@ export interface User {
   fon_yetkisi2?: string | null
   fon_yetkisi3?: string | null
   fon_bolgesi_yetkisi?: string | null
-  fon_yetkisi2?: string | null
-  fon_yetkisi3?: string | null
   imza_yetkisi2?: string | null
   imza_yetkisi3?: string | null
   
@@ -319,4 +318,55 @@ export const ROLE_VARIANTS: Record<Role, 'default' | 'secondary' | 'destructive'
   user: 'default',
 } as const
 
+/**
+ * Role bazlı varsayılan yetkiler (Client components için)
+ */
+export const ROLE_PERMISSIONS_MAP: Record<string, UserPermissions> = {
+  admin: {
+    LOGIN: true,
+    VIEW_PROFILE: true,
+    UPDATE_PROFILE: true,
+    VIEW_USERS: true,
+    CREATE_USER: true,
+    UPDATE_USER: true,
+    DELETE_USER: true,
+    MANAGE_ROLES: true,
+    VIEW_DONATIONS: true,
+    CREATE_DONATION: true,
+    VIEW_FINANCIAL_REPORTS: true,
+    VIEW_APPLICATIONS: true,
+    APPROVE_APPLICATION: true,
+    CREATE_PAYMENT: true,
+    VIEW_BENEFICIARIES: true,
+    CREATE_BENEFICIARY: true,
+    UPDATE_BENEFICIARY: true,
+    VIEW_SETTINGS: true,
+    UPDATE_SETTINGS: true,
+    MANAGE_SYSTEM: true,
+  },
+  moderator: {
+    LOGIN: true,
+    VIEW_PROFILE: true,
+    UPDATE_PROFILE: true,
+    VIEW_USERS: true,
+    CREATE_USER: true,
+    UPDATE_USER: true,
+    DELETE_USER: true,
+    VIEW_DONATIONS: true,
+    CREATE_DONATION: true,
+    VIEW_FINANCIAL_REPORTS: true,
+    VIEW_APPLICATIONS: true,
+    APPROVE_APPLICATION: true,
+    CREATE_PAYMENT: true,
+    VIEW_BENEFICIARIES: true,
+    CREATE_BENEFICIARY: true,
+    UPDATE_BENEFICIARY: true,
+    VIEW_SETTINGS: true,
+  },
+  user: {
+    LOGIN: true,
+    VIEW_PROFILE: true,
+    UPDATE_PROFILE: true,
+  },
+}
 

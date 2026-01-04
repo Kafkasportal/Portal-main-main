@@ -20,7 +20,7 @@ function mapSupabaseAuthUserToUser(authUser: any): User {
     phone: authUser.phone || appMetadata.phone || undefined,
     role: userRole,
     avatar_url: appMetadata.avatar_url || undefined,
-    is_active: authUser.aud === 'authenticated' && !authUser.banned_until,
+    isActive: authUser.aud === 'authenticated' && !authUser.banned_until,
     last_login: authUser.last_sign_in_at || undefined,
     created_at: authUser.created_at,
     updated_at: authUser.updated_at,

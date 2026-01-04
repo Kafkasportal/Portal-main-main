@@ -3,9 +3,12 @@
  * Kullanıcı Düzenleme Sayfası
  */
 
+'use client'
+
 import { ArrowLeft, Edit2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -155,23 +158,6 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           </AlertDescription>
         </Alert>
       </div>
-    </div>
-  )
-}
-
-/**
- * Badge Component (import from ui/badge)
- */
-function Badge({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'secondary' | 'outline' }) {
-  const variantClasses = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-    outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-  }
-
-  return (
-    <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variantClasses[variant]}`}>
-      {children}
     </div>
   )
 }

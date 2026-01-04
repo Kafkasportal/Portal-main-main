@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Switch } from '@/components/ui/switch'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 import { useUsers, useDeleteUser, useToggleUserStatus, useDeleteMultipleUsers } from '@/hooks/use-users'
 import { User, UserFilters } from '@/types/users'
 import { useRouter } from 'next/navigation'
@@ -72,7 +72,6 @@ export function UserTable({ filters }: UserTableProps) {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false)
 
   const { data, isLoading, refetch } = useUsers(filters, 1, 10)
-  const { toast } = useToast()
   const router = useRouter()
 
   const deleteUserMutation = useDeleteUser()

@@ -596,7 +596,7 @@ export default function BeneficiaryDetailPage({
                 <LinkedRecordButton
                   icon={Users}
                   label="Aile Üyeleri"
-                  count={data.aglantiliKayitlar?.baktigiKisiler || data.baglantiliKayitlar?.aileUyeleri}
+                  count={data.baglantiliKayitlar?.baktigiKisiler}
                   onClick={() => {
                     setActiveSheet('aileUyeleri')
                   }}

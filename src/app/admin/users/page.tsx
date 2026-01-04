@@ -3,6 +3,8 @@
  * Kullanıcı Yönetimi Ana Sayfası
  */
 
+'use client'
+
 import { Suspense } from 'react'
 import { Shield, UserPlus, Search, Filter, Download, Upload } from 'lucide-react'
 
@@ -151,7 +153,7 @@ export default function AdminUsersPage() {
  * Kullanıcı sayısını gösteren kart bileşeni
  */
 function UserCountCard({ role }: { role?: string }) {
-  const { data: count, isLoading } = useUserCount(role)
+  const { data, isLoading } = useUserCount(role)
 
   if (isLoading) {
     return <div className="text-2xl font-bold">...</div>
@@ -159,7 +161,7 @@ function UserCountCard({ role }: { role?: string }) {
 
   return (
     <div className="text-2xl font-bold">
-      {count ?? 0}
+      {data?.count ?? 0}
     </div>
   )
 }

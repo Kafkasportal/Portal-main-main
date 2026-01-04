@@ -30,8 +30,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PermissionConfig } from './permission-config'
-import { User, Role, Permission } from '@/types/users'
-import { ROLE_PERMISSIONS_MAP } from '@/lib/services/users.service'
+import { User, Role, Permission, ROLE_PERMISSIONS_MAP } from '@/types/users'
 
 // Form validation schema
 const userFormSchema = z.object({
@@ -39,7 +38,7 @@ const userFormSchema = z.object({
   password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır').optional().or(z.literal('')),
   ad: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
   soyad: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
-  role: z.enum(['admin', 'moderator', 'user']),
+  role: z.nativeEnum(Role),
   phone: z.string().optional(),
   birim: z.string().optional(),
   yetki: z.string().optional(),

@@ -49,8 +49,22 @@ export function WebVitals() {
         )
       }
 
-      // TODO: Integrate with custom analytics endpoint if needed
-      // Example: POST to /api/analytics with metric data
+      // Send to custom analytics endpoint
+      fetch('/api/analytics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: metric.name,
+          value: metric.value,
+          id: metric.id,
+          rating: metric.rating,
+          navigationType: metric.navigationType,
+        }),
+      }).catch((error) => {
+        console.error('[Web Vitals] Failed to send to analytics:', error)
+      })
     }
   })
 

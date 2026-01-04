@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    // Set explicit turbopack root to avoid lockfile confusion
-    turbopack: {
-      root: __dirname,
-    },
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-icons',

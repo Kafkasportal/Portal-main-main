@@ -96,7 +96,7 @@ export async function middleware(request: NextRequest) {
 
   response.headers.set('Content-Security-Policy', csp)
 
-  // Add rate limit headers to successful responses
+  // Add rate limit headers to all responses (for better visibility)
   response.headers.set('X-RateLimit-Limit', rateLimitOptions.maxRequests?.toString() || '100')
   response.headers.set('X-RateLimit-Remaining', remaining.toString())
   response.headers.set('X-RateLimit-Reset', resetTime.toISOString())

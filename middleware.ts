@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
-import { rateLimit, getRateLimitForPath, type RateLimitResult } from '@/lib/security/rate-limit'
+import { rateLimit, getRateLimitForPath } from '@/lib/security/rate-limit'
 
 /**
  * Security Headers Middleware
@@ -104,11 +104,11 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-// Configure which routes the middleware should run on
+// Configure which routes middleware should run on
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
+     * Match all request paths except for ones starting with:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)

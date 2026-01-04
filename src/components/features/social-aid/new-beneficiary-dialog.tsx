@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -90,6 +90,7 @@ export function NewBeneficiaryDialog({
 }: NewBeneficiaryDialogProps) {
   const router = useRouter()
   const [mernisKontrol, setMernisKontrol] = useState(false)
+  const [uyruk, setUyruk] = useState('Türkiye')
 
   const form = useForm<NewBeneficiaryFormData>({
     resolver: zodResolver(newBeneficiarySchema),
@@ -121,6 +122,18 @@ export function NewBeneficiaryDialog({
       }, 100)
     },
   })
+
+  // Update uyruk state when form value changes
+  useEffect(() => {
+    const currentUyruk = form.getValues('uyruk')
+    setUyruk(currentUyruk || 'Türkiye')
+    const subscription = form.watch((value) => {
+      if ('uyruk' in value && value.uyruk) {
+        setUyruk(value.uyruk)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   const onSubmit = (data: NewBeneficiaryFormData) => {
     const isTurkish = data.uyruk === 'Türkiye'
@@ -340,7 +353,7 @@ export function NewBeneficiaryDialog({
                     <FormControl>
                       <Input
                         placeholder={
-                          form.watch('uyruk') === 'Türkiye'
+                          uyruk === 'Türkiye'
                             ? 'TC Kimlik No'
                             : 'Yabancı Kimlik No'
                         }

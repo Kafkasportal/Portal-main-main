@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -62,6 +63,7 @@ export function TreatmentOutcomeForm({ referralId, outcome, onSuccess }: Treatme
   const createOutcome = useCreateOutcome(referralId)
   const updateReferral = useUpdateReferral(referralId)
   const { data: appointments } = useAppointments(referralId)
+  const [showFollowUpDate, setShowFollowUpDate] = useState(false)
 
   const form = useForm({
     resolver: zodResolver(outcomeSchema),
@@ -88,15 +90,26 @@ export function TreatmentOutcomeForm({ referralId, outcome, onSuccess }: Treatme
     }, {
       onSuccess: () => {
         // Automatically update referral status to 'treated' or 'follow-up'
-        updateReferral.mutate({ 
-          status: values.follow_up_needed ? 'follow-up' : 'treated' 
+        updateReferral.mutate({
+          status: values.follow_up_needed ? 'follow-up' : 'treated'
         })
         onSuccess?.()
       }
     })
   }
 
-  const followUpNeeded = form.watch('follow_up_needed')
+  // Update follow-up date visibility when follow_up_needed changes
+  useEffect(() => {
+    const needed = form.getValues('follow_up_needed')
+    setShowFollowUpDate(needed)
+    // Also update when form values change
+    const subscription = form.watch((value) => {
+      if ('follow_up_needed' in value) {
+        setShowFollowUpDate(value.follow_up_needed)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   return (
     <Form {...form}>
@@ -189,7 +202,7 @@ export function TreatmentOutcomeForm({ referralId, outcome, onSuccess }: Treatme
           )}
         />
 
-        {followUpNeeded && (
+        {showFollowUpDate && (
           <FormField
             control={form.control}
             name="follow_up_date"

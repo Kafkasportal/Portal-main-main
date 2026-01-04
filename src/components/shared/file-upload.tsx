@@ -135,6 +135,9 @@ export function FileUpload({
         {selectedFile ? (
           <div className="flex items-center gap-4">
             {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              // Note: Using <img> instead of Next.js Image because preview is a base64 data URL
+              // Next.js Image component does not support base64 data URLs properly
               <img
                 src={preview}
                 alt="Preview"

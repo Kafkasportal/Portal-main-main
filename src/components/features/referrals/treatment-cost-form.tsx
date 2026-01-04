@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -65,6 +66,7 @@ export function TreatmentCostForm({
   onSuccess,
 }: TreatmentCostFormProps) {
   const createCost = useCreateTreatmentCost(referralId)
+  const [showPaymentFields, setShowPaymentFields] = useState(false)
 
   const form = useForm({
     resolver: zodResolver(costSchema),
@@ -107,7 +109,18 @@ export function TreatmentCostForm({
     )
   }
 
-  const paymentStatus = form.watch('payment_status')
+  // Update payment fields visibility when payment_status changes
+  useEffect(() => {
+    const status = form.getValues('payment_status')
+    setShowPaymentFields(status !== 'pending')
+    // Also update when form values change
+    const subscription = form.watch((value) => {
+      if ('payment_status' in value) {
+        setShowPaymentFields(value.payment_status !== 'pending')
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   return (
     <Form {...form}>
@@ -241,7 +254,7 @@ export function TreatmentCostForm({
           />
         </div>
 
-        {paymentStatus !== 'pending' && (
+        {showPaymentFields && (
           <div className="animate-in fade-in slide-in-from-top-2 grid grid-cols-2 gap-4">
             <FormField
               control={form.control}

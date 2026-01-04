@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createAdminClient()
+    const supabase = await createAdminClient()
     const errors: string[] = []
 
     for (const userId of userIds) {

@@ -30,7 +30,7 @@ export async function POST(
       )
     }
 
-    const supabase = createAdminClient()
+    const supabase = await createAdminClient()
 
     const { data: { user }, error } = await supabase.auth.admin.updateUserById(
       id,

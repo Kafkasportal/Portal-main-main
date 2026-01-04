@@ -21,7 +21,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const supabase = createAdminClient()
+    const supabase = await createAdminClient()
 
     const { data: { user }, error } = await supabase.auth.admin.getUserById(id)
 
@@ -52,7 +52,7 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const supabase = createAdminClient()
+    const supabase = await createAdminClient()
 
     const updates: any = {
       user_metadata: {
@@ -118,7 +118,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const supabase = createAdminClient()
+    const supabase = await createAdminClient()
 
     const { error } = await supabase.auth.admin.deleteUser(id)
 

@@ -9,6 +9,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+const TURKISH_NUMBER_FORMATTER = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
 /**
  * Format a number as currency
  */
@@ -16,10 +21,7 @@ export function formatCurrency(
   amount: number,
   currency: Currency = 'TRY'
 ): string {
-  const formatted = new Intl.NumberFormat('tr-TR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
+  const formatted = TURKISH_NUMBER_FORMATTER.format(amount)
 
   return `${CURRENCY_SYMBOLS[currency]}${formatted}`
 }

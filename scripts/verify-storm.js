@@ -1,7 +1,11 @@
 const STORMMCP_URL = 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
-const STORMMCP_API_KEY = 'ag_HTt9LMOo0UuHA1v7nPFW+ucR9ITuqQVkMmCqkZDU8uo=';
+const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY;
 
 async function verifyStorm() {
+  if (!STORMMCP_API_KEY) {
+    console.error('❌ StormMCP API Key is missing (process.env.STORMMCP_API_KEY).');
+    process.exit(1);
+  }
     console.log('🧪 StormMCP Gateway Bağlantısı Test Ediliyor...');
     console.log(`🔗 URL: ${STORMMCP_URL}`);
 

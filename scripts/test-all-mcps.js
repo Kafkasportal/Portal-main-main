@@ -10,14 +10,12 @@ const { createClient } = require('@supabase/supabase-js');
 // Environment variables
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ||
   'https://idsiiayyvygcgegmqcov.supabase.co';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc2lpYXl5dnlnY2dlZ21xY292Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNDg4NjMsImV4cCI6MjA4MTkyNDg2M30.blDE-L_aRNSwoawUCD3esFt_CMk2fhy8TpShsgyshZQ';
-const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN ||
-  'https://fb90a51020186d9145ae70fbedf5e27e@o4510438396395520.ingest.de.sentry.io/4510612076757072';
-const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_JWyvNZTTdcB00iGHghVUxWbESLZc';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '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';
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const RENDER_API_KEY = process.env.RENDER_API_KEY;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const STORMMCP_URL = process.env.STORMMCP_URL || 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
-const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY || 'ag_HTt9LMOo0UuHA1v7nPFW+ucR9ITuqQVkMmCqkZDU8uo=';
+const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY;
 
 async function testSupabaseMCP() {
   console.log('🧪 Testing Supabase MCP...');

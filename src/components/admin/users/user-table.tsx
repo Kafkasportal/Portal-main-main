@@ -90,7 +90,7 @@ export function UserTable({ filters }: UserTableProps) {
       await deleteUserMutation.mutateAsync(deleteUser.id)
       toast.success('Kullanıcı başarıyla silindi')
       refetch()
-    } catch (_error) {
+    } catch {
       toast.error('Kullanıcı silinirken hata oluştu')
     } finally {
       setDeleteDialogOpen(false)
@@ -117,7 +117,7 @@ export function UserTable({ filters }: UserTableProps) {
       toast.success(`${userIds.length} kullanıcı başarıyla silindi`)
       setRowSelection({})
       refetch()
-    } catch (_error) {
+    } catch {
       toast.error('Kullanıcılar silinirken hata oluştu')
     } finally {
       setBulkDeleteDialogOpen(false)
@@ -131,7 +131,7 @@ export function UserTable({ filters }: UserTableProps) {
         isActive: !user.isActive,
       })
       refetch()
-    } catch (_error) {
+    } catch {
       toast.error('Kullanıcı durumu güncellenirken hata oluştu')
     }
   }

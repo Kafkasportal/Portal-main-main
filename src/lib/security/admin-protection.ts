@@ -42,7 +42,7 @@ export async function isAdmin(userId: string): Promise<boolean> {
     return false
   }
 
-  return ADMIN_ROLES.includes(user.role as any)
+  return ADMIN_ROLES.includes(user.role as typeof ADMIN_ROLES[number])
 }
 
 /**
@@ -101,7 +101,7 @@ export async function getCurrentUser(): Promise<{ id: string; role: string } | n
  *   return NextResponse.json({ data: 'admin content' })
  * }
  */
-export async function withAdminProtection(request: Request) {
+export async function withAdminProtection(_request: Request) {
   const user = await getCurrentUser()
 
   if (!user) {
@@ -143,7 +143,7 @@ export function hasPermission(
     user: ['user'],
   }
 
-  return roleHierarchy[requiredRole].includes(userRole as any)
+  return roleHierarchy[requiredRole].includes(userRole as 'admin' | 'moderator' | 'user')
 }
 
 /**
@@ -175,15 +175,15 @@ export function canPerformAction(
  *
  * export { handler as GET, handler as POST }
  */
-export function adminRoute<T extends any[]>(
+export function adminRoute<T>(
   handler: (request: Request, context: { user: { id: string; role: string } }) => T | Promise<T>
 ) {
-  return async (request: Request): Promise<T> => {
+  return async (request: Request): Promise<T | Response> => {
     const result = await withAdminProtection(request)
 
     if (result instanceof Response) {
       // Error response (401 or 403)
-      return result as any
+      return result
     }
 
     // User is authenticated and has admin role

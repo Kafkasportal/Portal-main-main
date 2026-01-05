@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Shield, User, Users, DollarSign, FileText, Settings, Activity } from 'lucide-react'
+import { Shield, User, Users, DollarSign, Settings, Activity } from 'lucide-react'
 
 interface PermissionConfigProps {
   permissions: Record<string, boolean>
@@ -153,7 +153,7 @@ export function PermissionConfig({ permissions, onPermissionChange, disabled }: 
  */
 export function PermissionSummary({ permissions }: { permissions: Record<string, boolean> }) {
   const enabledPermissions = Object.entries(permissions)
-    .filter(([_, enabled]) => enabled)
+    .filter(([, enabled]) => enabled)
     .map(([key]) => key)
 
   const categoryCounts = {

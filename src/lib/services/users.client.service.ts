@@ -4,10 +4,24 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import { User, Role, Permission, UserPermissions, UserFilters, CreateUserData, UpdateUserData } from '@/types/users'
+import { User, Role, UserPermissions, UserFilters, CreateUserData, UpdateUserData } from '@/types/users'
+
+// Type for Supabase auth user
+interface SupabaseAuthUser {
+  id: string;
+  email?: string;
+  phone?: string;
+  aud?: string;
+  banned_until?: string;
+  last_sign_in_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  app_metadata?: Record<string, unknown>;
+}
 
 // Supabase auth.users -> User mapping
-function mapSupabaseAuthUserToUser(authUser: any): User {
+function mapSupabaseAuthUserToUser(authUser: SupabaseAuthUser): User {
   const appMetadata = authUser.app_metadata || {}
   const userRole = (appMetadata.role || 'user') as Role
   const userPermissions = (appMetadata.permissions || {}) as UserPermissions
@@ -15,31 +29,31 @@ function mapSupabaseAuthUserToUser(authUser: any): User {
   return {
     id: authUser.id,
     email: authUser.email || '',
-    name: appMetadata.name || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim(),
-    phone: authUser.phone || appMetadata.phone || undefined,
+    name: String(appMetadata.name || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim()),
+    phone: authUser.phone || (appMetadata.phone as string) || undefined,
     role: userRole,
-    avatar_url: appMetadata.avatar_url || undefined,
+    avatar_url: appMetadata.avatar_url as string | undefined,
     isActive: authUser.aud === 'authenticated' && !authUser.banned_until,
     last_login: authUser.last_sign_in_at || undefined,
     created_at: authUser.created_at,
     updated_at: authUser.updated_at,
     deleted_at: authUser.deleted_at || undefined,
-    ad: appMetadata.ad || undefined,
-    soyad: appMetadata.soyad || undefined,
-    birim: appMetadata.birim || undefined,
-    yetki: appMetadata.yetki || undefined,
-    gorev: appMetadata.gorev || undefined,
-    dahili: appMetadata.dahili || undefined,
-    kisa_kod: appMetadata.kisa_kod || undefined,
-    kisa_kod2: appMetadata.kisa_kod2 || undefined,
-    erisim_yetkisi: appMetadata.erisim_yetkisi || undefined,
-    imza_yetkisi: appMetadata.imza_yetkisi || undefined,
-    fon_yetkisi: appMetadata.fon_yetkisi || undefined,
-    fon_yetkisi2: appMetadata.fon_yetkisi2 || undefined,
-    fon_yetkisi3: appMetadata.fon_yetkisi3 || undefined,
-    fon_bolgesi_yetkisi: appMetadata.fon_bolgesi_yetkisi || undefined,
-    imza_yetkisi2: appMetadata.imza_yetkisi2 || undefined,
-    imza_yetkisi3: appMetadata.imza_yetkisi3 || undefined,
+    ad: appMetadata.ad as string | undefined,
+    soyad: appMetadata.soyad as string | undefined,
+    birim: appMetadata.birim as string | undefined,
+    yetki: appMetadata.yetki as string | undefined,
+    gorev: appMetadata.gorev as string | undefined,
+    dahili: appMetadata.dahili as string | undefined,
+    kisa_kod: appMetadata.kisa_kod as string | undefined,
+    kisa_kod2: appMetadata.kisa_kod2 as string | undefined,
+    erisim_yetkisi: appMetadata.erisim_yetkisi as string | undefined,
+    imza_yetkisi: appMetadata.imza_yetkisi as string | undefined,
+    fon_yetkisi: appMetadata.fon_yetkisi as string | undefined,
+    fon_yetkisi2: appMetadata.fon_yetkisi2 as string | undefined,
+    fon_yetkisi3: appMetadata.fon_yetkisi3 as string | undefined,
+    fon_bolgesi_yetkisi: appMetadata.fon_bolgesi_yetkisi as string | undefined,
+    imza_yetkisi2: appMetadata.imza_yetkisi2 as string | undefined,
+    imza_yetkisi3: appMetadata.imza_yetkisi3 as string | undefined,
     permissions: userPermissions,
   }
 }
@@ -97,17 +111,11 @@ export const ROLE_PERMISSIONS_MAP: Record<Role, UserPermissions> = {
 /**
  * Get all users with filtering and pagination
  */
-export async function getUsers({
-  filters,
-  page = 1,
-  pageSize = 10,
-}: {
+export async function getUsers(_options: {
   filters?: UserFilters
   page?: number
   pageSize?: number
 }): Promise<{ users: User[]; total: number }> {
-  const supabase = createClient()
-
   // Since we can't directly query auth.users from client, we need to use a different approach
   // For now, return empty array - this should be handled by API routes
   throw new Error('getUsers should be called from server side or via API route')
@@ -176,7 +184,7 @@ export async function createUser(data: CreateUserData): Promise<User> {
 export async function updateUser(userId: string, data: UpdateUserData): Promise<User> {
   const supabase = createClient()
 
-  const updates: any = {
+  const updates: { data: Record<string, unknown>; password?: string; email?: string } = {
     data: {
       role: data.role,
       ad: data.ad,
@@ -254,7 +262,7 @@ export async function toggleUserStatus(userId: string, isActive: boolean): Promi
 /**
  * Get user count by role
  */
-export async function getUserCount(role?: string): Promise<number> {
+export async function getUserCount(_role?: string): Promise<number> {
   // This needs to be called from server side or via API route
   throw new Error('getUserCount should be called from server side or via API route')
 }
@@ -262,7 +270,7 @@ export async function getUserCount(role?: string): Promise<number> {
 /**
  * Get multiple users by IDs
  */
-export async function getUsersByIds(userIds: string[]): Promise<User[]> {
+export async function getUsersByIds(_userIds: string[]): Promise<User[]> {
   // This needs to be called from server side or via API route
   throw new Error('getUsersByIds should be called from server side or via API route')
 }

@@ -30,7 +30,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PermissionConfig } from './permission-config'
-import { User, Role, Permission, ROLE_PERMISSIONS_MAP } from '@/types/users'
+import { User, Role, ROLE_PERMISSIONS_MAP } from '@/types/users'
 
 // Form validation schema
 const userFormSchema = z.object({

@@ -6,7 +6,6 @@
 
 import { create } from 'zustand'
 import type { User } from '@/types/users'
-import { getCurrentUser } from '@/lib/supabase/client'
 
 // ============================================
 // STATE INTERFACE

@@ -54,7 +54,7 @@ export async function PATCH(
     const body = await request.json()
     const supabase = createAdminClient()
 
-    const updates: any = {
+    const updates: { user_metadata: Record<string, unknown>; password?: string; email?: string } = {
       user_metadata: {
         role: body.role,
         ad: body.ad,

@@ -40,66 +40,6 @@ export function sanitizeHTML(html: string, allowedTags?: string[]): string {
 }
 
 /**
- * Recursively removes tags not in the allowed list
- */
-function removeDangerousTags(node: Element, allowedTags: string[]): void {
-  const children = Array.from(node.childNodes)
-
-  for (const child of children) {
-    if (child.nodeType === Node.ELEMENT_NODE) {
-      const element = child as Element
-      const tagName = element.tagName.toLowerCase()
-
-      if (!allowedTags.includes(tagName)) {
-        // Replace with text content
-        const text = document.createTextNode(element.textContent || '')
-        element.replaceWith(text)
-      } else {
-        // Recursively check children
-        removeDangerousTags(element, allowedTags)
-      }
-    }
-  }
-}
-
-/**
- * Removes unsafe attributes from elements
- */
-function removeUnsafeAttributes(node: Element): void {
-  const allowedAttributes = [
-    'href', 'title', 'target', 'rel', 'class', 'id', 'style'
-  ]
-
-  const dangerous = ['on', 'script', 'data:', 'javascript:']
-
-  const children = Array.from(node.childNodes)
-
-  for (const child of children) {
-    if (child.nodeType === Node.ELEMENT_NODE) {
-      const element = child as Element
-
-      // Remove dangerous attributes
-      Array.from(element.attributes).forEach((attr) => {
-        const name = attr.name.toLowerCase()
-        const value = attr.value.toLowerCase()
-
-        // Check if attribute is dangerous
-        const isDangerous = dangerous.some((d) => 
-          name.startsWith(d) || value.includes(d)
-        )
-
-        if (isDangerous || !allowedAttributes.includes(name)) {
-          element.removeAttribute(attr.name)
-        }
-      })
-
-      // Recursively check children
-      removeUnsafeAttributes(element)
-    }
-  }
-}
-
-/**
  * Escapes HTML special characters
  */
 export function escapeHTML(text: string): string {

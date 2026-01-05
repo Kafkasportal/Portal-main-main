@@ -12,14 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format a number as currency
  */
+const numberFormatter = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
 export function formatCurrency(
   amount: number,
   currency: Currency = 'TRY'
 ): string {
-  const formatted = new Intl.NumberFormat('tr-TR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
+  const formatted = numberFormatter.format(amount)
 
   return `${CURRENCY_SYMBOLS[currency]}${formatted}`
 }

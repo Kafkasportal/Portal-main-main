@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key'
+
 // Mock IndexedDB for offline-queue tests
 const indexedDB = {
   open: vi.fn(),

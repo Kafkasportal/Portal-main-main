@@ -35,7 +35,7 @@ Modern, hızlı ve kullanıcı dostu yönetim paneli. Next.js 16, TypeScript ve 
 - **📱 PWA:** Progressive Web App desteği
 - **♿ Erişilebilirlik:** WCAG 2.1 uyumlu
 - **📊 Monitoring:** Sentry ile hata takibi
-- **🔄 MCP Entegrasyonu:** Supabase ve GitHub MCP server'ları
+- **🔄 MCP Entegrasyonu:** Supabase, GitHub, Filesystem ve Sentry MCP server'ları
 
 ---
 
@@ -76,7 +76,7 @@ Modern, hızlı ve kullanıcı dostu yönetim paneli. Next.js 16, TypeScript ve 
 - **Hosting:** Render.com (Production)
 - **Monitoring:** Sentry (Error tracking & performance)
 - **Secret Management:** Environment variables
-- **MCP Servers:** Supabase, GitHub, Sentry
+- **MCP Servers:** Supabase, GitHub, Filesystem, Sentry
 
 ---
 
@@ -144,7 +144,26 @@ npm run db:migrate
 npm run db:seed
 ```
 
-#### 5. Geliştirme Sunucusunu Başlatın
+#### 5. MCP Sunucularını Yapılandırın (Opsiyonel)
+
+MCP (Model Context Protocol) AI agent'lerinin dış kaynaklara erişimini sağlar.
+
+```bash
+# GitHub Token oluşturun (GitHub MCP için)
+# https://github.com/settings/tokens → Generate new token (classic)
+# İzinler: repo, workflow, read:org
+
+# .env.local dosyasına ekleyin
+GITHUB_TOKEN=ghp_your_token_here
+
+# Sentry Auth Token (Sentry MCP için - opsiyonel)
+# https://sentry.io/settings/auth-tokens/
+SENTRY_AUTH_TOKEN=your_sentry_token_here
+```
+
+Detaylı MCP kurulumu için: [docs/MCP.md](docs/MCP.md)
+
+#### 6. Geliştirme Sunucusunu Başlatın
 
 ```bash
 npm run dev
@@ -253,6 +272,7 @@ npm run test:e2e:debug
 
 ### Geliştiriciler İçin
 - **[Agent Guide](docs/AGENTS.md)** - AI agent'leri için rehber
+- **[MCP Guide](docs/MCP.md)** - Model Context Protocol entegrasyonu
 - **[Contributing](docs/CONTRIBUTING.md)** - Katılım kılavuzu
 - **[Development](docs/DEVELOPMENT.md)** - Geliştirici rehberi (detaylı)
 - **[Security](docs/SECURITY.md)** - Güvenlik best practices

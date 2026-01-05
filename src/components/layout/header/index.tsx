@@ -64,9 +64,9 @@ export function Header() {
           size="icon"
           className="hover:bg-accent lg:hidden"
           onClick={() => setOpen(true)}
+          aria-label="Menü"
         >
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Menü</span>
         </Button>
 
         {/* Desktop collapse toggle */}
@@ -76,6 +76,7 @@ export function Header() {
           className="hover:bg-accent hidden lg:flex"
           onClick={() => setCollapsed(!isCollapsed)}
           title="Menüyü daralt/genişlet"
+          aria-label="Menüyü daralt/genişlet"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -105,6 +106,7 @@ export function Header() {
           size="icon"
           className="hover:bg-accent sm:hidden"
           onClick={() => setCommandOpen(true)}
+          aria-label="Arama yap"
         >
           <Search className="h-5 w-5" />
         </Button>
@@ -121,7 +123,6 @@ export function Header() {
             className="bg-destructive absolute top-1.5 right-1.5 h-2 w-2 animate-pulse rounded-full shadow-sm"
             aria-hidden="true"
           />
-          <span className="sr-only">Bildirimler</span>
         </Button>
 
         {/* User menu */}

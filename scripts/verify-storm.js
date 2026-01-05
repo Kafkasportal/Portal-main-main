@@ -1,8 +1,17 @@
-const STORMMCP_URL = 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
-const STORMMCP_API_KEY = 'ag_HTt9LMOo0UuHA1v7nPFW+ucR9ITuqQVkMmCqkZDU8uo=';
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
+
+const STORMMCP_URL = process.env.STORMMCP_URL;
+const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY;
 
 async function verifyStorm() {
     console.log('🧪 StormMCP Gateway Bağlantısı Test Ediliyor...');
+
+    if (!STORMMCP_URL || !STORMMCP_API_KEY) {
+        console.error('❌ Hata: STORMMCP_URL ve STORMMCP_API_KEY ortam değişkenleri tanımlanmalıdır.');
+        process.exit(1);
+    }
+
     console.log(`🔗 URL: ${STORMMCP_URL}`);
 
     try {

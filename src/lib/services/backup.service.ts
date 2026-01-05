@@ -16,7 +16,7 @@ export interface BackupData {
     social_aid_applications?: Database['public']['Tables']['social_aid_applications']['Row'][]
     payments?: Database['public']['Tables']['payments']['Row'][]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    in_kind_aids?: any[]
+    inKindAids?: any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     kumbaras?: any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

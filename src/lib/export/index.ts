@@ -15,7 +15,9 @@ export function exportToCSV<T extends Record<string, unknown>>(
   filename: string = 'export.csv'
 ): void {
   if (data.length === 0) {
-    console.warn('No data to export')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('No data to export')
+    }
     return
   }
 
@@ -67,7 +69,9 @@ export function exportData<T extends Record<string, unknown>>(
   filename: string = 'export'
 ): void {
   if (data.length === 0) {
-    console.warn('No data to export')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('No data to export')
+    }
     return
   }
 
@@ -79,7 +83,9 @@ export function exportData<T extends Record<string, unknown>>(
   } else if (format === 'json') {
     exportToJSON(data, fullFilename)
   } else {
-    console.error(`Unsupported export format: ${format}`)
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Unsupported export format: ${format}`)
+    }
   }
 }
 

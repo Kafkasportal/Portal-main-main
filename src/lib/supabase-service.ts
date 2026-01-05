@@ -1672,7 +1672,7 @@ function mapTreatmentOutcome(
 export async function fetchHospitals(options?: {
   search?: string
   specialty?: string
-}): Promise<import('@/types').Hospital[]> {
+}): Promise<import('./types').Hospital[]> {
   const supabase = getSupabaseClient()
   let query = supabase
     .from('hospitals')
@@ -1722,7 +1722,7 @@ export async function fetchReferrals(options?: {
   beneficiaryId?: string
   hospitalId?: string
   status?: string
-}): Promise<import('@/types').Referral[]> {
+}): Promise<import('./types').Referral[]> {
   const supabase = getSupabaseClient()
   let query = supabase
     .from('referrals')
@@ -1790,7 +1790,7 @@ export async function updateReferral(
 
 export async function fetchAppointments(
   referralId: string
-): Promise<import('@/types').HospitalAppointment[]> {
+): Promise<import('./types').HospitalAppointment[]> {
   const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from('hospital_appointments')
@@ -1816,7 +1816,7 @@ export async function createAppointment(
 
 export async function fetchTreatmentCosts(
   referralId: string
-): Promise<import('@/types').TreatmentCost[]> {
+): Promise<import('./types').TreatmentCost[]> {
   const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from('treatment_costs')
@@ -1842,7 +1842,7 @@ export async function createTreatmentCost(
 
 export async function fetchTreatmentOutcomes(
   referralId: string
-): Promise<import('@/types').TreatmentOutcome[]> {
+): Promise<import('./types').TreatmentOutcome[]> {
   const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from('treatment_outcomes')

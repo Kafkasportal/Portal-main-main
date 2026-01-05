@@ -29,7 +29,7 @@ function mapSupabaseAuthUserToUser(authUser: SupabaseAuthUser): User {
   return {
     id: authUser.id,
     email: authUser.email || '',
-    name: String(appMetadata.name || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim()),
+    name: (appMetadata.name as string) || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim(),
     phone: authUser.phone || (appMetadata.phone as string) || undefined,
     role: userRole,
     avatar_url: appMetadata.avatar_url as string | undefined,

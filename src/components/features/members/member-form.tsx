@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useCreateMember } from '@/hooks/use-api'
+import { formatTurkishPhoneNumber } from '@/lib/formatters'
 import { MEMBER_TYPE_LABELS, TURKISH_CITIES } from '@/lib/constants'
 import { memberSchema, type MemberFormData } from '@/lib/validators'
 
@@ -277,12 +278,19 @@ export function MemberForm({ onSuccess, initialData }: MemberFormProps) {
                   <FormControl>
                     <Input
                       type="tel"
-                      placeholder="0555 123 45 67 veya 05551234567"
+                      placeholder="0555 123 45 67"
                       {...field}
+                      onChange={(e) => {
+                        const formatted = formatTurkishPhoneNumber(
+                          e.target.value
+                        )
+                        field.onChange(formatted)
+                      }}
+                      maxLength={14}
                     />
                   </FormControl>
                   <FormDescription>
-                    Türk telefon formatı (örn: 0555 123 45 67 veya 05551234567)
+                    Türk telefon formatı (örn: 0555 123 45 67)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

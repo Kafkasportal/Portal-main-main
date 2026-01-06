@@ -73,17 +73,19 @@ export default function DashboardPageNewDesign() {
   const financialTrend = donationsData?.monthlyTrend || []
 
   // Bekleyen başvuruları dönüştür
-  const pendingApplications = (applicationsData?.items || []).map((app: any) => ({
+  const pendingApplications = (applicationsData?.data || []).map((app) => ({
     id: app.id,
-    applicantName: app.basvuran_ad && app.basvuran_soyad
-      ? `${app.basvuran_ad} ${app.basvuran_soyad}`
+    applicantName: app.basvuranKisi?.ad && app.basvuranKisi?.soyad
+      ? `${app.basvuranKisi.ad} ${app.basvuranKisi.soyad}`
       : 'İsimsiz',
-    applicationType: app.yardim_turu || 'nakdi',
-    requestedAmount: app.talep_edilen_tutar || 0,
+    applicationType: app.yardimTuru || 'nakdi',
+    requestedAmount: app.talepEdilenTutar || 0,
     currency: 'TRY' as const,
-    applicationDate: app.basvuru_tarihi || new Date().toISOString(),
+    applicationDate: app.createdAt instanceof Date 
+      ? app.createdAt.toISOString() 
+      : (typeof app.createdAt === 'string' ? app.createdAt : new Date().toISOString()),
     status: app.durum || 'beklemede',
-    priority: app.oncelik || 'orta',
+    priority: 'orta',
     note: app.notlar,
   }))
 

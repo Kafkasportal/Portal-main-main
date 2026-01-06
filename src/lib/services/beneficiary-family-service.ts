@@ -255,34 +255,48 @@ export async function getFamilyCompositionSummary(beneficiaryId: number) {
     }
   }
 
+  // Single-pass aggregation for all categories (optimized from 6 reduce operations to 1 loop)
+  const byRelationship: Record<string, number> = {}
+  const byMaritalStatus: Record<string, number> = {}
+  const byGender: Record<string, number> = {}
+  const byEducation: Record<string, number> = {}
+  const byEmployment: Record<string, number> = {}
+  const byOccupation: Record<string, number> = {}
+
+  for (const m of data) {
+    // Count by relationship
+    byRelationship[m.iliski] = (byRelationship[m.iliski] || 0) + 1
+    
+    // Count by marital status
+    const maritalStatus = m.medeni_durum || 'belirtilmemiş'
+    byMaritalStatus[maritalStatus] = (byMaritalStatus[maritalStatus] || 0) + 1
+    
+    // Count by gender
+    const gender = m.cinsiyet || 'belirtilmemiş'
+    byGender[gender] = (byGender[gender] || 0) + 1
+    
+    // Count by education
+    const education = m.egitim_durumu || 'belirtilmemiş'
+    byEducation[education] = (byEducation[education] || 0) + 1
+    
+    // Count by employment
+    const employment = m.gelir_durumu || 'belirtilmemiş'
+    byEmployment[employment] = (byEmployment[employment] || 0) + 1
+    
+    // Count by occupation (only if meslek exists)
+    if (m.meslek) {
+      byOccupation[m.meslek] = (byOccupation[m.meslek] || 0) + 1
+    }
+  }
+
   return {
     total: data.length,
-    byRelationship: data.reduce((acc, m) => {
-      acc[m.iliski] = (acc[m.iliski] || 0) + 1
-      return acc
-    }, {} as Record<string, number>),
-    byMaritalStatus: data.reduce((acc, m) => {
-      acc[m.medeni_durum || 'belirtilmemiş'] = (acc[m.medeni_durum || 'belirtilmemiş'] || 0) + 1
-      return acc
-    }, {} as Record<string, number>),
-    byGender: data.reduce((acc, m) => {
-      acc[m.cinsiyet || 'belirtilmemiş'] = (acc[m.cinsiyet || 'belirtilmemiş'] || 0) + 1
-      return acc
-    }, {} as Record<string, number>),
-    byEducation: data.reduce((acc, m) => {
-      acc[m.egitim_durumu || 'belirtilmemiş'] = (acc[m.egitim_durumu || 'belirtilmemiş'] || 0) + 1
-      return acc
-    }, {} as Record<string, number>),
-    byEmployment: data.reduce((acc, m) => {
-      acc[m.gelir_durumu || 'belirtilmemiş'] = (acc[m.gelir_durumu || 'belirtilmemiş'] || 0) + 1
-      return acc
-    }, {} as Record<string, number>),
-    byOccupation: data.reduce((acc, m) => {
-      if (m.meslek) {
-        acc[m.meslek] = (acc[m.meslek] || 0) + 1
-      }
-      return acc
-    }, {} as Record<string, number>),
+    byRelationship,
+    byMaritalStatus,
+    byGender,
+    byEducation,
+    byEmployment,
+    byOccupation,
   }
 }
 

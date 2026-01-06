@@ -1,9 +1,17 @@
+import { useCallback } from 'react'
 import type { DashboardProps } from '@/types/dashboard'
 import { StatCard } from './StatCard'
 import { FinancialChart } from './FinancialChart'
 import { PendingApplicationsList } from './PendingApplicationsList'
 import { QuickActions } from './QuickActions'
 import { Users, Heart, FileText } from 'lucide-react'
+
+// Static icon map - defined outside component to avoid recreating on every render
+const STAT_ICON_MAP: Record<string, typeof Users> = {
+  'total-members': Users,
+  'monthly-donations': Heart,
+  'active-applications': FileText,
+}
 
 /**
  * Dashboard - Main overview screen showing key metrics, trends, and pending items
@@ -23,19 +31,10 @@ export function Dashboard({
   onQuickActionClick,
   onCommandPaletteOpen,
 }: DashboardProps) {
-  // Map stat IDs to appropriate icons
-  const getStatIcon = (statId: string) => {
-    switch (statId) {
-      case 'total-members':
-        return Users
-      case 'monthly-donations':
-        return Heart
-      case 'active-applications':
-        return FileText
-      default:
-        return Users
-    }
-  }
+  // Memoized icon lookup using static map
+  const getStatIcon = useCallback((statId: string) => {
+    return STAT_ICON_MAP[statId] || Users
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">

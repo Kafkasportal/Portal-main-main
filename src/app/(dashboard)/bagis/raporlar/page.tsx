@@ -43,14 +43,16 @@ export default function ReportsPage() {
     const timer = setTimeout(() => {
       setIsMounted(true)
     }, 300)
-    window.addEventListener('resize', () => {
+    
+    // Store handler reference to properly remove listener (performance fix)
+    const handleResize = () => {
       setIsMounted(true)
-    })
+    }
+    window.addEventListener('resize', handleResize)
+    
     return () => {
       clearTimeout(timer)
-      window.removeEventListener('resize', () => {
-        setIsMounted(true)
-      })
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 
@@ -89,20 +91,29 @@ export default function ReportsPage() {
 
   const { totalAmount, totalCount, avgAmount } = stats
 
-  // Purpose distribution - memoized
-  const purposeDistribution = useMemo(
-    () =>
-      Object.entries(DONATION_PURPOSE_LABELS)
-        .map(([key, label]) => {
-          const count = allDonations.filter((d) => d.amac === key).length
-          const amount = allDonations
-            .filter((d) => d.amac === key)
-            .reduce((sum, d) => sum + d.tutar, 0)
-          return { name: label, count, amount }
-        })
-        .filter((item) => item.count > 0),
-    [allDonations]
-  )
+  // Purpose distribution - optimized with single-pass aggregation
+  const purposeDistribution = useMemo(() => {
+    // Single pass to build aggregations by purpose
+    const purposeAggregations = new Map<string, { count: number; amount: number }>()
+    
+    for (const d of allDonations) {
+      const existing = purposeAggregations.get(d.amac)
+      if (existing) {
+        existing.count += 1
+        existing.amount += d.tutar
+      } else {
+        purposeAggregations.set(d.amac, { count: 1, amount: d.tutar })
+      }
+    }
+    
+    // Map to final format with labels
+    return Object.entries(DONATION_PURPOSE_LABELS)
+      .map(([key, label]) => {
+        const agg = purposeAggregations.get(key)
+        return { name: label, count: agg?.count || 0, amount: agg?.amount || 0 }
+      })
+      .filter((item) => item.count > 0)
+  }, [allDonations])
 
   const handleExportExcel = async () => {
     try {

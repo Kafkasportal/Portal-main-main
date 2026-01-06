@@ -896,16 +896,28 @@ export async function fetchDailyCashSummary(
   if (error) throw error
 
   const payments: PaymentRow[] = data || []
-  const toplamTutar = payments.reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const nakitTutar = payments
-    .filter((p) => p.odeme_yontemi === 'nakit')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const havaleTutar = payments
-    .filter((p) => p.odeme_yontemi === 'havale')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const eldenTutar = payments
-    .filter((p) => p.odeme_yontemi === 'elden')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
+  
+  // Single-pass calculation for all payment totals (optimized from 4 iterations to 1)
+  let toplamTutar = 0
+  let nakitTutar = 0
+  let havaleTutar = 0
+  let eldenTutar = 0
+  
+  for (const p of payments) {
+    const tutar = p.tutar || 0
+    toplamTutar += tutar
+    switch (p.odeme_yontemi) {
+      case 'nakit':
+        nakitTutar += tutar
+        break
+      case 'havale':
+        havaleTutar += tutar
+        break
+      case 'elden':
+        eldenTutar += tutar
+        break
+    }
+  }
 
   return {
     toplamTutar,
@@ -937,16 +949,28 @@ export async function fetchMonthlyCashSummary(
   if (error) throw error
 
   const payments: PaymentRow[] = data || []
-  const toplamTutar = payments.reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const nakitTutar = payments
-    .filter((p) => p.odeme_yontemi === 'nakit')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const havaleTutar = payments
-    .filter((p) => p.odeme_yontemi === 'havale')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
-  const eldenTutar = payments
-    .filter((p) => p.odeme_yontemi === 'elden')
-    .reduce((sum, p) => sum + (p.tutar || 0), 0)
+  
+  // Single-pass calculation for all payment totals (optimized from 4 iterations to 1)
+  let toplamTutar = 0
+  let nakitTutar = 0
+  let havaleTutar = 0
+  let eldenTutar = 0
+  
+  for (const p of payments) {
+    const tutar = p.tutar || 0
+    toplamTutar += tutar
+    switch (p.odeme_yontemi) {
+      case 'nakit':
+        nakitTutar += tutar
+        break
+      case 'havale':
+        havaleTutar += tutar
+        break
+      case 'elden':
+        eldenTutar += tutar
+        break
+    }
+  }
 
   return {
     toplamTutar,

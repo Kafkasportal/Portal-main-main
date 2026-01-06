@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
-import { getUsers as getUsersService, getUserCount } from '@/lib/services/users.service'
+import { getUsers as getUsersService } from '@/lib/services/users.service'
 
 /**
  * GET /api/users - Get all users with filtering and pagination

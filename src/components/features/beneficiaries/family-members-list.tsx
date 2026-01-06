@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Edit2, Trash2, UserPlus, AlertCircle, Info } from 'lucide-react'
+import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react'
 import {
   fetchFamilyMembers,
   addFamilyMember,
@@ -16,9 +16,9 @@ import {
   checkDuplicateRecipients,
 } from '@/lib/services/beneficiary-family-service'
 import type { FamilyMember } from '@/types'
-import type { Iliski, MedeniDurum, GelirDurumu } from '@/types'
+import type { Iliski, MedeniDurum } from '@/types'
 import { format } from 'date-fns'
-import { tr } from 'date-fns/locale'
+import { FamilyMemberForm } from './family-member-form'
 
 interface FamilyMembersListProps {
   beneficiaryId: number
@@ -38,14 +38,12 @@ export function FamilyMembersList({
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null)
-  const [summary, setSummary] = useState<any>(null)
+  const [summary, setSummary] = useState<{
+    total: number;
+    byRelationship?: Record<string, number>;
+  } | null>(null)
   const [duplicates, setDuplicates] = useState<string[]>([])
   const [checkingDuplicates, setCheckingDuplicates] = useState(false)
-
-  // Load family members on mount
-  useEffect(() => {
-    loadMembers()
-  }, [beneficiaryId])
 
   // Load family members
   const loadMembers = async () => {
@@ -63,6 +61,12 @@ export function FamilyMembersList({
       setLoading(false)
     }
   }
+
+  // Load family members on mount
+  useEffect(() => {
+    loadMembers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [beneficiaryId])
 
   // Search members
   const handleSearch = async (query: string) => {

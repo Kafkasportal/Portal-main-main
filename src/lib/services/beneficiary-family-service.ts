@@ -19,8 +19,8 @@ function mapFamilyMember(db: Tables['beneficiary_family_members']['Row']): Famil
     tcKimlikNo: db.tc_kimlik_no,
     cinsiyet: (db.cinsiyet as 'erkek' | 'kadın') || 'erkek',
     dogumTarihi: db.dogum_tarihi ? new Date(db.dogum_tarihi) : undefined,
-    iliski: (db.iliski as any),
-    medeniDurum: (db.medeni_durum as any) || 'belirtilmemiş',
+    iliski: db.iliski as FamilyMember['iliski'],
+    medeniDurum: (db.medeni_durum as FamilyMember['medeniDurum']) || 'belirtilmemiş',
     egitimDurumu: db.egitim_durumu || undefined,
     meslek: db.meslek || undefined,
     gelirDurumu: db.gelir_durumu || undefined,
@@ -311,7 +311,16 @@ export async function checkDuplicateRecipients(tcKimlikNumbers: string[]): Promi
 /**
  * Find beneficiaries with multiple family members receiving aid
  */
-export async function findBeneficiariesWithMultipleAidRecipients(): Promise<any[]> {
+export async function findBeneficiariesWithMultipleAidRecipients(): Promise<{
+  id: number;
+  ad: string | null;
+  soyad: string | null;
+  tcKimlikNo: string | null;
+  telefon: string | null;
+  adres: string | null;
+  familyMemberCount: number;
+  warning?: string;
+}[]> {
   const supabase = getSupabaseClient()
   
   // Get family members that have received aid

@@ -5,10 +5,24 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/server'
-import { User, Role, Permission, UserPermissions, UserFilters, CreateUserData, UpdateUserData } from '@/types/users'
+import { User, Role, UserPermissions, UserFilters, CreateUserData, UpdateUserData } from '@/types/users'
+
+// Type for Supabase auth user
+interface SupabaseAuthUser {
+  id: string;
+  email?: string;
+  phone?: string;
+  aud?: string;
+  banned_until?: string;
+  last_sign_in_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  app_metadata?: Record<string, unknown>;
+}
 
 // Supabase auth.users -> User mapping
-function mapSupabaseAuthUserToUser(authUser: any): User {
+function mapSupabaseAuthUserToUser(authUser: SupabaseAuthUser): User {
   const appMetadata = authUser.app_metadata || {}
   const userRole = (appMetadata.role || 'user') as Role
   const userPermissions = (appMetadata.permissions || {}) as UserPermissions
@@ -16,31 +30,31 @@ function mapSupabaseAuthUserToUser(authUser: any): User {
   return {
     id: authUser.id,
     email: authUser.email || '',
-    name: appMetadata.name || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim(),
-    phone: authUser.phone || appMetadata.phone || undefined,
+    name: (appMetadata.name as string) || `${appMetadata.ad || ''} ${appMetadata.soyad || ''}`.trim(),
+    phone: authUser.phone || (appMetadata.phone as string) || undefined,
     role: userRole,
-    avatar_url: appMetadata.avatar_url || undefined,
+    avatar_url: appMetadata.avatar_url as string | undefined,
     isActive: authUser.aud === 'authenticated' && !authUser.banned_until,
     last_login: authUser.last_sign_in_at || undefined,
     created_at: authUser.created_at,
     updated_at: authUser.updated_at,
     deleted_at: authUser.deleted_at || undefined,
-    ad: appMetadata.ad || undefined,
-    soyad: appMetadata.soyad || undefined,
-    birim: appMetadata.birim || undefined,
-    yetki: appMetadata.yetki || undefined,
-    gorev: appMetadata.gorev || undefined,
-    dahili: appMetadata.dahili || undefined,
-    kisa_kod: appMetadata.kisa_kod || undefined,
-    kisa_kod2: appMetadata.kisa_kod2 || undefined,
-    erisim_yetkisi: appMetadata.erisim_yetkisi || undefined,
-    imza_yetkisi: appMetadata.imza_yetkisi || undefined,
-    fon_yetkisi: appMetadata.fon_yetkisi || undefined,
-    fon_yetkisi2: appMetadata.fon_yetkisi2 || undefined,
-    fon_yetkisi3: appMetadata.fon_yetkisi3 || undefined,
-    fon_bolgesi_yetkisi: appMetadata.fon_bolgesi_yetkisi || undefined,
-    imza_yetkisi2: appMetadata.imza_yetkisi2 || undefined,
-    imza_yetkisi3: appMetadata.imza_yetkisi3 || undefined,
+    ad: appMetadata.ad as string | undefined,
+    soyad: appMetadata.soyad as string | undefined,
+    birim: appMetadata.birim as string | undefined,
+    yetki: appMetadata.yetki as string | undefined,
+    gorev: appMetadata.gorev as string | undefined,
+    dahili: appMetadata.dahili as string | undefined,
+    kisa_kod: appMetadata.kisa_kod as string | undefined,
+    kisa_kod2: appMetadata.kisa_kod2 as string | undefined,
+    erisim_yetkisi: appMetadata.erisim_yetkisi as string | undefined,
+    imza_yetkisi: appMetadata.imza_yetkisi as string | undefined,
+    fon_yetkisi: appMetadata.fon_yetkisi as string | undefined,
+    fon_yetkisi2: appMetadata.fon_yetkisi2 as string | undefined,
+    fon_yetkisi3: appMetadata.fon_yetkisi3 as string | undefined,
+    fon_bolgesi_yetkisi: appMetadata.fon_bolgesi_yetkisi as string | undefined,
+    imza_yetkisi2: appMetadata.imza_yetkisi2 as string | undefined,
+    imza_yetkisi3: appMetadata.imza_yetkisi3 as string | undefined,
     permissions: userPermissions,
   }
 }
@@ -284,7 +298,7 @@ export async function updateUser(userId: string, updates: Partial<UpdateUserData
     newAppMetadata.permissions = ROLE_PERMISSIONS_MAP[updates.role] || ROLE_PERMISSIONS_MAP[Role.USER]
   }
 
-  const userUpdateData: any = {
+  const userUpdateData = {
     email: updates.email,
     password: updates.password,
     app_metadata: newAppMetadata,

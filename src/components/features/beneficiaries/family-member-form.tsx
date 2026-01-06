@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import type { FamilyMember, Iliski, MedeniDurum } from '@/types'
-import { tr } from 'date-fns/locale'
 
 interface FamilyMemberFormProps {
   beneficiaryId: number
@@ -58,7 +57,7 @@ export function FamilyMemberForm({
         aciklama: initialData.aciklama || '',
       })
     }
-  }, [initialData])
+  }, [initialData, beneficiaryId])
 
   // Validate form
   const validateForm = (): boolean => {
@@ -195,7 +194,7 @@ export function FamilyMemberForm({
               id="dogumTarihi"
               type="date"
               value={formData.dogumTarihi ? new Date(formData.dogumTarihi).toISOString().split('T')[0] : ''}
-              onChange={(e) => setFormData({ ...formData, dogumTarihi: e.target.value as any })}
+              onChange={(e) => setFormData({ ...formData, dogumTarihi: e.target.value ? new Date(e.target.value) : undefined })}
               className=""
             />
           </div>

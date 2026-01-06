@@ -75,13 +75,15 @@ export default function DashboardPageNewDesign() {
   // Bekleyen başvuruları dönüştür
   const pendingApplications = (applicationsData?.data || []).map((app) => ({
     id: app.id,
-    applicantName: app.basvuranKisi.ad && app.basvuranKisi.soyad
+    applicantName: app.basvuranKisi?.ad && app.basvuranKisi?.soyad
       ? `${app.basvuranKisi.ad} ${app.basvuranKisi.soyad}`
       : 'İsimsiz',
     applicationType: app.yardimTuru || 'nakdi',
     requestedAmount: app.talepEdilenTutar || 0,
     currency: 'TRY' as const,
-    applicationDate: app.createdAt?.toISOString() || new Date().toISOString(),
+    applicationDate: app.createdAt instanceof Date 
+      ? app.createdAt.toISOString() 
+      : (typeof app.createdAt === 'string' ? app.createdAt : new Date().toISOString()),
     status: app.durum || 'beklemede',
     priority: 'orta',
     note: app.notlar,

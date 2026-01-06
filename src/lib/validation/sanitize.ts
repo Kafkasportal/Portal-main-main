@@ -1,92 +1,42 @@
 /**
  * Input Sanitization Utilities
  * Provides functions to sanitize user input and prevent XSS attacks
+ * Updated with improved security using DOMPurify
  */
 
+import DOMPurify from 'dompurify'
+
 /**
- * Sanitizes HTML content by removing dangerous tags and attributes
- * Allows basic formatting tags (b, i, u, br, p, etc.)
+ * Sanitizes HTML content using DOMPurify
+ * Allows basic formatting tags and blocks all XSS vectors
+ * @param html - HTML string to sanitize
+ * @param allowedTags - Optional list of allowed tags (defaults to safe tags)
+ * @returns Sanitized HTML string
  */
 export function sanitizeHTML(html: string, allowedTags?: string[]): string {
   if (!html) return ''
 
-  // Default allowed tags
-  const defaultAllowedTags = [
-    'b', 'i', 'u', 'strong', 'em', 'br', 'p', 'ul', 'ol', 'li',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'
-  ]
-
-  const tags = allowedTags || defaultAllowedTags
-
-  // Create temporary element
-  const temp = document.createElement('div')
-  temp.innerHTML = html
-
-  // Remove dangerous tags and attributes
-  removeDangerousTags(temp, tags)
-  removeUnsafeAttributes(temp)
-
-  return temp.innerHTML
-}
-
-/**
- * Recursively removes tags not in the allowed list
- */
-function removeDangerousTags(node: Element, allowedTags: string[]): void {
-  const children = Array.from(node.childNodes)
-
-  for (const child of children) {
-    if (child.nodeType === Node.ELEMENT_NODE) {
-      const element = child as Element
-      const tagName = element.tagName.toLowerCase()
-
-      if (!allowedTags.includes(tagName)) {
-        // Replace with text content
-        const text = document.createTextNode(element.textContent || '')
-        element.replaceWith(text)
-      } else {
-        // Recursively check children
-        removeDangerousTags(element, allowedTags)
-      }
-    }
+  // Configure DOMPurify with safe defaults
+  const config = {
+    // Allow only safe tags
+    ALLOWED_TAGS: allowedTags || [
+      'b', 'i', 'u', 'strong', 'em', 'br', 'p', 'ul', 'ol', 'li',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'
+    ],
+    // Allow only safe attributes
+    ALLOWED_ATTR: ['href', 'title', 'target', 'rel', 'class', 'id', 'style'],
+    // Strip unsafe tags and attributes
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
+    FORBID_ATTR: ['on', 'data:', 'javascript:', 'src'],
+    // Prevent JavaScript in href
+    FORCE_BODY: true,
+    // Clean HTML before returning
+    WHOLE_DOCUMENT: false,
+    // Don't keep comments (can hide XSS)
+    ALLOW_UNKNOWN_PROTOCOLS: false,
   }
-}
 
-/**
- * Removes unsafe attributes from elements
- */
-function removeUnsafeAttributes(node: Element): void {
-  const allowedAttributes = [
-    'href', 'title', 'target', 'rel', 'class', 'id', 'style'
-  ]
-
-  const dangerous = ['on', 'script', 'data:', 'javascript:']
-
-  const children = Array.from(node.childNodes)
-
-  for (const child of children) {
-    if (child.nodeType === Node.ELEMENT_NODE) {
-      const element = child as Element
-
-      // Remove dangerous attributes
-      Array.from(element.attributes).forEach((attr) => {
-        const name = attr.name.toLowerCase()
-        const value = attr.value.toLowerCase()
-
-        // Check if attribute is dangerous
-        const isDangerous = dangerous.some((d) => 
-          name.startsWith(d) || value.includes(d)
-        )
-
-        if (isDangerous || !allowedAttributes.includes(name)) {
-          element.removeAttribute(attr.name)
-        }
-      })
-
-      // Recursively check children
-      removeUnsafeAttributes(element)
-    }
-  }
+  return DOMPurify.sanitize(html, config)
 }
 
 /**

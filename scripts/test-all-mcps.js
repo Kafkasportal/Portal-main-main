@@ -6,6 +6,8 @@
  */
 
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
 // Environment variables
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -21,6 +23,11 @@ async function testSupabaseMCP() {
   console.log('🧪 Testing Supabase MCP...');
 
   try {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.log('   ⚠️  Skipping: Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+      return { success: false, service: 'Supabase', error: 'Missing credentials' };
+    }
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Test database connection
@@ -62,6 +69,11 @@ async function testSentryMCP() {
   console.log('🧪 Testing Sentry MCP...');
 
   try {
+    if (!SENTRY_DSN) {
+       console.log('   ⚠️  Skipping: Missing NEXT_PUBLIC_SENTRY_DSN');
+       return { success: false, service: 'Sentry', error: 'Missing DSN' };
+    }
+
     // Parse DSN
     const dsnMatch = SENTRY_DSN.match(/https:\/\/(.+)@(.+)\/(.+)/);
     if (!dsnMatch) {
@@ -91,8 +103,13 @@ async function testRenderMCP() {
   console.log('🧪 Testing Render MCP...');
 
   try {
-    if (!RENDER_API_KEY || RENDER_API_KEY.length < 20) {
-      throw new Error('Invalid API key');
+    if (!RENDER_API_KEY) {
+       console.log('   ⚠️  Skipping: Missing RENDER_API_KEY');
+       return { success: false, service: 'Render', error: 'Missing API Key' };
+    }
+
+    if (RENDER_API_KEY.length < 20) {
+      throw new Error('Invalid API key length');
     }
 
     console.log('   ✅ API key format valid');
@@ -115,8 +132,13 @@ async function testGitHubMCP() {
   console.log('🧪 Testing GitHub MCP...');
 
   try {
-    if (!GITHUB_TOKEN || !GITHUB_TOKEN.startsWith('ghp_')) {
-      throw new Error('Invalid GitHub token format');
+    if (!GITHUB_TOKEN) {
+       console.log('   ⚠️  Skipping: Missing GITHUB_TOKEN');
+       return { success: false, service: 'GitHub', error: 'Missing Token' };
+    }
+
+    if (!GITHUB_TOKEN.startsWith('ghp_')) {
+      throw new Error('Invalid GitHub token format (expected ghp_ prefix)');
     }
 
     console.log('   ✅ Token format valid');
@@ -136,12 +158,19 @@ async function testStormMCP() {
   console.log('🧪 Testing StormMCP Gateway...');
 
   try {
-    if (!STORMMCP_API_KEY || !STORMMCP_API_KEY.startsWith('ag_')) {
-      throw new Error('Invalid StormMCP API key format');
+    if (!STORMMCP_API_KEY) {
+       console.log('   ⚠️  Skipping: Missing STORMMCP_API_KEY');
+       return { success: false, service: 'StormMCP', error: 'Missing API Key' };
+    }
+
+    if (!STORMMCP_API_KEY.startsWith('ag_')) {
+      throw new Error('Invalid StormMCP API key format (expected ag_ prefix)');
     }
 
     console.log('   ✅ API key format valid');
-    console.log('   ✅ Gateway URL:', STORMMCP_URL);
+    if (STORMMCP_URL) {
+        console.log('   ✅ Gateway URL:', STORMMCP_URL);
+    }
     console.log('✅ StormMCP: CONFIGURED\n');
 
     return { success: true, service: 'StormMCP' };

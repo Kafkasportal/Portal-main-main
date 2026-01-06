@@ -68,7 +68,10 @@ export function withCSRFProtection(
       const csrfCheck = await validateCSRFMiddleware(request)
 
       if (!csrfCheck.isValid) {
-        console.warn(`CSRF validation failed: ${csrfCheck.error}`)
+        // Log CSRF validation failure in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`CSRF validation failed: ${csrfCheck.error}`)
+        }
         return NextResponse.json(
           { error: csrfCheck.error || 'CSRF validation failed' },
           { status: 403 }

@@ -523,6 +523,31 @@ export interface IhtiyacSahibiListItem {
   durum: IhtiyacDurumu
 }
 
+// Family Member Types
+export type Iliski = 'eş' | 'baba' | 'anne' | 'çocuk' | 'torun' | 'kardeş' | 'diğer'
+
+export type MedeniDurum = 'bekâr' | 'evli' | 'dül' | 'boşanmış'
+
+export type GelirDurumu = 'çalışan' | 'emekli' | 'çalışmıyor' | 'öğrenci'
+
+export interface FamilyMember {
+  id: number
+  beneficiaryId: number
+  ad: string
+  soyad: string
+  tcKimlikNo: string
+  cinsiyet: 'erkek' | 'kadın'
+  dogumTarihi?: Date
+  iliski: Iliski
+  medeniDurum: MedeniDurum
+  egitimDurumu?: string
+  meslek?: string
+  gelirDurumu?: GelirDurumu
+  aciklama?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 // Table State Types
 export interface TableState {
   page: number

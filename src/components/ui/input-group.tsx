@@ -130,7 +130,6 @@ function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
 
 function InputGroupInput({
   className,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   size: _size,
   ...props
 }: React.ComponentProps<'input'>) {

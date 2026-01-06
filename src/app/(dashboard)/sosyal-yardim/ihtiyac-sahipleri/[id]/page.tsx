@@ -63,6 +63,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 
 import { DocumentList } from '@/components/features/documents/document-list'
+import { FamilyMembersList } from '@/components/features/beneficiaries/family-members-list'
 import { FileUpload } from '@/components/shared/file-upload'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -590,6 +591,14 @@ export default function BeneficiaryDetailPage({
                   count={data.baglantiliKayitlar?.baktigiKisiler}
                   onClick={() => {
                     setActiveSheet('baktigiKisiler')
+                  }}
+                />
+                <LinkedRecordButton
+                  icon={Users}
+                  label="Aile Üyeleri"
+                  count={data.baglantiliKayitlar?.baktigiKisiler}
+                  onClick={() => {
+                    setActiveSheet('aileUyeleri')
                   }}
                 />
                 <LinkedRecordButton
@@ -1552,7 +1561,53 @@ export default function BeneficiaryDetailPage({
             </CardContent>
           </Card>
 
-          {/* BÖLÜM 4: NOTLAR */}
+          {/* BÖLÜM 4: HANE İLE İLGİLİ KİŞİLER */}
+          <Card>
+            <CardContent className="p-6">
+              <SectionTitle>Hane İle İlgili Kişiler</SectionTitle>
+              
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {data.ad} {data.soyad} adlı ihtiyaç sahibinin hanesindeki diğer kişileri buradan yönetebilirsiniz.
+                </p>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setActiveSheet('aileUyeleri')
+                  }}
+                  className="w-full"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Hane İle İlgili Kişileri Yönet
+                </Button>
+                
+                {/* Quick summary */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="rounded-lg bg-muted p-4">
+                    <div className="text-sm text-muted-foreground">Toplam Üye</div>
+                    <div className="text-2xl font-bold">
+                      {data.aileHaneBilgileri?.ailedekiKisiSayisi || 0}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-muted p-4">
+                    <div className="text-sm text-muted-foreground">Çocuk Sayısı</div>
+                    <div className="text-2xl font-bold">
+                      {data.aileHaneBilgileri?.cocukSayisi || 0}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-muted p-4">
+                    <div className="text-sm text-muted-foreground">Yetim Sayısı</div>
+                    <div className="text-2xl font-bold">
+                      {data.aileHaneBilgileri?.yetimSayisi || 0}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* BÖLÜM 5: NOTLAR */}
           <Card>
             <CardContent className="p-6">
               <SectionTitle>Ek Notlar</SectionTitle>
@@ -1841,6 +1896,20 @@ export default function BeneficiaryDetailPage({
             </div>
           )}
         </div>
+      </LinkedRecordSheet>
+
+      {/* Hane İle İlgili Kişiler (Aile Üyeleri) */}
+      <LinkedRecordSheet
+        open={activeSheet === 'aileUyeleri'}
+        onOpenChange={(open) => !open && setActiveSheet(null)}
+        title="Hane İle İlgili Kişiler"
+        description={`${data.ad} ${data.soyad} - Hane İle İlgili Kişiler`}
+      >
+        <FamilyMembersList
+          beneficiaryId={id}
+          beneficiaryName={`${data.ad} ${data.soyad}`}
+          beneficiaryTcKimlikNo={data.tcKimlikNo}
+        />
       </LinkedRecordSheet>
 
       {/* Sponsorlar */}

@@ -7,6 +7,12 @@ async function verifyStorm() {
     process.exit(1);
   }
     console.log('🧪 StormMCP Gateway Bağlantısı Test Ediliyor...');
+
+    if (!STORMMCP_URL || !STORMMCP_API_KEY) {
+        console.error('❌ Hata: STORMMCP_URL ve STORMMCP_API_KEY ortam değişkenleri tanımlanmalıdır.');
+        process.exit(1);
+    }
+
     console.log(`🔗 URL: ${STORMMCP_URL}`);
 
     try {

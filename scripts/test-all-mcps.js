@@ -10,12 +10,13 @@ require('dotenv').config({ path: '.env.local' });
 require('dotenv').config();
 
 // Environment variables
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://idsiiayyvygcgegmqcov.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 const RENDER_API_KEY = process.env.RENDER_API_KEY;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const STORMMCP_URL = process.env.STORMMCP_URL;
+const STORMMCP_URL = process.env.STORMMCP_URL || 'https://stormmcp.ai/gateway/7e6981d1-22cc-42a2-af7f-2b9f7f55bb7e/mcp';
 const STORMMCP_API_KEY = process.env.STORMMCP_API_KEY;
 
 async function testSupabaseMCP() {

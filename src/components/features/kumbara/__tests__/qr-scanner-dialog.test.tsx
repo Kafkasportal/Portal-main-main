@@ -1,69 +1,75 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QrScannerDialog } from '../qr-scanner-dialog'
+import { QRScannerDialog } from '../qr-scanner-dialog'
 
 jest.mock('sonner', () => ({
-    toast: {
-        success: jest.fn(),
-        error: jest.fn(),
-    },
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
 }))
 
 describe('QrScannerDialog', () => {
-    beforeEach(() => {
-        jest.clearAllMocks()
-    })
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
-    it('should render dialog when open', () => {
-        render(<QrScannerDialog open onScan={jest.fn()} onClose={jest.fn()} />)
+  it('should render dialog when open', () => {
+    render(<QRScannerDialog open onOpenChange={jest.fn()} onScan={jest.fn()} />)
 
-        expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
+  })
 
-    it('should not render when closed', () => {
-        const { container } = render(<QrScannerDialog open={false} onScan={jest.fn()} onClose={jest.fn()} />)
+  it('should not render when closed', () => {
+    const { container } = render(
+      <QRScannerDialog
+        open={false}
+        onOpenChange={jest.fn()}
+        onScan={jest.fn()}
+      />
+    )
 
-        expect(container.firstChild).toBeNull()
-    })
+    expect(container.firstChild).toBeNull()
+  })
 
-    it('should close when close button clicked', async () => {
-        const onClose = jest.fn()
-        const user = userEvent.setup()
-        render(<QrScannerDialog open onScan={jest.fn()} onClose={onClose} />)
+  it('should close when close button clicked', async () => {
+    const onOpenChange = jest.fn()
+    const user = userEvent.setup()
+    render(
+      <QRScannerDialog open onOpenChange={onOpenChange} onScan={jest.fn()} />
+    )
 
-        const closeButton = screen.getByRole('button', { name: /Kapat/i })
-        await user.click(closeButton)
+    const closeButton = screen.getByRole('button', { name: /Kapat/i })
+    await user.click(closeButton)
 
-        expect(onClose).toHaveBeenCalled()
-    })
+    expect(onOpenChange).toHaveBeenCalled()
+  })
 
-    it('should show scanning indicator', () => {
-        render(<QrScannerDialog open onScan={jest.fn()} onClose={jest.fn()} />)
+  it('should show scanning indicator', () => {
+    render(<QRScannerDialog open onOpenChange={jest.fn()} onScan={jest.fn()} />)
 
-        expect(screen.getByText(/Taranıyor/i)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/Taranıyor/i)).toBeInTheDocument()
+  })
 
-    it('should show error message on scan error', () => {
-        const toast = require('sonner').toast
+  it('should show error message on scan error', () => {
+    render(<QRScannerDialog open onOpenChange={jest.fn()} onScan={jest.fn()} />)
 
-        render(<QrScannerDialog open onScan={jest.fn()} onClose={jest.fn()} />)
+    // Simulate scan error
+    expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
+  })
 
-        // Simulate scan error
-        expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
-    })
+  it('should call onScan when QR code is detected', async () => {
+    const onScan = jest.fn()
+    render(<QRScannerDialog open onOpenChange={jest.fn()} onScan={onScan} />)
 
-    it('should call onScan when QR code is detected', async () => {
-        const onScan = jest.fn()
-        render(<QrScannerDialog open onScan={onScan} onClose={jest.fn()} />)
+    // Simulate QR scan
+    // In real component, this would be called from QR library
+    expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
+  })
 
-        // Simulate QR scan
-        // In real component, this would be called from QR library
-        expect(screen.getByText(/QR Kod Tarayıcı/i)).toBeInTheDocument()
-    })
+  it('should show permission request message', () => {
+    render(<QRScannerDialog open onOpenChange={jest.fn()} onScan={jest.fn()} />)
 
-    it('should show permission request message', () => {
-        render(<QrScannerDialog open onScan={jest.fn()} onClose={jest.fn()} />)
-
-        expect(screen.getByText(/Kamera izni gereklidir/i)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/Kamera izni gereklidir/i)).toBeInTheDocument()
+  })
 })

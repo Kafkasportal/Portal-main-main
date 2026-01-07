@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
+import { useDebounce } from '@/hooks/use-debounce'
 
 describe('useDebounce', () => {
     beforeEach(() => {
@@ -12,7 +13,6 @@ describe('useDebounce', () => {
 
     it('should return initial value immediately', () => {
         const { result } = renderHook(() => {
-            const { useDebounce } = require('@/hooks/use-debounce')
             return useDebounce('initial', 500)
         })
 
@@ -20,7 +20,6 @@ describe('useDebounce', () => {
     })
 
     it('should debounce value changes', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
         const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
             initialProps: { value: 'initial', delay: 500 }
         })
@@ -37,7 +36,6 @@ describe('useDebounce', () => {
     })
 
     it('should reset timer on value change', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
         const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
             initialProps: { value: 'a', delay: 500 }
         })
@@ -62,7 +60,6 @@ describe('useDebounce', () => {
     })
 
     it('should use default delay of 500ms', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
         const { result, rerender } = renderHook(({ value }) => useDebounce(value), {
             initialProps: { value: 'initial' }
         })
@@ -81,8 +78,6 @@ describe('useDebounce', () => {
     })
 
     it('should work with different data types', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
-
         const numResult = renderHook(({ value }) => useDebounce(value, 100), {
             initialProps: { value: 0 }
         })
@@ -112,7 +107,6 @@ describe('useDebounce', () => {
     })
 
     it('should handle null and undefined', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
         const { result, rerender } = renderHook(({ value }) => useDebounce(value, 100), {
             initialProps: { value: 'test' as string | null | undefined }
         })
@@ -131,7 +125,6 @@ describe('useDebounce', () => {
     })
 
     it('should cleanup timer on unmount', () => {
-        const { useDebounce } = require('@/hooks/use-debounce')
         const { unmount, rerender } = renderHook(({ value }) => useDebounce(value, 500), {
             initialProps: { value: 'initial' }
         })

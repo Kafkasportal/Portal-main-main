@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { ProgressBar } from '../progress-bar'
+import { usePathname } from 'next/navigation'
 
 jest.mock('next/navigation', () => ({
     usePathname: jest.fn(),
@@ -16,7 +17,6 @@ describe('ProgressBar', () => {
     })
 
     it('should render progress bar container', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<ProgressBar />)
@@ -24,7 +24,6 @@ describe('ProgressBar', () => {
     })
 
     it('should render progress bar element', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<ProgressBar />)
@@ -32,7 +31,6 @@ describe('ProgressBar', () => {
     })
 
   it('should have correct initial styles', () => {
-    const { usePathname } = require('next/navigation')
     jest.mocked(usePathname).mockReturnValue('/genel')
     
     const { container } = render(<ProgressBar />)
@@ -43,7 +41,6 @@ describe('ProgressBar', () => {
   })
 
     it('should be positioned at top', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<ProgressBar />)
@@ -52,7 +49,6 @@ describe('ProgressBar', () => {
     })
 
     it('should have high z-index', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<ProgressBar />)
@@ -61,7 +57,6 @@ describe('ProgressBar', () => {
     })
 
     it('should be pointer events none', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<ProgressBar />)

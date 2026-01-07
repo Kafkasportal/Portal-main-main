@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Card } from '../card'
+import { Card, CardHeader, CardContent, CardFooter } from '../card'
 
 describe('Card Component', () => {
   it('should render card with content', () => {
@@ -50,12 +49,11 @@ describe('Card Component', () => {
   it('should be clickable with onClick', () => {
     const handleClick = jest.fn()
 
-    render(
+    const { container } = render(
       <Card onClick={handleClick}>
         <p>Card Content</p>
       </Card>
     )
-    const { container } = render(<Card><p>Card Content</p></Card>)
 
     fireEvent.click(container.firstChild as HTMLElement)
     expect(handleClick).toHaveBeenCalled()

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FileText, Upload, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import type { DocumentType } from '@/types'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,7 +14,7 @@ import * as service from '@/lib/supabase-service'
 interface DocumentUploadProps {
   applicationId?: string
   beneficiaryId?: string
-  onSuccess?: (document: any) => void
+  onSuccess?: (document: unknown) => void
   maxFiles?: number
   allowedTypes?: string[]
 }
@@ -36,7 +37,7 @@ export function DocumentUpload({
         throw new Error('Beneficiary ID is required')
       }
 
-      const documentType = getDocumentType(file.name) as any
+      const documentType = getDocumentType(file.name)
 
       return service.uploadDocument(file, beneficiaryId, documentType, (progress) => {
         setUploadProgress(progress)
@@ -54,17 +55,17 @@ export function DocumentUpload({
     },
   })
 
-  const getDocumentType = (filename: string): string => {
+  const getDocumentType = (filename: string): DocumentType => {
     const ext = filename.split('.').pop()?.toLowerCase()
-    const typeMap: Record<string, string> = {
-      pdf: 'pdf',
-      jpg: 'image',
-      jpeg: 'image',
-      png: 'image',
-      doc: 'document',
-      docx: 'document',
+    const typeMap: Record<string, DocumentType> = {
+      pdf: 'diger',
+      jpg: 'diger',
+      jpeg: 'diger',
+      png: 'diger',
+      doc: 'diger',
+      docx: 'diger',
     }
-    return typeMap[ext || ''] || 'other'
+    return typeMap[ext || ''] || 'diger'
   }
 
   const handleFileSelect = useCallback(

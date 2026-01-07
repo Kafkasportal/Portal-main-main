@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { Breadcrumbs } from '../breadcrumbs'
+import { usePathname } from 'next/navigation'
 
 jest.mock('next/navigation', () => ({
     usePathname: jest.fn(),
@@ -11,7 +12,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should not render on home page', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/')
         
         const { container } = render(<Breadcrumbs />)
@@ -19,7 +19,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should not render on dashboard page', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/genel')
         
         const { container } = render(<Breadcrumbs />)
@@ -27,7 +26,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should render breadcrumbs for nested routes', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/bagis/liste')
         
         render(<Breadcrumbs />)
@@ -38,7 +36,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should translate route segments to Turkish', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/uyeler')
         
         render(<Breadcrumbs />)
@@ -47,7 +44,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should handle UUID segments in route', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/uyeler/123e4567-e89b-12d3-a456-426614174000')
         
         render(<Breadcrumbs />)
@@ -57,7 +53,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should handle numeric ID segments in route', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/bagis/123')
         
         render(<Breadcrumbs />)
@@ -67,7 +62,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should show correct number of breadcrumbs', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/sosyal-yardim/basvurular')
         
         render(<Breadcrumbs />)
@@ -77,17 +71,15 @@ describe('Breadcrumbs', () => {
     })
 
     it('should link to parent routes', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/uyeler/yeni')
         
         render(<Breadcrumbs />)
 
         const uyelerLink = screen.getByText(/Üyeler/i)
-        expect(uyersLink.closest('a')).toHaveAttribute('href', '/uyeler')
+        expect(uyelerLink.closest('a')).toHaveAttribute('href', '/uyeler')
     })
 
     it('should not link to current page', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/uyeler/yeni')
         
         render(<Breadcrumbs />)
@@ -97,7 +89,6 @@ describe('Breadcrumbs', () => {
     })
 
     it('should capitalize first letter for unknown routes', () => {
-        const { usePathname } = require('next/navigation')
         jest.mocked(usePathname).mockReturnValue('/unknown-route')
         
         render(<Breadcrumbs />)

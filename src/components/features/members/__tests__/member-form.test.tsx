@@ -38,6 +38,7 @@ describe('MemberForm', () => {
       reset: jest.fn(),
       isPaused: false,
       submittedAt: 0,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 
   beforeEach(() => {

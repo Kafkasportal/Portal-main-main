@@ -41,6 +41,7 @@ describe('YeniKumbaraDialog', () => {
       reset: jest.fn(),
       isPaused: false,
       submittedAt: 0,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 
   beforeEach(() => {
@@ -91,7 +92,9 @@ describe('YeniKumbaraDialog', () => {
 
     await user.type(screen.getByLabelText(/Kod/i), 'KUM001')
     await user.type(screen.getByLabelText(/Konum/i), 'İstanbul')
-    await user.select(screen.getByLabelText(/Tür/i), 'sehirk')
+    const typeSelect = screen.getByRole('combobox', { name: /Tür/i })
+    await user.click(typeSelect)
+    await user.click(screen.getByText(/Şehir İçi/i))
 
     const submitButton = screen.getByRole('button', { name: /Oluştur/i })
     await user.click(submitButton)

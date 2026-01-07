@@ -11,13 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useIsMobile } from '@/hooks/use-media-query'
-import { CURRENT_USER } from '@/lib/mock-data'
 import { getInitials } from '@/lib/utils'
 import { useSidebarStore } from '@/stores/sidebar-store'
 import { useUserStore } from '@/stores/user-store'
 import { Bell, LogOut, Menu, Search, Settings, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 
 // Lazy load Command Palette - only needed when user opens it
 const CommandPalette = lazy(() =>
@@ -28,10 +27,15 @@ const CommandPalette = lazy(() =>
 
 export function Header() {
   const { isCollapsed, setCollapsed, setOpen } = useSidebarStore()
-  const { logout } = useUserStore()
+  const { logout, user } = useUserStore()
   const router = useRouter()
   const isMobile = useIsMobile()
   const [commandOpen, setCommandOpen] = useState(false)
+
+  const handleLogout = async () => {
+    await logout()
+    router.push('/giris')
+  }
 
   // Keyboard shortcut for command palette
   useEffect(() => {
@@ -47,11 +51,6 @@ export function Header() {
       document.removeEventListener('keydown', down)
     }
   }, [])
-
-  const handleLogout = () => {
-    logout()
-    router.push('/giris')
-  }
 
   return (
     <header className="border-border bg-card/80 flex h-16 items-center justify-between border-b px-4 shadow-sm backdrop-blur-sm lg:px-6">
@@ -127,12 +126,12 @@ export function Header() {
             >
               <Avatar className="ring-primary/20 h-8 w-8 shadow-sm ring-2">
                 <AvatarFallback className="from-primary to-accent text-primary-foreground bg-gradient-to-br text-xs font-semibold">
-                  {getInitials(CURRENT_USER.name)}
+                  {getInitials(user?.name || 'K')}
                 </AvatarFallback>
               </Avatar>
               {!isMobile && (
                 <span className="max-w-25 truncate text-sm font-medium">
-                  {CURRENT_USER.name}
+                  {user?.name || 'Kullanıcı'}
                 </span>
               )}
             </Button>
@@ -143,9 +142,11 @@ export function Header() {
           >
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-semibold">{CURRENT_USER.name}</p>
+                <p className="text-sm font-semibold">
+                  {user?.name || 'Kullanıcı'}
+                </p>
                 <p className="text-muted-foreground text-xs">
-                  {CURRENT_USER.email}
+                  {user?.email || ''}
                 </p>
               </div>
             </DropdownMenuLabel>

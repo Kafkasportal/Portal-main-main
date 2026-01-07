@@ -89,14 +89,6 @@ Belge/fotoğraf yüklemesi için:
 3. Public: Hayır (private)
 4. RLS politikası ekleyin
 
-## 8. MCP Entegrasyonu
-
-VS Code'da Supabase MCP kullanmak için:
-
-1. `.vscode/mcp.json` dosyası zaten yapılandırılmış
-2. `.env.local` dosyasında anahtarları ayarlayın
-3. VS Code'u yeniden başlatın
-
 ## Dosya Yapısı
 
 ```

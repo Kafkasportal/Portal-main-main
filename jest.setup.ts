@@ -8,6 +8,7 @@ jest.mock('next/navigation', () => ({
     prefetch: jest.fn(),
     back: jest.fn(),
     forward: jest.fn(),
+    refresh: jest.fn(),
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
@@ -16,7 +17,7 @@ jest.mock('next/navigation', () => ({
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -35,19 +36,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }))
 
-// Suppress console errors in tests (optional)
-// const originalError = console.error
-// beforeAll(() => {
-//   console.error = (...args) => {
-//     if (
-//       typeof args[0] === 'string' &&
-//       args[0].includes('Warning: ReactDOM.render')
-//     ) {
-//       return
-//     }
-//     originalError.call(console, ...args)
-//   }
-// })
-// afterAll(() => {
-//   console.error = originalError
-// })
+// Mock form resolvers
+jest.mock('@hookform/resolvers/zod', () => ({
+  zodResolver: jest.fn(() => (data: unknown) => data),
+}))

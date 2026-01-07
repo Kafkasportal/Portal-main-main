@@ -131,7 +131,17 @@ function mapKumbara(db: Tables['kumbaras']['Row']): Kumbara {
       kod: db.kod,
       tapilanTarih: db.created_at ? new Date(db.created_at) : undefined,
     },
-    sorumlu: { id: db.sorumlu_id, name: 'Sorumlu' } as any,
+    sorumlu: {
+      id: db.sorumlu_id || '',
+      name: 'Sorumlu',
+      email: '',
+      phone: '',
+      role: 'gorevli',
+      isActive: true,
+      permissions: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     toplamTutar: db.toplam_toplanan || 0,
     toplamaBaşarina: db.toplam_toplanan || 0,
     toplamaGecmisi: [],
@@ -551,7 +561,7 @@ export async function fetchApplications(options?: {
   if (error) throw error
 
   return toPaginatedResponse(
-    (data || []).map(mapApplication as any),
+    (data || []).map(mapApplication),
     count,
     page,
     limit
@@ -582,7 +592,7 @@ export async function fetchApplicationById(
   if (!data) return null
 
   // Map to SosyalYardimBasvuru type
-  return mapApplication(data as any)
+  return mapApplication(data)
 }
 
 export async function updateApplicationStatus(
@@ -594,7 +604,7 @@ export async function updateApplicationStatus(
   const { data, error } = await supabase
     .from('social_aid_applications')
     .update({
-      durum: durum as any,
+      durum: durum,
       onaylanan_tutar: onaylananTutar,
       degerlendirme_tarihi: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -614,7 +624,7 @@ export async function fetchPayments(options?: {
   page?: number
   limit?: number
   durum?: string
-}): Promise<PaginatedResponse<any>> {
+}): Promise<PaginatedResponse<Tables['payments']['Row']>> {
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, durum } = options || {}
   const from = (page - 1) * limit
@@ -742,7 +752,7 @@ export async function fetchDashboardStats() {
       { month: 'May', amount: 55000 },
       { month: 'Haz', amount: 67000 },
     ],
-    recentDonations: (donations || []).slice(0, 5).map(mapDonation as any),
+    recentDonations: (donations || []).slice(0, 5).map(mapDonation),
     aidDistribution:
       aidDistribution.length > 0
         ? aidDistribution

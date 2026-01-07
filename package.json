@@ -19,12 +19,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "db:seed": "tsx scripts/seed.ts",
     "clean": "rm -rf .next out node_modules/.cache",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "rm -rf node_modules/next/dist/compiled/@modelcontextprotocol/sdk/server/mcp.js node_modules/next/dist/esm/server/mcp node_modules/next/dist/server/mcp node_modules/next/dist/esm/shared/lib/mcp-error-types.* node_modules/next/dist/esm/shared/lib/mcp-page-metadata-types.* node_modules/next/dist/shared/lib/mcp-error-types.* node_modules/next/dist/shared/lib/mcp-page-metadata-types.* node_modules/next/dist/telemetry/events/mcp-telemetry.* node_modules/playwright/lib/mcp node_modules/playwright/lib/mcpBundleImpl.js"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.1.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",
@@ -49,8 +48,9 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "exceljs": "^4.4.0",
+    "framer-motion": "^12.24.7",
     "lucide-react": "^0.562.0",
-    "next": "16.0.10",
+    "next": "^16.1.1",
     "next-themes": "^0.4.6",
     "nprogress": "^0.2.0",
     "nuqs": "^2.8.5",
@@ -90,8 +90,6 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2",
-    "tw-animate-css": "^1.4.0",
     "typescript": "5.9.3"
   },
   "lint-staged": {

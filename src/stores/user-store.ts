@@ -10,7 +10,7 @@ interface UserState {
   error: string | null
   login: (email: string, password: string) => Promise<boolean>
   logout: () => Promise<void>
-  initializeAuth: () => void // Changed to sync or managed as it sets up listener
+  initializeAuth: () => void
   updateUser: (updates: Partial<User>) => void
 }
 
@@ -32,10 +32,22 @@ export const useUserStore = create<UserState>()((set) => ({
             user: {
               id: session.user.id,
               email: session.user.email || '',
-              ad: session.user.user_metadata?.ad || '',
-              soyad: session.user.user_metadata?.soyad || '',
-              role: session.user.user_metadata?.role || 'user',
-            } as unknown as User,
+              name:
+                session.user.user_metadata?.name ||
+                session.user.email?.split('@')[0] ||
+                '',
+              phone: session.user.phone || '',
+              role: session.user.user_metadata?.role || 'admin',
+              avatar: session.user.user_metadata?.avatar_url,
+              isActive: true,
+              permissions: session.user.user_metadata?.permissions || [],
+              createdAt: session.user.created_at
+                ? new Date(session.user.created_at)
+                : new Date(),
+              updatedAt: session.user.updated_at
+                ? new Date(session.user.updated_at)
+                : new Date(),
+            } as User,
             isAuthenticated: true,
           })
         }
@@ -49,10 +61,22 @@ export const useUserStore = create<UserState>()((set) => ({
             user: {
               id: session.user.id,
               email: session.user.email || '',
-              ad: session.user.user_metadata?.ad || '',
-              soyad: session.user.user_metadata?.soyad || '',
-              role: session.user.user_metadata?.role || 'user',
-            } as unknown as User,
+              name:
+                session.user.user_metadata?.name ||
+                session.user.email?.split('@')[0] ||
+                '',
+              phone: session.user.phone || '',
+              role: session.user.user_metadata?.role || 'admin',
+              avatar: session.user.user_metadata?.avatar_url,
+              isActive: true,
+              permissions: session.user.user_metadata?.permissions || [],
+              createdAt: session.user.created_at
+                ? new Date(session.user.created_at)
+                : new Date(),
+              updatedAt: session.user.updated_at
+                ? new Date(session.user.updated_at)
+                : new Date(),
+            } as User,
             isAuthenticated: true,
           })
         } else {
@@ -79,10 +103,22 @@ export const useUserStore = create<UserState>()((set) => ({
           user: {
             id: data.user.id,
             email: data.user.email || '',
-            ad: data.user.user_metadata?.ad || '',
-            soyad: data.user.user_metadata?.soyad || '',
-            role: data.user.user_metadata?.role || 'user',
-          } as unknown as User,
+            name:
+              data.user.user_metadata?.name ||
+              data.user.email?.split('@')[0] ||
+              '',
+            phone: data.user.phone || '',
+            role: data.user.user_metadata?.role || 'admin',
+            avatar: data.user.user_metadata?.avatar_url,
+            isActive: true,
+            permissions: data.user.user_metadata?.permissions || [],
+            createdAt: data.user.created_at
+              ? new Date(data.user.created_at)
+              : new Date(),
+            updatedAt: data.user.updated_at
+              ? new Date(data.user.updated_at)
+              : new Date(),
+          } as User,
           isAuthenticated: true,
           isLoading: false,
         })

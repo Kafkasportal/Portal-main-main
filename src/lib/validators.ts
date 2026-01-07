@@ -263,3 +263,49 @@ export const beneficiarySchema = z.object({
 })
 
 export type BeneficiaryFormData = z.infer<typeof beneficiarySchema>
+
+// Cash payment schema for vezne
+export const cashPaymentSchema = z.object({
+    tutar: z.number()
+        .positive('Tutar pozitif olmalıdır')
+        .min(0.01, 'Minimum tutar 0.01 TL'),
+    makbuzNo: z.string()
+        .min(1, 'Makbuz numarası gereklidir')
+        .max(50, 'Makbuz numarası en fazla 50 karakter olabilir'),
+    aliciAdi: z.string()
+        .min(2, 'Alıcı adı en az 2 karakter olmalıdır')
+        .max(50, 'Alıcı adı en fazla 50 karakter olabilir'),
+    aliciSoyadi: z.string()
+        .min(2, 'Alıcı soyadı en az 2 karakter olmalıdır')
+        .max(50, 'Alıcı soyadı en fazla 50 karakter olabilir'),
+    aliciImza: z.string()
+        .min(2, 'İmza gereklidir')
+        .max(100, 'İmza en fazla 100 karakter olabilir')
+})
+
+export type CashPaymentFormData = z.infer<typeof cashPaymentSchema>
+
+// Bank order schema for banka-emirleri
+export const bankOrderSchema = z.object({
+    tutar: z.number()
+        .positive('Tutar pozitif olmalıdır')
+        .min(0.01, 'Minimum tutar 0.01 TL'),
+    bankaAdi: z.string()
+        .min(2, 'Banka adı gereklidir')
+        .max(50, 'Banka adı en fazla 50 karakter olabilir'),
+    iban: z.string()
+        .min(26, 'IBAN en az 26 karakter olmalıdır')
+        .max(34, 'IBAN en fazla 34 karakter olabilir')
+        .regex(/^TR[0-9]{2}[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{2}$/, 'Geçerli bir IBAN giriniz (TR ile başlamalı)'),
+    aliciAdi: z.string()
+        .min(2, 'Alıcı adı en az 2 karakter olmalıdır')
+        .max(50, 'Alıcı adı en fazla 50 karakter olabilir'),
+    aliciSoyadi: z.string()
+        .min(2, 'Alıcı soyadı en az 2 karakter olmalıdır')
+        .max(50, 'Alıcı soyadı en fazla 50 karakter olabilir'),
+    aciklama: z.string()
+        .max(200, 'Açıklama en fazla 200 karakter olabilir')
+        .optional()
+})
+
+export type BankOrderFormData = z.infer<typeof bankOrderSchema>

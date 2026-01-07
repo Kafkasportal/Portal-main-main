@@ -34,7 +34,7 @@ const memberColumns: ColumnDef<Uye>[] = [
     accessorKey: 'uyeNo',
     header: 'Üye No',
     cell: ({ row }) => (
-      <code className="bg-muted rounded px-2 py-1 font-mono text-xs">
+      <code className="bg-primary/10 text-primary rounded px-2 py-1 font-mono text-xs font-semibold">
         {row.original.uyeNo}
       </code>
     ),
@@ -44,16 +44,18 @@ const memberColumns: ColumnDef<Uye>[] = [
     header: 'Ad Soyad',
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <Avatar className="h-9 w-9">
-          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+        <Avatar className="ring-background h-9 w-9 shadow-sm ring-2">
+          <AvatarFallback className="from-primary/10 to-primary/20 text-primary bg-gradient-to-br text-xs font-semibold">
             {getInitials(`${row.original.ad} ${row.original.soyad}`)}
           </AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-medium">
+          <p className="text-foreground/90 font-semibold">
             {row.original.ad} {row.original.soyad}
           </p>
-          <p className="text-muted-foreground text-xs">{row.original.email}</p>
+          <p className="text-muted-foreground text-xs font-medium">
+            {row.original.email}
+          </p>
         </div>
       </div>
     ),
@@ -68,11 +70,20 @@ const memberColumns: ColumnDef<Uye>[] = [
   {
     accessorKey: 'uyeTuru',
     header: 'Üye Türü',
-    cell: ({ row }) => (
-      <Badge variant="outline">
-        {MEMBER_TYPE_LABELS[row.original.uyeTuru]}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const uyeTuru = row.original.uyeTuru
+      const variants = {
+        aktif: 'teal',
+        onursal: 'purple',
+        genc: 'blue',
+        destekci: 'emerald',
+      } as const
+      return (
+        <Badge variant={variants[uyeTuru] || 'outline'}>
+          {MEMBER_TYPE_LABELS[uyeTuru]}
+        </Badge>
+      )
+    },
   },
   {
     accessorKey: 'aidatDurumu',
@@ -115,7 +126,11 @@ const memberColumns: ColumnDef<Uye>[] = [
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground h-8 w-8"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

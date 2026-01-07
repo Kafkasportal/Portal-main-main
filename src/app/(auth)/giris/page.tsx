@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -58,29 +60,39 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1 text-center">
+    <Card className="border-muted/60 animate-in hover-glow w-full max-w-sm overflow-hidden bg-white/95 shadow-xl backdrop-blur-sm">
+      <CardHeader className="space-y-4 pb-2 text-center">
         {/* Logo */}
-        <div className="mb-4 flex justify-center">
-          <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-2xl">
-            <span className="text-primary-foreground text-3xl font-bold">
-              K
-            </span>
+        <div className="flex justify-center">
+          <div className="relative h-48 w-full transform transition-transform duration-300 hover:scale-105">
+            <Image
+              src="/kafkasder-logo.png"
+              alt="KAFKASDER Logo"
+              fill
+              className="object-contain" // Use object-contain to ensure the wide logo fits well
+              priority
+            />
           </div>
         </div>
 
-        <CardTitle className="text-2xl font-bold">Hoş Geldiniz</CardTitle>
-        <CardDescription>Dernek yönetim panelinize giriş yapın</CardDescription>
+        <div className="space-y-2">
+          <CardTitle className="text-foreground text-2xl font-bold tracking-tight">
+            Hoş Geldiniz
+          </CardTitle>
+          <CardDescription className="text-base">
+            Dernek yönetim panelinize giriş yapın
+          </CardDescription>
+        </div>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="stagger-item">
                   <FormLabel>E-posta</FormLabel>
                   <FormControl>
                     <Input
@@ -104,7 +116,7 @@ export default function LoginPage() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="stagger-item">
                   <FormLabel>Şifre</FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -113,11 +125,6 @@ export default function LoginPage() {
                         placeholder="••••••••"
                         autoComplete="current-password"
                         {...field}
-                        onChange={(e) => {
-                          const trimmed = e.target.value.trim()
-                          field.onChange(trimmed)
-                        }}
-                        onBlur={field.onBlur}
                       />
                       <Button
                         type="button"
@@ -145,7 +152,7 @@ export default function LoginPage() {
               control={form.control}
               name="rememberMe"
               render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
+                <FormItem className="stagger-item flex items-center space-x-2">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -159,24 +166,25 @@ export default function LoginPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" loading={isLoading}>
-              {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-            </Button>
+            <div className="stagger-item pt-2">
+              <Button
+                type="submit"
+                className="btn-press hover:bg-primary/90 h-11 w-full text-base font-semibold shadow-md transition-all"
+                loading={isLoading}
+              >
+                {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+              </Button>
+            </div>
           </form>
         </Form>
 
         <div className="mt-4 text-center">
-          <Button variant="link" className="text-muted-foreground text-sm">
+          <Button
+            variant="link"
+            className="text-muted-foreground hover:text-primary text-sm transition-colors"
+          >
             Şifrenizi mi unuttunuz?
           </Button>
-        </div>
-
-        {/* Demo credentials hint */}
-        <div className="bg-muted/50 mt-6 rounded-lg p-3 text-center">
-          <p className="text-muted-foreground text-xs">
-            Demo: Herhangi bir e-posta ve 6+ karakterli şifre ile giriş
-            yapabilirsiniz
-          </p>
         </div>
       </CardContent>
     </Card>

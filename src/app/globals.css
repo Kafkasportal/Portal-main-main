@@ -1,6 +1,6 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -50,55 +50,55 @@
   --radius: 0.625rem;
 
   /* Arka Plan - Ferah, nötr gri-beyaz */
-  --background: oklch(0.975 0.002 250);       /* #F5F7FA - Cool off-white */
-  --foreground: oklch(0.20 0.02 260);         /* #1A1D26 - Koyu slate */
+  --background: oklch(0.975 0.002 250); /* #F5F7FA - Cool off-white */
+  --foreground: oklch(0.2 0.02 260); /* #1A1D26 - Koyu slate */
 
-  /* Marka Renkleri - Modernize bordo */
-  --primary: oklch(0.48 0.18 10);             /* #A91E3A - Canlı bordo */
-  --primary-foreground: oklch(0.99 0 0);      /* #FFFFFF */
+  /* Marka Renkleri - Kafkasder Teal */
+  --primary: oklch(0.5 0.14 180); /* #008080 - Dernek Teal */
+  --primary-foreground: oklch(0.99 0 0); /* #FFFFFF */
 
   /* Yüzeyler ve Kartlar - Net ayrım için beyaz */
-  --card: oklch(1 0 0);                       /* #FFFFFF - Saf beyaz kartlar */
-  --card-foreground: oklch(0.20 0.02 260);
+  --card: oklch(1 0 0); /* #FFFFFF - Saf beyaz kartlar */
+  --card-foreground: oklch(0.2 0.02 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.02 260);
+  --popover-foreground: oklch(0.2 0.02 260);
 
   /* İkincil - Soft slate tonu */
-  --secondary: oklch(0.94 0.005 250);         /* Çok açık slate */
+  --secondary: oklch(0.94 0.005 250); /* Çok açık slate */
   --secondary-foreground: oklch(0.35 0.02 260);
 
   /* Sessiz ve Vurgu */
-  --muted: oklch(0.955 0.005 250);            /* Açık gri-mavi */
-  --muted-foreground: oklch(0.50 0.015 260);  /* Orta slate */
-  --accent: oklch(0.55 0.16 10);              /* #B82E4A - Aktif bordo */
+  --muted: oklch(0.955 0.005 250); /* Açık gri-mavi */
+  --muted-foreground: oklch(0.5 0.015 260); /* Orta slate */
+  --accent: oklch(0.55 0.12 180); /* #20B2AA - Aktif Teal */
   --accent-foreground: oklch(0.99 0 0);
 
   /* Kenarlık ve Girdiler - Daha belirgin */
-  --border: oklch(0.90 0.005 250);            /* #E2E5EA - Net gri */
+  --border: oklch(0.9 0.005 250); /* #E2E5EA - Net gri */
   --input: oklch(0.97 0.003 250);
-  --ring: oklch(0.55 0.18 10);                /* Bordo ring */
+  --ring: oklch(0.5 0.14 180); /* Teal ring */
 
   /* Anlamsal Renkler - Standart ve okunabilir */
-  --destructive: oklch(0.55 0.20 25);         /* #DC2626 - Net kırmızı */
-  --success: oklch(0.60 0.16 155);            /* #16A34A - Canlı yeşil */
-  --warning: oklch(0.75 0.15 75);             /* #F59E0B - Parlak amber */
+  --destructive: oklch(0.55 0.2 25); /* #DC2626 - Net kırmızı */
+  --success: oklch(0.6 0.16 155); /* #16A34A - Canlı yeşil */
+  --warning: oklch(0.75 0.15 75); /* #F59E0B - Parlak amber */
 
   /* Grafik Renkleri - Modern ve ayırt edilebilir */
-  --chart-1: oklch(0.55 0.18 10);             /* Bordo - Ana */
-  --chart-2: oklch(0.60 0.14 250);            /* Mavi - Kontrast */
-  --chart-3: oklch(0.60 0.16 155);            /* Yeşil - Pozitif */
-  --chart-4: oklch(0.72 0.15 75);             /* Amber - Uyarı */
-  --chart-5: oklch(0.55 0.15 290);            /* Mor - Vurgu */
+  --chart-1: oklch(0.5 0.14 180); /* Teal - Ana */
+  --chart-2: oklch(0.6 0.14 250); /* Mavi - Kontrast */
+  --chart-3: oklch(0.6 0.16 155); /* Yeşil - Pozitif */
+  --chart-4: oklch(0.72 0.15 75); /* Amber - Uyarı */
+  --chart-5: oklch(0.55 0.15 290); /* Mor - Vurgu */
 
   /* Kenar Çubuğu - Yumuşak koyu, nötre yakın */
-  --sidebar: oklch(0.22 0.025 260);           /* #1E2330 - Koyu slate-gri */
+  --sidebar: oklch(0.22 0.025 260); /* #1E2330 - Koyu slate-gri */
   --sidebar-foreground: oklch(0.92 0.005 250); /* Açık gri metin */
-  --sidebar-primary: oklch(0.65 0.16 10);     /* Açık bordo - aktif */
+  --sidebar-primary: oklch(0.5 0.14 180); /* Teal - aktif */
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.28 0.02 260);     /* Hover state */
+  --sidebar-accent: oklch(0.28 0.02 260); /* Hover state */
   --sidebar-accent-foreground: oklch(0.97 0.005 250);
-  --sidebar-border: oklch(0.30 0.02 260);     /* Subtle border */
-  --sidebar-ring: oklch(0.60 0.16 10);        /* Bordo ring */
+  --sidebar-border: oklch(0.3 0.02 260); /* Subtle border */
+  --sidebar-ring: oklch(0.5 0.14 180); /* Teal ring */
 }
 
 @layer base {
@@ -118,13 +118,21 @@
   }
 
   /* Başlıklar için özel stil */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
     letter-spacing: -0.02em;
   }
 
   /* GPU acceleration for clickable elements */
-  a, button, [role="button"], [tabindex] {
+  a,
+  button,
+  [role='button'],
+  [tabindex] {
     will-change: transform;
     transform: translateZ(0);
   }
@@ -138,8 +146,8 @@
   }
   .hover-glow:hover {
     box-shadow:
-      0 4px 12px -2px oklch(0.20 0.02 260 / 0.08),
-      0 2px 6px -2px oklch(0.20 0.02 260 / 0.04);
+      0 4px 12px -2px oklch(0.2 0.02 260 / 0.08),
+      0 2px 6px -2px oklch(0.2 0.02 260 / 0.04);
     transform: translateY(-1px);
   }
 
@@ -221,11 +229,21 @@
     animation: staggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
 
-  .stagger-item:nth-child(1) { animation-delay: 0.05s; }
-  .stagger-item:nth-child(2) { animation-delay: 0.1s; }
-  .stagger-item:nth-child(3) { animation-delay: 0.15s; }
-  .stagger-item:nth-child(4) { animation-delay: 0.2s; }
-  .stagger-item:nth-child(5) { animation-delay: 0.25s; }
+  .stagger-item:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .stagger-item:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .stagger-item:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  .stagger-item:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  .stagger-item:nth-child(5) {
+    animation-delay: 0.25s;
+  }
 
   @keyframes staggerIn {
     from {
@@ -251,6 +269,32 @@
     height: 3px;
     background: var(--primary);
     border-radius: 2px;
+  }
+
+  /* Blob Animation for Auth Background */
+  .animate-blob {
+    animation: blob 10s infinite;
+  }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
   }
 }
 

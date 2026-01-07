@@ -25,9 +25,25 @@ import type {
 } from '@/types'
 import type { Database } from '@/types/supabase'
 import crypto from 'crypto'
+import {
+  mockApplications,
+  mockBeneficiaries,
+  mockDashboardStats,
+  mockDonations,
+  mockKumbaras,
+  mockMembers,
+} from './mock-data'
 import { getSupabaseClient } from './supabase/client'
 
 type Tables = Database['public']['Tables']
+
+// Check if we're in mock mode
+function isMockMode(): boolean {
+  const useMockApi = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false'
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  return !supabaseUrl || !supabaseAnonKey || useMockApi
+}
 
 function toPaginatedResponse<T>(
   data: T[],
@@ -214,6 +230,24 @@ export async function fetchMembers(options?: {
   limit?: number
   search?: string
 }): Promise<PaginatedResponse<import('@/types').Uye>> {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    const { page = 1, limit = 10, search } = options || {}
+    let filtered = mockMembers
+    if (search) {
+      const s = search.toLowerCase()
+      filtered = mockMembers.filter(
+        (m) =>
+          m.ad.toLowerCase().includes(s) ||
+          m.soyad.toLowerCase().includes(s) ||
+          m.uyeNo.toLowerCase().includes(s)
+      )
+    }
+    const start = (page - 1) * limit
+    const paged = filtered.slice(start, start + limit)
+    return toPaginatedResponse(paged, filtered.length, page, limit)
+  }
+
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, search } = options || {}
   const from = (page - 1) * limit
@@ -294,6 +328,18 @@ export async function fetchDonations(options?: {
   search?: string
   amac?: string
 }): Promise<PaginatedResponse<import('@/types').Bagis>> {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    const { page = 1, limit = 10, amac } = options || {}
+    let filtered = mockDonations
+    if (amac) {
+      filtered = mockDonations.filter((d) => d.amac === amac)
+    }
+    const start = (page - 1) * limit
+    const paged = filtered.slice(start, start + limit)
+    return toPaginatedResponse(paged, filtered.length, page, limit)
+  }
+
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, search, amac } = options || {}
   const from = (page - 1) * limit
@@ -354,6 +400,18 @@ export async function fetchBeneficiaries(options?: {
   durum?: string
   ihtiyacDurumu?: string
 }): Promise<PaginatedResponse<IhtiyacSahibi>> {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    const { page = 1, limit = 10, durum } = options || {}
+    let filtered = mockBeneficiaries
+    if (durum && durum !== 'all') {
+      filtered = mockBeneficiaries.filter((b) => b.durum === durum)
+    }
+    const start = (page - 1) * limit
+    const paged = filtered.slice(start, start + limit)
+    return toPaginatedResponse(paged, filtered.length, page, limit)
+  }
+
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, search, durum, ihtiyacDurumu } = options || {}
   const from = (page - 1) * limit
@@ -455,6 +513,18 @@ export async function fetchKumbaras(options?: {
   limit?: number
   durum?: string
 }): Promise<PaginatedResponse<Kumbara>> {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    const { page = 1, limit = 10, durum } = options || {}
+    let filtered = mockKumbaras
+    if (durum) {
+      filtered = mockKumbaras.filter((k) => k.durum === durum)
+    }
+    const start = (page - 1) * limit
+    const paged = filtered.slice(start, start + limit)
+    return toPaginatedResponse(paged, filtered.length, page, limit)
+  }
+
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, durum } = options || {}
   const from = (page - 1) * limit
@@ -535,6 +605,18 @@ export async function fetchApplications(options?: {
   limit?: number
   durum?: string
 }): Promise<PaginatedResponse<SosyalYardimBasvuru>> {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    const { page = 1, limit = 10, durum } = options || {}
+    let filtered = mockApplications
+    if (durum) {
+      filtered = mockApplications.filter((a) => a.durum === durum)
+    }
+    const start = (page - 1) * limit
+    const paged = filtered.slice(start, start + limit)
+    return toPaginatedResponse(paged, filtered.length, page, limit)
+  }
+
   const supabase = getSupabaseClient()
   const { page = 1, limit = 10, durum } = options || {}
   const from = (page - 1) * limit
@@ -657,6 +739,11 @@ export async function fetchPayments(options?: {
 // DASHBOARD STATS
 // ============================================
 export async function fetchDashboardStats() {
+  // Return mock data in demo mode
+  if (isMockMode()) {
+    return mockDashboardStats
+  }
+
   const supabase = getSupabaseClient()
 
   // Bu ayın başlangıcını hesapla

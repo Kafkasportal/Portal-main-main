@@ -125,7 +125,21 @@ export const useUserStore = create<UserState>()((set) => ({
         return true
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Giriş yapılamadı'
+      // Supabase error details
+      let message = 'Giriş yapılamadı'
+      if (err instanceof Error) {
+        message = err.message
+        // Provide user-friendly Turkish messages
+        if (message.includes('Invalid login credentials')) {
+          message = 'Geçersiz e-posta veya şifre'
+        } else if (message.includes('Email not confirmed')) {
+          message =
+            'E-posta adresiniz onaylanmamış. Lütfen e-postanızı kontrol edin.'
+        } else if (message.includes('User not found')) {
+          message = 'Bu e-posta ile kayıtlı kullanıcı bulunamadı'
+        }
+      }
+      console.error('Login error:', err)
       set({ error: message, isLoading: false })
       return false
     }

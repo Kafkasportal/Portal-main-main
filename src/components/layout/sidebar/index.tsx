@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
@@ -186,24 +188,23 @@ function DesktopSidebar() {
         {/* Logo */}
         <div
           className={cn(
-            'border-sidebar-border flex h-16 items-center border-b px-4',
+            'border-sidebar-border flex h-20 items-center border-b px-4',
             isCollapsed && 'justify-center'
           )}
         >
           {!isCollapsed ? (
-            <Link href="/genel" className="group flex items-center gap-3">
-              <div className="from-sidebar-primary to-warning flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br shadow-md transition-shadow group-hover:shadow-lg">
-                <span className="text-sidebar-primary-foreground text-xl font-bold tracking-wider">
-                  K
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sidebar-foreground text-lg font-bold tracking-tight">
-                  Kafkasder
-                </span>
-                <span className="text-sidebar-foreground/60 text-2.5 tracking-wide uppercase">
-                  Yönetim Paneli
-                </span>
+            <Link
+              href="/genel"
+              className="group flex w-full flex-col items-center justify-center"
+            >
+              <div className="relative h-16 w-full transform transition-transform duration-200 group-hover:scale-105">
+                <Image
+                  src="/kafkasder-logo.png"
+                  alt="Kafkasder"
+                  fill
+                  className="object-contain" // Contain to show full logo including text
+                  priority
+                />
               </div>
             </Link>
           ) : (
@@ -211,14 +212,21 @@ function DesktopSidebar() {
               <TooltipTrigger asChild>
                 <Link
                   href="/genel"
-                  className="from-sidebar-primary to-warning flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br shadow-md transition-shadow hover:shadow-lg"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/50 p-1 shadow-md transition-shadow hover:shadow-lg"
                 >
-                  <span className="text-sidebar-primary-foreground text-xl font-bold tracking-wider">
-                    K
-                  </span>
+                  <div className="relative h-full w-full">
+                    <Image
+                      src="/kafkasder-logo.png"
+                      alt="K"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Ana Sayfa</TooltipContent>
+              <TooltipContent side="right">
+                Kafkasder Yönetim Paneli
+              </TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -268,31 +276,27 @@ function MobileSidebar() {
         className="bg-sidebar border-sidebar-border w-72 p-0"
       >
         {/* Logo */}
-        <div className="border-sidebar-border flex h-16 items-center justify-between border-b px-4">
+        <div className="border-sidebar-border flex h-20 items-center justify-between border-b px-4">
           <Link
             href="/genel"
-            className="group flex items-center gap-3"
+            className="group flex flex-1 items-center justify-center"
             onClick={() => setOpen(false)}
           >
-            <div className="from-sidebar-primary to-warning flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br shadow-md">
-              <span className="text-sidebar-primary-foreground text-xl font-bold tracking-wider">
-                K
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sidebar-foreground text-lg font-bold tracking-tight">
-                Kafkasder
-              </span>
-              <span className="text-sidebar-foreground/60 text-2.5 tracking-wide uppercase">
-                Yönetim Paneli
-              </span>
+            <div className="relative h-14 w-48">
+              <Image
+                src="/kafkasder-logo.png"
+                alt="Kafkasder"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </Link>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setOpen(false)}
-            className="text-sidebar-foreground/70 hover:text-sidebar-foreground"
+            className="text-sidebar-foreground/70 hover:text-sidebar-foreground ml-2 shrink-0"
           >
             <X className="h-5 w-5" />
           </Button>

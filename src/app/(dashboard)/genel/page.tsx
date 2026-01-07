@@ -217,8 +217,8 @@ export default function DashboardPage() {
       <Card className="hover-glow border-border/50 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-blue-600">
-              <Users className="h-4 w-4 text-white" />
+            <div className="bg-primary/10 ring-primary/20 flex h-8 w-8 items-center justify-center rounded-lg ring-1">
+              <Users className="text-primary h-4 w-4" />
             </div>
             İhtiyaç Sahipleri Özeti
           </CardTitle>
@@ -230,12 +230,12 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20">
-                <UserCheck className="h-5 w-5 text-green-600" />
+            <div className="flex items-center gap-3 rounded-lg border border-teal-500/20 bg-teal-500/5 p-4 transition-colors hover:bg-teal-500/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-500/20">
+                <UserCheck className="h-5 w-5 text-teal-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-teal-600">
                   {beneficiariesData?.data.filter((b) => b.durum === 'aktif')
                     .length || 0}
                 </p>
@@ -277,8 +277,8 @@ export default function DashboardPage() {
         <Card className="hover-glow border-border/50 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-orange-500 to-red-500">
-                <FileText className="h-4 w-4 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10 ring-1 ring-orange-500/20">
+                <FileText className="h-4 w-4 text-orange-600" />
               </div>
               Bekleyen Başvurular
             </CardTitle>
@@ -356,8 +356,8 @@ export default function DashboardPage() {
         <Card className="hover-glow border-border/50 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-teal-500">
-                <UserPlus className="h-4 w-4 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
+                <UserPlus className="h-4 w-4 text-emerald-600" />
               </div>
               Son Kayıt Olan Üyeler
             </CardTitle>

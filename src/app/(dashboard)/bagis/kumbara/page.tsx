@@ -298,14 +298,17 @@ function KumbaraGrid({
               <MapPin className="h-2.5 w-2.5 shrink-0" />
               <span className="truncate">{kumbara.konum}</span>
             </p>
-            <div className="border-t pt-1">
+            <div className="border-t pt-1.5">
               <p className="text-primary font-mono text-sm font-bold">
                 {formatCurrency(kumbara.toplamTutar)}
               </p>
             </div>
-            <div className="text-muted-foreground text-2.5 flex items-center justify-between">
-              <span className="truncate">
-                {kumbara.sorumlu.name.split(' ')[0]}
+            <div className="text-muted-foreground text-2.5 flex items-center justify-between pt-0.5">
+              <span className="flex items-center gap-1 truncate">
+                <span className="text-muted-foreground/70">Sorumlu:</span>
+                <span className="text-foreground/80 font-medium">
+                  {kumbara.sorumlu.name.split(' ')[0]}
+                </span>
               </span>
               {kumbara.koordinat && (
                 <MapPin className="text-success h-2.5 w-2.5" />

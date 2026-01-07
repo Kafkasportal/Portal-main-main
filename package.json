@@ -20,8 +20,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "clean": "rm -rf .next out node_modules/.cache",
-    "prepare": "husky",
-    "postinstall": "rm -rf node_modules/next/dist/compiled/@modelcontextprotocol/sdk/server/mcp.js node_modules/next/dist/esm/server/mcp node_modules/next/dist/server/mcp node_modules/next/dist/esm/shared/lib/mcp-error-types.* node_modules/next/dist/esm/shared/lib/mcp-page-metadata-types.* node_modules/next/dist/shared/lib/mcp-error-types.* node_modules/next/dist/shared/lib/mcp-page-metadata-types.* node_modules/next/dist/telemetry/events/mcp-telemetry.* node_modules/playwright/lib/mcp node_modules/playwright/lib/mcpBundleImpl.js"
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

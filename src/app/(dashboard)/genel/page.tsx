@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
  * Animasyonlu, modern dashboard tasarımı.
  * Gerçek Supabase verilerinizle çalışır.
  */
-export default function DashboardPageNewDesign() {
+export default function DashboardPage() {
   const router = useRouter()
 
   // Gerçek verileri çek
@@ -81,8 +81,8 @@ export default function DashboardPageNewDesign() {
     applicationType: app.yardimTuru || 'nakdi',
     requestedAmount: app.talepEdilenTutar || 0,
     currency: 'TRY' as const,
-    applicationDate: app.createdAt instanceof Date 
-      ? app.createdAt.toISOString() 
+    applicationDate: app.createdAt instanceof Date
+      ? app.createdAt.toISOString()
       : (typeof app.createdAt === 'string' ? app.createdAt : new Date().toISOString()),
     status: app.durum || 'beklemede',
     priority: 'orta',

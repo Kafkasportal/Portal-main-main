@@ -77,7 +77,7 @@ function NavItemComponent({
         )}
 
         {isOpen && !isCollapsed && (
-          <div 
+          <div
             id={`submenu-${item.label}`}
             role="menu"
             className="border-sidebar-primary/30 animate-in slide-in-from-top-2 mt-1 ml-4 space-y-1 border-l-2 pl-4 duration-200"
@@ -105,7 +105,7 @@ function NavItemComponent({
         'active:bg-sidebar-accent/80 transition-colors duration-150',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         isActive &&
-          'bg-sidebar-accent text-sidebar-primary border-sidebar-primary border-l-2'
+        'bg-sidebar-accent text-sidebar-primary font-semibold shadow-sm'
       )}
       aria-label={isCollapsed ? item.label : undefined}
       aria-current={isActive ? 'page' : undefined}
@@ -238,7 +238,7 @@ function DesktopSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav 
+        <nav
           className="scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent flex-1 space-y-1 overflow-y-auto p-3"
           aria-label="Ana navigasyon menüsü"
         >

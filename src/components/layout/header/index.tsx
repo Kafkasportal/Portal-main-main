@@ -13,8 +13,9 @@ import {
 import { useIsMobile } from '@/hooks/use-media-query'
 import { getInitials } from '@/lib/utils'
 import { useSidebarStore } from '@/stores/sidebar-store'
+import { useThemeStore } from '@/stores/theme-store'
 import { useUserStore } from '@/stores/user-store'
-import { Bell, LogOut, Menu, Search, Settings, User } from 'lucide-react'
+import { Bell, LogOut, Menu, Moon, Search, Settings, Sun, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Suspense, lazy, useEffect, useState } from 'react'
 
@@ -27,6 +28,7 @@ const CommandPalette = lazy(() =>
 
 export function Header() {
   const { isCollapsed, setCollapsed, setOpen } = useSidebarStore()
+  const { theme, toggleTheme } = useThemeStore()
   const { user, logout } = useUserStore()
   const router = useRouter()
   const isMobile = useIsMobile()
@@ -111,6 +113,30 @@ export function Header() {
           <Search className="h-5 w-5" />
         </Button>
 
+        {/* Dark Mode Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-accent relative transition-colors"
+          onClick={toggleTheme}
+          aria-label={
+            theme === 'dark'
+              ? 'Açık moda geçiş'
+              : 'Koyu moda geçiş'
+          }
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">
+            {theme === 'dark'
+              ? 'Açık moda geçiş'
+              : 'Koyu moda geçiş'}
+          </span>
+        </Button>
+
         {/* Notifications */}
         <Button
           variant="ghost"
@@ -163,6 +189,18 @@ export function Header() {
                 <p className="text-muted-foreground text-xs">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={toggleTheme}
+              className="cursor-pointer"
+            >
+              {theme === 'dark' ? (
+                <Sun className="mr-2 h-4 w-4" />
+              ) : (
+                <Moon className="mr-2 h-4 w-4" />
+              )}
+              {theme === 'dark' ? 'Açık Mod' : 'Koyu Mod'}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />

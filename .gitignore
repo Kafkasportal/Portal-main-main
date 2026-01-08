@@ -67,9 +67,8 @@ node_modules/
 .netlify
 
 # MCP configuration with sensitive tokens
-.vscode/mcp.json
-.cursor/mcp.json
-.cursor/
+.
+
 # .claude/ directory - keep skills but ignore settings
 .claude/*
 !.claude/skills/

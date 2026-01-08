@@ -1,10 +1,9 @@
-import { ConstructionPage } from '@/components/shared/construction-page'
+import { EventListPlaceholder } from '@/components/features/events/event-list-placeholder'
 
 export default function EventsPage() {
   return (
-    <ConstructionPage
-      title="Etkinlikler"
-      description="Dernek etkinliklerini planlayın ve yönetin"
-    />
+    <div className="container mx-auto py-6">
+      <EventListPlaceholder />
+    </div>
   )
 }
